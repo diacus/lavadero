@@ -10,7 +10,7 @@
 
 typedef struct tp{
 	unsigned int clave;
-	void *valor
+	int valor
 } tupla;
 
 /* tupla *tupla_new( unsigned int k, void *val )
