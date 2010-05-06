@@ -5,12 +5,12 @@
  *      Author: diacus
  */
 
-#include <tupla.c>
+#include <tupla.h>
 
 int main(int argc, char *argv[]) {
 	char a = 'a';
 	tupla *t = tupla_new(0, (void *) &a);
-	print_tupla(t);
+	tupla_print(t);
 	tupla_delete(t);
 	return 0;
 }
