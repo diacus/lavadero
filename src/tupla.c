@@ -25,7 +25,7 @@ tupla *tupla_new( unsigned int k, void *val ) {
  */
 
 int tupla_print( tupla *t ) {
-	printf( "(%u,%X)\n", t->clave, t->valor );
+	printf( "(%u,%X)\n", t->clave, (unsigned int) t->valor );
 	return 0;
 }
 
