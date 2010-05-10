@@ -5,3 +5,78 @@
  *      Author: diacus
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <lista.h>
+
+/* lista *lista_new( void *inf, char *key )
+ *
+ * Constructor de un nodo de lista con información info
+ * y clave key.
+ */
+
+lista *lista_new( void *inf, char *k ) {
+	lista *res = (lista *) malloc( sizeof(lista) );
+	res->info = inf;
+	res->key  = k;
+	res->next = NULL;
+	return res;
+}
+
+/* lista *lista_insert( lista *lst, lista *item )
+ *
+ * Inserta el nodo item en la lista lst, ordenandolo
+ * por su clave
+ */
+
+lista *lista_insert( lista *lst, lista *item ) {
+	lista *res = NULL;
+	int dif;
+	if ( lst ) {
+
+		dif = strcmp ( lst->key, item->key );
+		if( dif > 0 ) {
+			res = item;
+			item->next = lst;
+		} else if( dif < 0 ) {
+			res = lst;
+			lst->next = lista_insert( lst->next, item );
+		} else {
+			fprintf( stderr, "Error: La clave %s ya esta en uso, por favor elige otra\n", item->key );
+			res = lst;
+		}
+
+	} else
+		res = item;
+	return res;
+}
+
+/* lista *lista_remove( lista *lst, char *k )
+ *
+ * Elimina el nodo con clave k de la lista lst.
+ */
+
+lista *lista_remove( lista *lst, char *k ) {
+	return NULL;
+}
+
+/* void *lista_find( lista *lst, char *k )
+ *
+ * Devuelve el apuntador al dato almacenado en la lista
+ * lst, con clave k.
+ */
+
+void *lista_find( lista *lst, char *k ) {
+	return NULL;
+}
+
+/* lista *lista_delete( lista *lst )
+ *
+ * Elimina la lista lst.
+ */
+
+lista *lista_delete( lista *lst ) {
+	return NULL;
+}
+
