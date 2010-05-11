@@ -37,14 +37,24 @@ lista *lista_insert( lista *lst, lista *item ) {
 
 		dif = strcmp ( lst->key, item->key );
 		if( dif > 0 ) {
+
 			res = item;
 			item->next = lst;
+
 		} else if( dif < 0 ) {
+
 			res = lst;
 			lst->next = lista_insert( lst->next, item );
+
 		} else {
-			fprintf( stderr, "Error: La clave %s ya esta en uso, por favor elige otra\n", item->key );
+
+			fprintf(
+				stderr,
+				"Error: La clave %s ya esta en uso, por favor elige otra\n",
+				item->key
+			);
 			res = lst;
+
 		}
 
 	} else
@@ -58,7 +68,32 @@ lista *lista_insert( lista *lst, lista *item ) {
  */
 
 lista *lista_remove( lista *lst, char *k ) {
-	return NULL;
+
+	lista *res;
+
+	if( lst ) {
+
+		if ( !strcmp( k, lst->key ) ) { 		/* si las claves coinciden */
+
+			res = lst->next;					/* se elimina el nodo actual */
+			lst->next = NULL;
+			lista_delete( lst );
+
+		} else {								/* En caso de que no coincidan */
+			res = lst;							/* el nodo a remover se busca en */
+			lst->next = lista_remove(lst, k);	/* el resto de la lista */
+		}
+	} else {
+		res = NULL;
+		fprintf(
+				stderr,
+				"Error: no hay ningun elemento con la clave %s en la tabla\n",
+				k
+		);
+	}
+
+	return res;
+
 }
 
 /* void *lista_find( lista *lst, char *k )
@@ -77,6 +112,12 @@ void *lista_find( lista *lst, char *k ) {
  */
 
 lista *lista_delete( lista *lst ) {
+	if(lst) {
+		free(lst->info);
+		free(lst->key);
+		free(lst->next);
+		free(lst);
+	}
 	return NULL;
 }
 
