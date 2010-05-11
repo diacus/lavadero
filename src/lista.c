@@ -19,7 +19,7 @@
 lista *lista_new( void *inf, char *k ) {
 	lista *res = (lista *) malloc( sizeof(lista) );
 	res->info = inf;
-	res->key  = k;
+	res->key  = strdup(k);
 	res->next = NULL;
 	return res;
 }
