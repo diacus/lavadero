@@ -86,9 +86,9 @@ lista *lista_remove( lista *lst, char *k ) {
 	} else {
 		res = NULL;
 		fprintf(
-				stderr,
-				"Error: no hay ningun elemento con la clave %s en la tabla\n",
-				k
+			stderr,
+			"Error: no hay ningun elemento con la clave %s en la tabla\n",
+			k
 		);
 	}
 
@@ -103,7 +103,15 @@ lista *lista_remove( lista *lst, char *k ) {
  */
 
 void *lista_find( lista *lst, char *k ) {
-	return NULL;
+
+	void *res;
+
+	if(lst)
+		res = strcmp(k, lst->key) ? lista_find(lst->next, k) : lst->info;
+	else
+		res = NULL;
+
+	return res;
 }
 
 /* lista *lista_delete( lista *lst )
@@ -115,7 +123,7 @@ lista *lista_delete( lista *lst ) {
 	if(lst) {
 		free(lst->info);
 		free(lst->key);
-		free(lst->next);
+		lista_delete(lst->next);
 		free(lst);
 	}
 	return NULL;
