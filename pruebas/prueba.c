@@ -23,3 +23,7 @@ int prueba1() {
 
 	return 0;
 }
+
+int pruebahash( int argc, char *argv[] ) {
+	return 0;
+}
