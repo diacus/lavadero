@@ -5,61 +5,75 @@
  *      Author: diacus
  */
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <thash.h>
 
-unsigned int hash( char *s );
+/* unsigned int hash( char *key )
+ *
+ */
 
-thash thash_get() {
-	static int creada = 0;
-	static thash th;
-	if( !creada ) {
-		th = (thash) calloc( SIZE, sizeof(int) );
-		creada ++;
-	}
-	return th;
+unsigned int hash( char *key, unsigned int sz ) {
+	char xor = '\0', *s = key - 1;
+	unsigned int hash_val;
+	double prod;
+
+	while( *++s )
+		xor ^= *s;
+
+	prod = (double) xor * GOLD;
+	hash_val = (int) ((prod - floor(prod)) * 10.0e4);
+
+	return hash_val % sz;
+
 }
 
-unsigned int hash( char *s ) {
+/* thash *thash_new( unsigned int sz )
+ *
+ */
 
+thash *thash_new( unsigned int sz ) {
+	return NULL;
 }
 
-/* int thash_in( char *key, int value )
+/* unsigned int thash_insert( thash *t, void *value, char *key )
  *
- * Inserta el valor value usado la clave key dentro
- * de la tabla de dispersión.
  */
 
-int thash_in( char *key, int value );
+unsigned int thash_insert( thash *t, void *value, char *key ) {
+	return 0;
+}
 
-/* int thash_out( char *key )
+/* void *thash_remove( thash *t, char *key )
  *
- * Recupera el dato con la clave asociada key dentro de la
- * tabla de dispersión.
  */
 
-int thash_out( char *key );
+void *thash_remove( thash *t, char *key ) {
+	return NULL;
+}
 
-/* int thash_drop( char *key )
+/* void *thash_read( thash *t, char *key )
  *
- * Elimina de la tabla de dispersión el elemento con
- * clave key.
  */
 
-int thash_drop( char *key );
+void *thash_read( thash *t, char *key ) {
+	return NULL;
+}
 
-/* int thash_flush()
+/* int thash_flush( thash *t )
  *
- * borra todos lo elementos almacenados en la
- * tabla de dispersión.
  */
 
-int thash_flush();
+int thash_flush( thash *t ) {
+	return 0;
+}
 
-/* int thash_delete()
+/* thash *thash_delete( thash *t )
  *
- * Libera el espacio de memoria que ocupa la tabla de
- * dispersión.
  */
 
-int thash_delete();
+thash *thash_delete( thash *t ) {
+	return NULL;
+}
+

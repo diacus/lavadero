@@ -5,14 +5,10 @@
  *      Author: diacus
  */
 
-#include <tupla.h>
+#include <thash.h>
 #include <prueba.h>
 
 int main(int argc, char *argv[]) {
-
-	/* prueba1(); */
-
-	/* return 0; */
 
 	return pruebahash( argc, argv );
 }

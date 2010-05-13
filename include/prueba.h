@@ -10,6 +10,13 @@
 
 int prueba1();
 
+/* int pruebalista( int argc, char *argv[] )
+ *
+ * Función para probar la lista
+ */
+
+int pruebalista( int argc, char *argv[] );
+
 /* int pruebahash( int argc, char *argv[] )
  *
  * Función para probar la tabla hash
