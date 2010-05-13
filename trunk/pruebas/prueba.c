@@ -59,7 +59,7 @@ int pruebahash( int argc, char *argv[] ) {
 		for( j = 0; j < WSIZE;
 			palabra[j++] = 1 + rand() % 255
 		);
-		sprintf( s_hash, "%u", hash( palabra, 2000, 10e6 ) );
+		sprintf( s_hash, "%u", hash( palabra, 2000, 10e7 ) );
 		printf ("Generado hash: %s\n", s_hash );
 
 		lis = lista_insert( lis, lista_new(NULL, s_hash) );

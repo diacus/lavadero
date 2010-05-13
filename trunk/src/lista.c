@@ -121,7 +121,6 @@ void *lista_find( lista *lst, char *k ) {
 
 lista *lista_delete( lista *lst ) {
 	if(lst) {
-		free(lst->info);
 		free(lst->key);
 		lista_delete(lst->next);
 		free(lst);
