@@ -12,6 +12,8 @@
 #include <thash.h>
 #include <lista.h>
 
+#define WSIZE 15
+
 #define CREA_ENTERO(a) \
 	a = (int *) malloc(sizeof(int));
 
@@ -20,34 +22,48 @@
 
 int prueba1() {
 
-	/* probando singleton */
-	thash h1, h2;
+	return 0;
+}
 
-	h1 = thash_get();
+int prueblista( int argc, char *argv[] ) {
 
-	h1[0] = 1986;
+	char clave[256] = "";
+	int i, *item;
+	lista *aux, *lis = NULL;
 
-	h2 = thash_get();
+	srand( time(NULL) );
 
-	printf("%d\n", h2[0] );
+	for( i = 0; i < 100 ; i++ ) {
+		sprintf( clave, "%d", rand() % 10000 );
+		CREA_ENTERO(item); *item = rand() % 1000;
+		printf( "Insertando el entero %d, con clave \"%s\"\n", *item, clave );
+		lis = lista_insert( lis, lista_new( (void *) item, clave ) );
+		clave[0] = '\0';
+	}
+
+	for( aux = lis; aux; aux = aux->next )
+		printf( "Elemento %d, con clave \"%s\"\n", *((int *) aux->info), aux->key );
 
 	return 0;
 }
 
 int pruebahash( int argc, char *argv[] ) {
 
-	char clave[256] = "";
-	int i, *item;
+	int i,j;
+	char palabra[WSIZE], s_hash[5] = "";
+	lista *lis = NULL;
 	srand( time(NULL) );
 
-	CREA_ENTERO(item); *item = rand() % 1000;
-	lista *lis = lista_new( (void *) item, "inicio" );
+	for( i = 0; i < 1000; i++ ) {
+		for( j = 0; j < WSIZE;
+			palabra[j++] = rand() % 256
+		);
+		sprintf( s_hash, "%u", hash( palabra, 1024 ) );
+		printf ("Generado: hash %s\n", s_hash );
 
-	for( i = 0; i < 10 ; i++ ) {
-		sprintf( clave, "item%02d", i);
-		CREA_ENTERO(item); *item = rand() % 1000;
-		lista_insert( lis, lista_new( (void *) item, clave ) );
-		clave[0] = '\0';
+		lis = lista_insert( lis, lista_new(s_hash, NULL) );
+
+		s_hash[0] = '\0';
 	}
 
 	return 0;

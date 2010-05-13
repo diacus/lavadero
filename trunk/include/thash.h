@@ -8,56 +8,59 @@
 #ifndef THASH_H_
 #define THASH_H_
 
-#define SIZE 1024
+#include <lista.h>
 
-typedef int *thash;
+#define GOLD 1.6180339887498949
 
-/* thash thash_get()
- *
- * función constructora, que se asegura de que exista una
- * y sólo una tabla de dispersión.
+/* Type thash
  *
  */
-thash thash_get();
 
-/* int thash_in( char *key, int value )
+typedef struct th {
+	unsigned int size;
+	lista **table;
+} thash;
+
+/* unsigned int hash( char *key, unsigned int sz )
  *
- * Inserta el valor value usado la clave key dentro
- * de la tabla de dispersión.
  */
 
-int thash_in( char *key, int value );
+unsigned int hash( char *key, unsigned int sz );
 
-/* int thash_out( char *key )
+/* thash *thash_new( unsigned int sz )
  *
- * Recupera el dato con la clave asociada key dentro de la
- * tabla de dispersión.
  */
 
-int thash_out( char *key );
+thash *thash_new( unsigned int sz );
 
-/* int thash_drop( char *key )
+/* unsigned int thash_insert( thash *t, void *value, char *key )
  *
- * Elimina de la tabla de dispersión el elemento con
- * clave key.
  */
 
-int thash_drop( char *key );
+unsigned int thash_insert( thash *t, void *value, char *key );
 
-/* int thash_flush()
+/* void *thash_remove( thash *t, char *key )
  *
- * borra todos lo elementos almacenados en la
- * tabla de dispersión.
  */
 
-int thash_flush();
+void *thash_remove( thash *t, char *key );
 
-/* int thash_delete()
+/* void *thash_read( thash *t, char *key )
  *
- * Libera el espacio de memoria que ocupa la tabla de
- * dispersión.
  */
 
-int thash_delete();
+void *thash_read( thash *t, char *key );
+
+/* int thash_flush( thash *t )
+ *
+ */
+
+int thash_flush( thash *t );
+
+/* thash *thash_delete( thash *t )
+ *
+ */
+
+thash *thash_delete( thash *t );
 
 #endif /* THASH_H_ */
