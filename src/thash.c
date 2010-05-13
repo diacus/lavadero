@@ -10,20 +10,25 @@
 #include <math.h>
 #include <thash.h>
 
-/* unsigned int hash( char *key )
+/* unsigned int hash( char *key, unsigned int sz, unsigned int shift )
  *
  */
 
-unsigned int hash( char *key, unsigned int sz ) {
+unsigned int hash( char *key, unsigned int sz, unsigned int shift ) {
+
 	char xor = '\0', *s = key - 1;
-	unsigned int hash_val;
+	unsigned int bits, hash_val;
 	double prod;
 
-	while( *++s )
+	bits = 1;
+	while( *++s ) {
+		ROTAR( *s, bits );
+		bits++;
 		xor ^= *s;
+	}
 
 	prod = (double) xor * GOLD;
-	hash_val = (int) ((prod - floor(prod)) * 10.0e4);
+	hash_val = (int) ((prod - floor(prod)) * shift);
 
 	return hash_val % sz;
 

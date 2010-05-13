@@ -24,4 +24,6 @@ int pruebalista( int argc, char *argv[] );
 
 int pruebahash( int argc, char *argv[] );
 
+int pruebabit();
+
 #endif /* PRUEBA_H_ */
