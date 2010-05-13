@@ -8,7 +8,7 @@
 #ifndef PRUEBAG_H_
 #define PRUEBAG_H_
 
-void prueba();
+void pruebaG();
 
 /* tupla tupla_new( int N, ... )
  *
