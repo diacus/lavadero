@@ -12,4 +12,5 @@ int main(int argc, char *argv[]) {
 
 	return pruebahash( argc, argv );
 	/* return pruebabit(); */
+	/* prueba(); */
 }

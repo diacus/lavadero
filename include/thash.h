@@ -11,6 +11,7 @@
 #include <lista.h>
 
 #define GOLD 1.6180339887498949
+#define SHIFT 10e7
 
 #define ROTAR( c, n ) \
 	c = (c >> (n%8)) ^ ((c % (1 << (n%8))) << (8 - (n%8)))
