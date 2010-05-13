@@ -12,6 +12,9 @@
 
 #define GOLD 1.6180339887498949
 
+#define ROTAR( c, n ) \
+	c = (c >> (n%8)) ^ ((c % (1 << (n%8))) << (8 - (n%8)))
+
 /* Type thash
  *
  */
@@ -21,11 +24,11 @@ typedef struct th {
 	lista **table;
 } thash;
 
-/* unsigned int hash( char *key, unsigned int sz )
+/* unsigned int hash( char *key, unsigned int sz, unsigned int shift )
  *
  */
 
-unsigned int hash( char *key, unsigned int sz );
+unsigned int hash( char *key, unsigned int sz, unsigned int shift );
 
 /* thash *thash_new( unsigned int sz )
  *

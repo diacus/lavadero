@@ -12,13 +12,14 @@
 #include <thash.h>
 #include <lista.h>
 
-#define WSIZE 15
+#define WSIZE 10
 
 #define CREA_ENTERO(a) \
 	a = (int *) malloc(sizeof(int));
 
 #define BORRA_ENTERO(a) \
 	free(a);
+
 
 int prueba1() {
 
@@ -56,15 +57,32 @@ int pruebahash( int argc, char *argv[] ) {
 
 	for( i = 0; i < 1000; i++ ) {
 		for( j = 0; j < WSIZE;
-			palabra[j++] = rand() % 256
+			palabra[j++] = 1 + rand() % 255
 		);
-		sprintf( s_hash, "%u", hash( palabra, 1024 ) );
-		printf ("Generado: hash %s\n", s_hash );
+		sprintf( s_hash, "%u", hash( palabra, 2000, 10e6 ) );
+		printf ("Generado hash: %s\n", s_hash );
 
-		lis = lista_insert( lis, lista_new(s_hash, NULL) );
+		lis = lista_insert( lis, lista_new(NULL, s_hash) );
 
 		s_hash[0] = '\0';
 	}
+
+	return 0;
+}
+
+void printbit( char c, unsigned int bits ) {
+	if( bits > 1 )
+		printbit( c >> 1, bits - 1 );
+	putchar( c % 2? '1' : '0' );
+}
+
+
+
+int pruebabit() {
+	unsigned char c = 0x8F;
+	printbit( c, 8 ); putchar('\n');
+	ROTAR( c, 3 );
+	printbit( c, 8 );
 
 	return 0;
 }
