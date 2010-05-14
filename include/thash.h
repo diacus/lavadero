@@ -14,7 +14,7 @@
 #define SHIFT 10e7
 
 #define ROTAR( c, n ) \
-	c = (c >> (n%8)) ^ ((c % (1 << (n%8))) << (8 - (n%8)))
+	c = (c >> (n%8)) ^ ((c % (1 << (n%8)) << (8 - (n%8))))
 
 /* Type thash
  *
@@ -24,6 +24,12 @@ typedef struct th {
 	unsigned int size;
 	lista **table;
 } thash;
+
+/* void rotabit( char *c, unsigned int shift )
+ *
+ */
+
+void rotabit( char *c, unsigned int shift );
 
 /* unsigned int hash( char *key, unsigned int sz, unsigned int shift )
  *
