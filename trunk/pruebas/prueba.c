@@ -15,10 +15,10 @@
 #define WSIZE 10
 
 #define CREA_ENTERO(a) \
-	a = (int *) malloc(sizeof(int));
+	a = (int *) malloc(sizeof(int))
 
 #define BORRA_ENTERO(a) \
-	free(a);
+	free(a)
 
 
 int prueba1() {
@@ -50,22 +50,21 @@ int prueblista( int argc, char *argv[] ) {
 
 int pruebahash( int argc, char *argv[] ) {
 
-	int i,j;
-	char palabra[WSIZE], s_hash[5] = "";
-	lista *lis = NULL;
-	srand( time(NULL) );
+	int *numero, *solicitud;
+	thash *tabla = thash_new(512);
 
-	for( i = 0; i < 1000; i++ ) {
-		for( j = 0; j < WSIZE;
-			palabra[j++] = 1 + rand() % 255
-		);
-		sprintf( s_hash, "%u", hash( palabra, 2000, 10e7 ) );
-		printf ("Generado hash: %s\n", s_hash );
+	CREA_ENTERO(numero); *numero = rand() % 10000;
+	printf( "Entero generado: %d\n", *numero );
 
-		lis = lista_insert( lis, lista_new(NULL, s_hash) );
+	thash_insert( tabla, numero, "dato" );
 
-		s_hash[0] = '\0';
-	}
+	solicitud = thash_read( tabla, "dato" );
+
+	printf("Valor recuperado: %d\n", *solicitud );
+
+	BORRA_ENTERO(solicitud);
+
+	thash_delete(tabla);
 
 	return 0;
 }
