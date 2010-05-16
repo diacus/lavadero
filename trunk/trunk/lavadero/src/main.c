@@ -8,9 +8,10 @@
 #include <thash.h>
 #include <prueba.h>
 
-int main2(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 
 	/*return pruebahash( argc, argv ); */
 	/* return pruebabit(); */
-	return prueba1();
+	return CalculaPI( argc, argv );
+	/* return prueba1(); */
 }

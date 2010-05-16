@@ -26,4 +26,12 @@ int pruebahash( int argc, char *argv[] );
 
 int pruebabit();
 
+/* Funciones generadas por Eclipse PTP al crear un
+ * MPI Project.
+ */
+
+void calc_pi(int rank, int num_procs);
+int CalculaPI(int argc, char *argv[]);
+
+
 #endif /* PRUEBA_H_ */
