@@ -10,16 +10,19 @@
 #include <string.h>
 #include <lista.h>
 
-/* lista *lista_new( void *inf, char *key )
+/* lista *lista_new( void *inf, unsigned int sz, char *k )
  *
- * Constructor de un nodo de lista con información info
- * y clave key.
+ * Constructor de un nodo de lista con que almacena un apuntador
+ * info a una cadena de sz bytes etiquetados con la clave key.
+ *
+ * Devuelve un apuntador al nodo de lista creado.
  */
 
-lista *lista_new( void *inf, char *k ) {
+lista *lista_new( void *inf, unsigned int sz, char *k ) {
 	lista *res = (lista *) malloc( sizeof(lista) );
 	res->info = inf;
 	res->key  = strdup(k);
+	res->size = sz;
 	res->next = NULL;
 	return res;
 }
@@ -87,7 +90,7 @@ lista *lista_remove( lista *lst, char *k ) {
 		res = NULL;
 		fprintf(
 			stderr,
-			"Error: no hay ningun elemento con la clave %s en la tabla\n",
+			"Error: no hay elementos etiquetados con la clave %s en la tabla.\n",
 			k
 		);
 	}
@@ -102,14 +105,21 @@ lista *lista_remove( lista *lst, char *k ) {
  * lst, con clave k.
  */
 
-void *lista_find( lista *lst, char *k ) {
+void *lista_find( lista *lst, unsigned int *sz, char *k ) {
 
 	void *res;
 
-	if(lst)
-		res = strcmp(k, lst->key) ? lista_find(lst->next, k) : lst->info;
-	else
+	if(lst) {
+		if( strcmp(k, lst->key) )
+			res = lista_find(lst->next, sz, k);
+		else {
+			res = lst->info;
+			*sz = lst->size;
+		}
+	} else {
 		res = NULL;
+		*sz = 0;
+	}
 
 	return res;
 }

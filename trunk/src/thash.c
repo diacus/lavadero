@@ -26,6 +26,9 @@ void rotabit( char *c, unsigned int shift ) {
 
 /* unsigned int hash( char *key, unsigned int sz, unsigned int shift )
  *
+ * Calcula el índice correspondiente a la clave key, dentro de una tabla hash que tiene
+ * sz posibles particiones.
+ *
  */
 
 unsigned int hash( char *key, unsigned int sz, unsigned int shift ) {
@@ -58,15 +61,15 @@ thash *thash_new( unsigned int sz ) {
 	return res;
 }
 
-/* unsigned int thash_insert( thash *t, void *value, char *key )
+/* unsigned int thash_insert( thash *t, void *value, unsigned int sz, char *key )
  *
  */
 
-unsigned int thash_insert( thash *t, void *value, char *key ) {
+unsigned int thash_insert( thash *t, void *value, unsigned int sz, char *key ) {
 
 	unsigned int index = hash( key, t->size, SHIFT );
 	lista **selected, *elem;
-	elem = lista_new(value, key);
+	elem = lista_new(value, sz, key);
 	selected = t->table + index;
 	*selected = lista_insert( *selected, elem );
 
@@ -77,11 +80,11 @@ unsigned int thash_insert( thash *t, void *value, char *key ) {
  *
  */
 
-void *thash_remove( thash *t, char *key ) {
+void *thash_remove( thash *t, unsigned int *sz, char *key ) {
 
 	unsigned int index = hash( key, t->size, SHIFT );
 	lista *selected = *(t->table + index);
-	void *res = lista_find( selected, key );
+	void *res = lista_find( selected, sz, key );
 
 	if( res )
 		selected = lista_remove( selected, key );
@@ -89,13 +92,13 @@ void *thash_remove( thash *t, char *key ) {
 	return res;
 }
 
-/* void *thash_read( thash *t, char *key )
+/* void *thash_read( thash *t, unsigned int *sz, char *key )
  *
  */
 
-void *thash_read( thash *t, char *key ) {
+void *thash_read( thash *t, unsigned int *sz, char *key ) {
 	unsigned int index = hash( key, t->size, SHIFT );
-	void *res = lista_find( *(t->table + index), key );
+	void *res = lista_find( *(t->table + index), sz, key );
 	return res;
 }
 
@@ -108,8 +111,10 @@ int thash_flush( thash *t ) {
 	lista **ini, **fin;
 	fin = t->table + t->size;
 	for( ini = t->table; ini < fin; ini ++ ) {
-		lista_delete(*ini);
-		*ini = NULL;
+		if( *ini ) {
+			lista_delete(*ini);
+			*ini = NULL;
+		}
 	}
 
 	return 0;

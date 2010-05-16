@@ -11,16 +11,20 @@
 typedef struct lst {
 	void *info;
 	char *key;
+	unsigned int size;
+
 	struct lst *next;
 } lista;
 
-/* lista *lista_new( void *inf, char *k )
+/* lista *lista_new( void *inf, unsigned int sz, char *k )
  *
- * Constructor de un nodo de lista con información info
- * y clave key.
+ * Constructor de un nodo de lista con que almacena un apuntador
+ * info a una cadena de sz bytes etiquetados con la clave key.
+ *
+ * Devuelve un apuntador al nodo de lista creado.
  */
 
-lista *lista_new( void *inf, char *k );
+lista *lista_new( void *inf, unsigned int sz, char *k );
 
 /* lista *lista_insert( lista *lst, lista *item )
  *
@@ -37,13 +41,13 @@ lista *lista_insert( lista *lst, lista *item );
 
 lista *lista_remove( lista *lst, char *k );
 
-/* void *lista_find( lista *lst, char *k )
+/* void *lista_find( lista *lst, unsigned int *sz, char *k )
  *
  * Devuelve el apuntador al dato almacenado en la lista
  * lst, con clave k.
  */
 
-void *lista_find( lista *lst, char *k );
+void *lista_find( lista *lst, unsigned int *sz, char *k );
 
 /* lista *lista_delete( lista *lst )
  *
