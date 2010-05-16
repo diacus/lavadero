@@ -8,6 +8,14 @@
 #ifndef SDBLINDA_H_
 #define SDBLINDA_H_
 
+
+/* int sdblinda_start( int argc, char *argv[] )
+ *
+ * Función para inicializar el espacio de tuplas
+ */
+
+int sdblinda_start( int argc, char *argv[] );
+
 /* int sdblinda_store( void *data, unsigned int size, const char *key )
  *
  * Función para almacenar los size bytes de datos apuntados por data, bajo
@@ -41,5 +49,13 @@ int sdblinda_grab( void *data, const char *key );
  */
 
 int sdblinda_drop( const char *key );
+
+/* int sdblinda_stop()
+ *
+ * Una vez terminada la aplicación, esta función destruye el espacio
+ * de tuplas.
+ */
+
+int sdblinda_stop();
 
 #endif /* SDBLINDA_H_ */
