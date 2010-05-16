@@ -10,10 +10,9 @@
 #include <mpi.h>
 #include <stdio.h>
 #include <string.h>
+#include <prueba.h>
 
-void
-calc_pi(int rank, int num_procs)
-{
+void calc_pi(int rank, int num_procs) {
 	int		i;
 	int		num_intervals;
 	double	h;
@@ -50,9 +49,7 @@ calc_pi(int rank, int num_procs)
 	}
 }
 
-int 
-main(int argc, char *argv[])
-{
+int CalculaPI(int argc, char *argv[]) {
 	int			my_rank;		/* rank of process */
 	int			num_procs;		/* number of processes */
 	int			source;			/* rank of sender */

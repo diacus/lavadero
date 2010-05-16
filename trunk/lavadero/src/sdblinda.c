@@ -6,6 +6,8 @@
  */
 
 #include <sdblinda.h>
+#include <sdbmaestro.h>
+#include <sdbesclavo.h>
 
 /* int sdblinda_store( void *data, unsigned int size, const char *key )
  *
