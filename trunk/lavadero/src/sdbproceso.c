@@ -1,30 +1,13 @@
 /*
- * sdbproceso.h
+ * sdbproceso.c
  *
  *  Created on: 16/05/2010
  *      Author: diacus
  */
 
-#ifndef SDBPROCESO_H_
-#define SDBPROCESO_H_
-
-#include <mpi.h>
-
-/* Registro: estado
- *
- * Estructura para almacenar las variables que identifican
- * a cada proceso dentro de MPI.
- */
-
-typedef struct edo {
-	int			my_rank;		/* Identificador de proceso                */
-	int			num_procs;		/* Número de procesos activos              */
-	int			source;			/* Identificador del proceso emisor        */
-	int			dest;    		/* Identificador del proceso destino       */
-	int			tag;    		/* Etiqueta para el mensaje                */
-	char		*message;   	/* Apuntador al mensaje a enviar o recibir */
-	MPI_Status	status ;		/* Estado de la comunicación               */
-} estado;
+#include <stdlib.h>
+#include <string.h>
+#include <sdbproceso.h>
 
 /* estado *sdbproceso_estado()
  *
@@ -33,7 +16,18 @@ typedef struct edo {
  *
  * Devuelve un apuntador a una variable de tipo estado
  */
-estado *sdbproceso_estado();
+
+estado *sdbproceso_estado() {
+	static int creado = 0;
+	static estado *est;
+
+	if( ! creado ) {
+		est = (estado *) malloc( sizeof(estado) );
+		creado++;
+	}
+
+	return est;
+}
 
 /* char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int *sz, char *key )
  *
@@ -46,7 +40,14 @@ estado *sdbproceso_estado();
  * nbytes el tamaño de este.
  */
 
-char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int *sz, char *key );
+char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int *sz, char *key ) {
+
+	unsigned int shift = strlen(key) + 1;
+	unsigned int pack_size = *sz + shift + sizeof( unsigned int );
+	char *package = (char *) calloc( pack_size, sizeof(char) );
+
+	strcpy( package, key ); /* Falta completar la implementación */
+}
 
 /* void *sdbproceso_unpack( unsigned int *nbytes, char **key, char *msg )
  *
@@ -58,5 +59,3 @@ char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int *sz, char 
  */
 
 void *sdbproceso_unpack( unsigned int *nbytes, char* key, char *msg );
-
-#endif /* SDBPROCESO_H_ */
