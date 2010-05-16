@@ -38,7 +38,7 @@ int prueblista( int argc, char *argv[] ) {
 		sprintf( clave, "%d", rand() % 10000 );
 		CREA_ENTERO(item); *item = rand() % 1000;
 		printf( "Insertando el entero %d, con clave \"%s\"\n", *item, clave );
-		lis = lista_insert( lis, lista_new( (void *) item, clave ) );
+		lis = lista_insert( lis, lista_new( (void *) item, sizeof(int), clave ) );
 		clave[0] = '\0';
 	}
 
@@ -51,14 +51,16 @@ int prueblista( int argc, char *argv[] ) {
 int pruebahash( int argc, char *argv[] ) {
 
 	int *numero, *solicitud;
+	unsigned int tam;
 	thash *tabla = thash_new(512);
 
+	srand( time(NULL) );
 	CREA_ENTERO(numero); *numero = rand() % 10000;
 	printf( "Entero generado: %d\n", *numero );
 
-	thash_insert( tabla, numero, "dato" );
+	thash_insert( tabla, numero, sizeof(int), "dato" );
 
-	solicitud = thash_read( tabla, "dato" );
+	solicitud = thash_read( tabla, &tam,  "dato" );
 
 	printf("Valor recuperado: %d\n", *solicitud );
 
