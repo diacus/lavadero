@@ -33,5 +33,7 @@ int pruebabit();
 void calc_pi(int rank, int num_procs);
 int CalculaPI(int argc, char *argv[]);
 
+int pruebapack();
+int prueba_linda( int argc, char *argv[] );
 
 #endif /* PRUEBA_H_ */

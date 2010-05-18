@@ -99,7 +99,7 @@ lista *lista_remove( lista *lst, char *k ) {
 
 }
 
-/* void *lista_find( lista *lst, char *k )
+/* void *lista_find( lista *lst, unsigned int *sz, char *k )
  *
  * Devuelve el apuntador al dato almacenado en la lista
  * lst, con clave k.
@@ -113,7 +113,8 @@ void *lista_find( lista *lst, unsigned int *sz, char *k ) {
 		if( strcmp(k, lst->key) )
 			res = lista_find(lst->next, sz, k);
 		else {
-			res = lst->info;
+			res = malloc( lst->size );
+			memcpy( res, lst->info, lst->size );
 			*sz = lst->size;
 		}
 	} else {
@@ -126,12 +127,13 @@ void *lista_find( lista *lst, unsigned int *sz, char *k ) {
 
 /* lista *lista_delete( lista *lst )
  *
- * Elimina la lista lst.
+ * Elimina la lista apuntada por lst.
  */
 
 lista *lista_delete( lista *lst ) {
 	if(lst) {
 		free(lst->key);
+		free(lst->info);
 		lista_delete(lst->next);
 		free(lst);
 	}

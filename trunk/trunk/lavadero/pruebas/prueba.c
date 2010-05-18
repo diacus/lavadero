@@ -12,6 +12,8 @@
 #include <thash.h>
 #include <lista.h>
 
+#include <sdbproceso.h>
+
 #define WSIZE 10
 
 #define CREA_ENTERO(a) \
@@ -20,6 +22,11 @@
 #define BORRA_ENTERO(a) \
 	free(a)
 
+struct registro{
+	int numero;
+	char palabra[10];
+	double promedio;
+};
 
 int prueba1() {
 
@@ -86,4 +93,31 @@ int pruebabit() {
 	printbit( c, 8 );
 
 	return 0;
+}
+
+int pruebapack() {
+
+	struct registro origen, destino;
+	char *msg, *cad;
+	unsigned int bytes;
+
+	origen.numero = 1986;
+	origen.promedio = 3.141593;
+	strcpy(origen.palabra, "Hola" );
+
+	msg = sdbproceso_pack( &bytes, &origen, sizeof(origen), "clave" );
+
+	printf("Mensaje empaquetado\n");
+
+	sdbproceso_unpack( &destino, &bytes, &cad, msg );
+
+	printf (
+		"Registro recuperado:\n\tnumero: %d\n\tpromedio: %f\n\tpalabra: %s\n",
+		destino.numero,
+		destino.promedio,
+		destino.palabra
+	);
+
+	return 0;
+
 }
