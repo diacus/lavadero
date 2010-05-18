@@ -7,8 +7,12 @@
 
 #include <sdbmaestro.h>
 
+#define TABLESIZE 1000
+
 /* thash *sdbmaestro_gethash()
  *
+ * Función para obtener una referencia a la tabla hash en la
+ * que almacenan las tuplas.
  */
 
 thash *sdbmaestro_gethash() {
@@ -19,7 +23,7 @@ thash *sdbmaestro_gethash() {
 		creada ++;
 		/* Esta parte puede ser parametrizada con */
 		/* un archivo de configuración            */
-		tabla = thash_new(1000);
+		tabla = thash_new(TABLESIZE);
 	}
 
 	return tabla;
@@ -27,11 +31,18 @@ thash *sdbmaestro_gethash() {
 
 /* int sdbmaestro_start()
  *
+ * Función para inicializar el especio de tuplas.
  */
 
 int sdbmaestro_start() {
+
 	thash *tabla = sdbmaestro_gethash();
 	estado *edo = sdbproceso_estado();
+	char *message;
+
+	while( edo->tag != FIN ) {
+
+	}
 
 	return 0;
 }
