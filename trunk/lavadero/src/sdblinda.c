@@ -30,6 +30,8 @@ int sdblinda_start( int argc, char *argv[] ) {
 
 	MPI_Comm_size(MPI_COMM_WORLD, &(edo->num_procs));
 
+	edo->tag = INICIO;
+
 	return 0;
 }
 
@@ -43,6 +45,12 @@ int sdblinda_start( int argc, char *argv[] ) {
  */
 
 int sdblinda_store( void *data, unsigned int size, const char *key ) {
+
+	unsigned int bytes;
+	char *message = sdbproceso_pack( &bytes, data, size, key );
+
+	MPI_Send( message, bytes, MPI_CHAR, LINDA, ENVIA, MPI_COMM_WORLD );
+
 	return 0;
 }
 
@@ -80,6 +88,12 @@ int sdblinda_drop( const char *key ) {
  */
 
 int sdblinda_stop() {
+
+	estado *edo = sdbproceso_estado();
+
+	if ( SOYMAESTRO(edo) )
+		thash_delete( sdbmaestro_gethash() );
+
 	MPI_Finalize();
 	return 0;
 }

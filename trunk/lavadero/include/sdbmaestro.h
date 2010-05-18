@@ -8,6 +8,7 @@
 #ifndef SDBMAESTRO_H_
 #define SDBMAESTRO_H_
 
+#include <sdbmaestro.h>
 #include <sdbproceso.h>
 #include <thash.h>
 
@@ -20,6 +21,7 @@
 thash *sdbmaestro_gethash();
 
 /* sdbmaestro_start()
+ *
  * Función para inicializar el proceso maestro.
  */
 
