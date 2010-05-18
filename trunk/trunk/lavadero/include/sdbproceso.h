@@ -10,6 +10,11 @@
 
 #include <mpi.h>
 
+#define MAESTRO 0
+#define TUPLA 100
+#define ACK   101
+
+
 /* Registro: estado
  *
  * Estructura para almacenar las variables que identifican
@@ -57,6 +62,6 @@ char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int *sz, char 
  * apuntada por key la clave con que se etiqueta.
  */
 
-void *sdbproceso_unpack( unsigned int *nbytes, char* key, char *msg );
+void *sdbproceso_unpack( unsigned int *nbytes, char **key, char *msg );
 
 #endif /* SDBPROCESO_H_ */
