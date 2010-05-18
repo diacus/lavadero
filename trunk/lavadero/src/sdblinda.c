@@ -6,8 +6,32 @@
  */
 
 #include <sdblinda.h>
+#include <sdbproceso.h>
 #include <sdbmaestro.h>
 #include <sdbesclavo.h>
+#include <mpi.h>
+
+
+/* int sdblinda_start( int argc, char *argv[] )
+ *
+ * Función para inicializar el espacio de tuplas
+ */
+
+int sdblinda_start( int argc, char *argv[] ) {
+
+	estado *edo;
+
+	MPI_Init(&argc, &argv);
+	edo = sdbproceso_estado();
+
+	/* ¿Cuál es mi identificador de proceso? */
+	MPI_Comm_rank(MPI_COMM_WORLD, &(edo->my_rank));
+	/* ¿Cuántos proceso hay en el sistema? */
+
+	MPI_Comm_size(MPI_COMM_WORLD, &(edo->num_procs));
+
+	return 0;
+}
 
 /* int sdblinda_store( void *data, unsigned int size, const char *key )
  *
@@ -46,5 +70,16 @@ int sdblinda_grab( void *data, const char *key ) {
  */
 
 int sdblinda_drop( const char *key ) {
+	return 0;
+}
+
+/* int sdblinda_stop()
+ *
+ * Una vez terminada la aplicación, esta función destruye el espacio
+ * de tuplas.
+ */
+
+int sdblinda_stop() {
+	MPI_Finalize();
 	return 0;
 }

@@ -5,13 +5,12 @@
  *      Author: diacus
  */
 
-#include <thash.h>
 #include <prueba.h>
 
 int main(int argc, char *argv[]) {
 
 	/*return pruebahash( argc, argv ); */
 	/* return pruebabit(); */
-	return CalculaPI( argc, argv );
+	return prueba_linda( argc, argv );
 	/* return prueba1(); */
 }

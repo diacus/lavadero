@@ -10,10 +10,11 @@
 
 #include <mpi.h>
 
-#define MAESTRO 0
-#define TUPLA 100
-#define ACK   101
+#define MAESTRO    0
+#define ENVIA    100
+#define SOLICITA 101
 
+#define SOYMAESTRO(e) !(e->my_rank)
 
 /* Registro: estado
  *
@@ -40,7 +41,7 @@ typedef struct edo {
  */
 estado *sdbproceso_estado();
 
-/* char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int *sz, char *key )
+/* char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int sz, char *key )
  *
  * Función para empaquetar los *sz bytes apuntados por data y su
  * clave key, en una sola porción de memoria, para ser enviados
@@ -51,17 +52,17 @@ estado *sdbproceso_estado();
  * nbytes el tamaño de este.
  */
 
-char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int *sz, char *key );
+char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int sz, char *key );
 
-/* void *sdbproceso_unpack( unsigned int *nbytes, char **key, char *msg )
+/* int sdbproceso_unpack( void *data, unsigned int *nbytes, char **key, char *msg )
  *
  * Función para descomponer el mensaje apuntado por msg.
  *
- * Devuelve un apuntador a los datos recuperados, escribe en el entero
+ * Devuelve en el apuntador data los datos recuperados, escribe en el entero
  * apuntado por nbytes el tamaño en bytes de dichos datos y en la cadena
  * apuntada por key la clave con que se etiqueta.
  */
 
-void *sdbproceso_unpack( unsigned int *nbytes, char **key, char *msg );
+int sdbproceso_unpack( void *data, unsigned int *nbytes, char **key, char *msg );
 
 #endif /* SDBPROCESO_H_ */

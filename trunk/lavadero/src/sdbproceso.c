@@ -41,38 +41,37 @@ estado *sdbproceso_estado() {
  * nbytes el tamaño de este.
  */
 
-char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int *sz, char *key ) {
+char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int sz, char *key ) {
 
 	unsigned int shift = strlen(key) + 1;
-	unsigned int pack_size = *sz + shift + sizeof( unsigned int );
+	unsigned int pack_size = sz + shift + sizeof( unsigned int );
 	char *package = (char *) calloc( pack_size, sizeof(char) );
 
 	/* Copiando la clave de la tupla */
 	strcpy( package, key );
 
 	/* Copiando la cantidad de bytes de la tupla */
-	memcpy( package + shift, sz, sizeof(unsigned int) );
+	memcpy( package + shift, &sz, sizeof(unsigned int) );
 
 	/* Copiando la tupla al paquete */
-	memcpy( package + shift + sizeof(unsigned int), data, *sz );
+	memcpy( package + shift + sizeof(unsigned int), data, sz );
 
-	*nbytes = shift + sizeof(unsigned int), *sz;
+	*nbytes = shift + sizeof(unsigned int) + sz;
 
 	return package;
 }
 
-/* void *sdbproceso_unpack( unsigned int *nbytes, char **key, char *msg )
+/* void sdbproceso_unpack( void *data, unsigned int *nbytes, char **key, char *msg )
  *
  * Función para descomponer el mensaje apuntado por msg.
  *
- * Devuelve un apuntador a los datos recuperados, escribe en el entero
+ * Devuelve en el apuntador data los datos recuperados, escribe en el entero
  * apuntado por nbytes el tamaño en bytes de dichos datos y en la cadena
  * apuntada por key la clave con que se etiqueta.
  */
 
-void *sdbproceso_unpack( unsigned int *nbytes, char **key, char *msg ) {
+int sdbproceso_unpack( void * data, unsigned int *nbytes, char **key, char *msg ) {
 
-	void *res;
 	unsigned int shift = strlen(msg) + 1;
 
 	*key = (char *) calloc( shift, sizeof(char) );
@@ -80,9 +79,8 @@ void *sdbproceso_unpack( unsigned int *nbytes, char **key, char *msg ) {
 
 	memcpy( nbytes, msg + shift, sizeof(unsigned int) );
 
-	res = calloc(*nbytes, sizeof(char) );
-	memcpy( res, msg + shift + sizeof(unsigned int), *nbytes );
+	memcpy( data, msg + shift + sizeof(unsigned int), *nbytes );
 
-	return res;
+	return 0;
 
 }
