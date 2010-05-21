@@ -39,7 +39,7 @@ void calc_pi(int rank, int num_procs) {
 		sum += (4.0 / (1.0 + x*x)); 
 	} 
 
-	mypi = h * sum;
+ 	mypi = h * sum;
 
 	/* combine everyone's calculations */
 	MPI_Reduce(&mypi, &pi, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
