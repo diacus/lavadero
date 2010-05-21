@@ -54,7 +54,7 @@ int sdblinda_store( void *data, unsigned int size, const char *key ) {
 	return 0;
 }
 
-/* int sdblinda_grab( void *data, const char *key )
+/* int sdblinda_grab( void **data, const char *key )
  *
  * Función para recuperar los datos almacenados bajo la clave key, y recibirlos
  * en el espacio de memoria apuntado por data.  Esta función elimina los datos
@@ -64,7 +64,14 @@ int sdblinda_store( void *data, unsigned int size, const char *key ) {
  * de la operación.
  */
 
-int sdblinda_grab( void *data, const char *key ) {
+int sdblinda_grab( void **data, const char *key ) {
+	unsigned int bytes;
+	void *buffer;
+	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, DAME, MPI_COMM_WORLD );
+	MPI_Recv( &bytes, sizeof(unsigned int), MPI_INT, LINDA, TALLA, MPI_COMM_WORLD );
+
+	*data = calloc( bytes, sizeof(char) );
+
 	return 0;
 }
 
@@ -78,6 +85,7 @@ int sdblinda_grab( void *data, const char *key ) {
  */
 
 int sdblinda_drop( const char *key ) {
+	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, RETIRA, MPI_COMM_WORLD );
 	return 0;
 }
 

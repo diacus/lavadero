@@ -16,11 +16,11 @@
  */
 
 thash *sdbmaestro_gethash() {
-	static int creada = 0;
+	static int creadaHash = 0;
 	static thash *tabla = NULL;
 
-	if( ! creada ) {
-		creada ++;
+	if( ! creadaHash ) {
+		creadaHash ++;
 		/* Esta parte puede ser parametrizada con */
 		/* un archivo de configuración            */
 		tabla = thash_new(TABLESIZE);
