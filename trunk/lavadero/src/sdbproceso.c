@@ -53,10 +53,11 @@ char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int sz, char *
 	/* Copiando la cantidad de bytes de la tupla */
 	memcpy( package + shift, &sz, sizeof(unsigned int) );
 
+	*nbytes = shift + sizeof(unsigned int) + sz;
 	/* Copiando la tupla al paquete */
 	memcpy( package + shift + sizeof(unsigned int), data, sz );
 
-	*nbytes = shift + sizeof(unsigned int) + sz;
+
 
 	return package;
 }

@@ -27,7 +27,7 @@ int sdblinda_start( int argc, char *argv[] );
 
 int sdblinda_store( void *data, unsigned int size, const char *key );
 
-/* int sdblinda_grab( void *data, const char *key )
+/* int sdblinda_grab( void **data, const char *key )
  *
  * Función para recuperar los datos almacenados bajo la clave key, y recibirlos
  * en el espacio de memoria apuntado por data.  Esta función elimina los datos
@@ -37,7 +37,7 @@ int sdblinda_store( void *data, unsigned int size, const char *key );
  * de la operación.
  */
 
-int sdblinda_grab( void *data, const char *key );
+int sdblinda_grab( void **data, const char *key );
 
 /* int sdblinda_drop( const char *key )
  *
