@@ -54,6 +54,33 @@ int sdblinda_store( void *data, unsigned int size, const char *key ) {
 	return 0;
 }
 
+
+/* int sdblinda_read( void **data, const char *key )
+ *
+ * Función para recuperar los datos almacenados bajo la clave key, y recibirlos
+ * en el espacio de memoria apuntado por data. Es parecida a grab, sólo que en ésta
+ * no se elimina la tupla del espacio.
+ *
+ * El valor de retorno le notifica al programador acerca del éxito o fracaso
+ * de la operación.
+ */
+
+int sdblinda_read( void *data, const char *key ) {
+	unsigned int bytes;
+	char *buffer;
+	//envia la clave a LINDA
+	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, DAME, MPI_COMM_WORLD );
+	//recibe de LINDA el tamaño (TALLA) a almacenar
+	MPI_Recv( &bytes, sizeof(unsigned int), MPI_INT, LINDA, TALLA, MPI_COMM_WORLD );
+	//reserva memoria para almacenar los datos
+	*buffer = (char *) calloc( bytes, sizeof(char) );
+	//recibe los datos de LINDA
+	MPI_Recv(buffer, bytes, MPI_CHAR, LINDA, RETIRA, MPI_COMM_WORLD );
+	//iguala las direcciones del buffer recibido y los datos
+	data = buffer;
+	return 0;
+}
+
 /* int sdblinda_grab( void **data, const char *key )
  *
  * Función para recuperar los datos almacenados bajo la clave key, y recibirlos
@@ -64,14 +91,21 @@ int sdblinda_store( void *data, unsigned int size, const char *key ) {
  * de la operación.
  */
 
-int sdblinda_grab( void **data, const char *key ) {
+int sdblinda_grab( void *data, const char *key ) {
 	unsigned int bytes;
-	void *buffer;
+	char *buffer;
+	//envia la clave a LINDA
 	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, DAME, MPI_COMM_WORLD );
+	//recibe de LINDA el tamaño (TALLA) a almacenar
 	MPI_Recv( &bytes, sizeof(unsigned int), MPI_INT, LINDA, TALLA, MPI_COMM_WORLD );
-
-	*data = calloc( bytes, sizeof(char) );
-
+	//reserva memoria para almacenar los datos
+	*buffer = (char *) calloc( bytes, sizeof(char) );
+	//recibe los datos de LINDA
+	MPI_Recv(buffer, bytes, MPI_CHAR, LINDA, RETIRA, MPI_COMM_WORLD );
+	//iguala las direcciones del buffer recibido y los datos
+	data = buffer;
+	//elimina la tupla con clave key
+	sdblinda_drop( key );
 	return 0;
 }
 
@@ -85,7 +119,7 @@ int sdblinda_grab( void **data, const char *key ) {
  */
 
 int sdblinda_drop( const char *key ) {
-	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, RETIRA, MPI_COMM_WORLD );
+	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, ELIMINA, MPI_COMM_WORLD );
 	return 0;
 }
 
