@@ -37,7 +37,7 @@ int sdblinda_store( void *data, unsigned int size, const char *key );
  * de la operación.
  */
 
-int sdblinda_grab( void **data, const char *key );
+int sdblinda_grab( void *data, const char *key );
 
 /* int sdblinda_drop( const char *key )
  *
@@ -47,6 +47,20 @@ int sdblinda_grab( void **data, const char *key );
  * El valor de retorno le notifica al programador acerca del éxito o fracaso
  * de la operación.
  */
+
+
+/* int sdblinda_read( void **data, const char *key )
+ *
+ * Función para recuperar los datos almacenados bajo la clave key, y recibirlos
+ * en el espacio de memoria apuntado por data. Es parecida a grab, sólo que en ésta
+ * no se elimina la tupla del espacio.
+ *
+ * El valor de retorno le notifica al programador acerca del éxito o fracaso
+ * de la operación.
+ */
+
+int sdblinda_read( void *data, const char *key )
+
 
 int sdblinda_drop( const char *key );
 

@@ -16,6 +16,7 @@
 #define RETIRA   102
 #define INICIO   103
 #define FIN      104
+#define ELIMINA  105
 
 #define SOYMAESTRO(e) !(e->my_rank)
 
