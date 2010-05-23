@@ -30,74 +30,62 @@ estado *sdbproceso_estado() {
 	return est;
 }
 
-/* char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int *sz, char *key )
+/* char *sdbproceso_pack( void *data, unsigned int sz, char *key )
  *
- * Función para empaquetar los *sz bytes apuntados por data y su
+ * Función para empaquetar los sz bytes apuntados por data y su
  * clave key, en una sola porción de memoria, para ser enviados
  * a la memoria compartida.
  *
+ * +-------+-----------------------------------------+
+ * | clave |                  tupla                  |
+ * +-------+-----------------------------------------+
+ *
+ * |<--longitud de la clave + n bytes de la tupla -->|
+ *
  * La función devuelve un apuntador al espacio de memoria que
- * almacena el "paquete" y escribe en el entero apuntado por
- * nbytes el tamaño de este.
+ * almacena el "paquete".
+ *
  */
 
-char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int sz, char *key ) {
-
+char *sdbproceso_pack( void *data, unsigned int sz, char *key ) {
+	/*tamaño (shift) en bytes de la clave*/
 	unsigned int shift = strlen(key) + 1;
-	unsigned int pack_size = sz + shift + sizeof( unsigned int );
+	/*tamaño del paquete a enviar*/
+	unsigned int pack_size = sz + shift;
+	/*Reservación de memoria para el paquete*/
 	char *package = (char *) calloc( pack_size, sizeof(char) );
 
 	/* Copiando la clave de la tupla */
 	strcpy( package, key );
 
-	/* Copiando la cantidad de bytes de la tupla */
-	memcpy( package + shift, &sz, sizeof(unsigned int) );
-
-	*nbytes = shift + sizeof(unsigned int) + sz;
 	/* Copiando la tupla al paquete */
-	memcpy( package + shift + sizeof(unsigned int), data, sz );
-
-
+	memcpy( package + shift, data, sz );
 
 	return package;
 }
 
-/* void sdbproceso_unpack( void *data, unsigned int *nbytes, char **key, char *msg )
+/* int sdbproceso_unpack( char *msg, unsigned int sz, char **key, void **data)
  *
- * Función para descomponer el mensaje apuntado por msg.
+ * Función para descomponer el mensaje apuntado por msg de tamaño sz.
  *
- * Devuelve en el apuntador data los datos recuperados, escribe en el entero
- * apuntado por nbytes el tamaño en bytes de dichos datos y en la cadena
- * apuntada por key la clave con que se etiqueta.
+ * Devuelve en el apuntador data los datos recuperados, la cadena
+ * apuntada por key con la clave de la tupla y el tamaño en bytes de la tupla
  */
 
-int sdbproceso_unpack( void * data, unsigned int *nbytes, char **key, char *msg ) {
-
+int sdbproceso_unpack( char *msg, unsigned int sz, char **key, void **data) {
+	/*Calculado el tamaño de la clave*/
 	unsigned int shift = strlen(msg) + 1;
-
+	/*Reservando memoria para almacenar la clave*/
 	*key = (char *) calloc( shift, sizeof(char) );
+	/*Reservando memoria para almacenar la tupla*/
+	*data = (char *) calloc( sz - shift, sizeof(char) );
+	/*copiando la clave del mensaje*/
 	strcpy( *key, msg );
-
-	memcpy( nbytes, msg + shift, sizeof(unsigned int) );
-
-	memcpy( data, msg + shift + sizeof(unsigned int), *nbytes );
-
-	return 0;
+	/*copiando la tupla del mensaje*/
+	memcpy( *data, msg + shift,  sz - shift);
+	/*regresa el tamaño de la tupla*/
+	return sz - shift;
 
 }
 
-/* int cpy_tupla (void * or, unsigned int size, void ** de)
- *
- * función para copiar una tupla recibida del espacio a una variable local
- *
- * Devuelve la tupla destino ( ** de) inicializada con respecto al tamaño (size)
- * de la tupla origen (* or)
- *
- */
-int cpy_tupla (void * or, unsigned int size, void ** de){
-	char * buffer;
-	buffer = (char *) calloc( size, sizeof(char) );
-	memcpy( buffer , or , size );
-	*de = buffer;
-	return 0;
-}
+

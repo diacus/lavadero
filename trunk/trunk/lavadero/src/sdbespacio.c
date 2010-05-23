@@ -5,6 +5,7 @@
  *      Author: diacus
  */
 
+#include <stdio.h>
 #include <sdbespacio.h>
 #include <stdlib.h>
 
@@ -51,24 +52,79 @@ thash *sdbespacio_getpendientes() {
 	return pendientes;
 }
 
-/* int sdbespacio_start()
+/* int sdbmaestro_start()
  *
  * Función para inicializar el especio de tuplas.
  */
 
 int sdbespacio_start() {
 
-	/* thash *tabla = sdbespacio_gethash();*/
-	estado *edo = sdbproceso_estado();
-	/* char *message; */
+	/* thash *tabla = sdbespacio_gethash(); / * apuntador a tabla hash */
+	estado *edo = sdbproceso_estado(); /* apuntador a estado (propio de LINDA) */
+	char *buffer; /* buffer de mensaje a recibir */
+	int n = edo -> num_procs - 1; /* número de procesos activos al momento de iniciar la comunicación */
+	int nbytes;
+	int source, tag; /* tamaño (nbytes) del buffer a recibir, identidad (source) del emisor y
+	etiqueta (tag) del mensaje */
 
-	while( edo->tag != END ) {
+
+	while( n > 0 ) {
+
+
+		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &(edo->status));
+		source = (edo->status).MPI_SOURCE;
+		tag = (edo->status).MPI_TAG;
+		MPI_Get_count(&(edo->status), MPI_BYTE, &nbytes);
+		printf("bytes a recibir = %d\n", nbytes);
+		buffer = (char *) calloc( nbytes, sizeof(char) );
+		MPI_Recv( buffer, nbytes, MPI_BYTE, source, tag, MPI_COMM_WORLD, &(edo->status) );
+
+		switch(tag){
+
+		case END :
+			printf("Recibi mensaje FIN de proc %d\n", source);
+			n--;
+			break;
+
+		case STORE :
+
+			sdbespacio_atiendeStore( buffer, nbytes );
+
+			break;
+
+		default:
+			n=0;
+			printf("Error de aplicación terminando\n");
+		}
 
 	}
 
 	return 0;
 }
 
+
+/* unsigned int sdbespacio_atiendeStore( char * message, int sz )
+ *
+ * Función que recibe un mensaje y el tamaño en bytes de éste
+ * almacena en la tabla hash la tupla contenida en el mensaje
+ * empleando la clave también empaquetada en el mensaje
+ *
+ */
+unsigned int sdbespacio_atiendeStore( char * message, int sz ){
+
+	thash *tabla; /* Creación de apuntador a la tabla hash*/
+	void * data; /* Tupla a almacenar */
+	char *key;	/* Clave de la tupla */
+	int indice, tam; /* índice de la tabla en el que se almacenará la tupla y tamaño de la tupla*/
+	/* Proceso para desempaquetar la tupla se recibe el tamaño de la tupla*/
+	tam = sdbproceso_unpack( message, sz, &key, &data);
+	/* Se obtiene la dirección de la tabla hash */
+	tabla = sdbespacio_gethash();
+	/* se inserta en la tabla hash (tabla), el dato (data), de tamaño (tam) con clave (key)*/
+	indice = thash_insert( tabla, data, tam, key);
+	printf("Tupla %s insertada en el indice %d con clave %s\n", (char *)data, indice, key);
+	return 0;
+}
 
 /* int sdbespacio_atiendeGrab( char *key, unsigned int src )
  *

@@ -88,6 +88,12 @@ thash *sdbespacio_getpendientes();
 
 int sdbespacio_start();
 
+/* unsigned int sdbespacio_atiendeStore( char * message, int sz )
+ *
+ */
+
+unsigned int sdbespacio_atiendeStore( char * message, int sz );
+
 /* int sdbespacio_atiendeGrab( char *key, unsigned int src )
  *
  * Rutina para atender la petición Grab de un cliente, y
