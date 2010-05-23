@@ -142,7 +142,7 @@ int sdblinda_stop() {
 	estado *edo = sdbproceso_estado();
 
 	if ( SOYMAESTRO(edo) )
-		thash_delete( sdbmaestro_gethash() );
+		thash_delete( sdbespacio_gethash() );
 
 	MPI_Finalize();
 	return 0;

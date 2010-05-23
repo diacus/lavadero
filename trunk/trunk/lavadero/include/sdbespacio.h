@@ -8,23 +8,31 @@
 #ifndef SDBMAESTRO_H_
 #define SDBMAESTRO_H_
 
-#include <sdbmaestro.h>
+#include <sdbespacio.h>
 #include <sdbproceso.h>
 #include <thash.h>
 
-/* thash *sdbmaestro_gethash()
+/* thash *sdbespacio_gethash()
  *
  * Función para obtener una referencia a la tabla hash en la
  * que almacenan las tuplas.
  */
 
-thash *sdbmaestro_gethash();
+thash *sdbespacio_gethash();
 
-/* sdbmaestro_start()
+/* sdbespacio_start()
  *
  * Función para inicializar el proceso maestro.
  */
 
-int sdbmaestro_start();
+int sdbespacio_start();
+
+/* int sdbespacio_atiendeGrab( char *key, unsigned int src )
+ *
+ * Rutina para atender la petición Grab de un cliente, y
+ * proporcionarle la tupla que solicitó.
+ */
+
+int sdbespacio_atiendeGrab( char *key, unsigned int src );
 
 #endif /* SDBMAESTRO_H_ */
