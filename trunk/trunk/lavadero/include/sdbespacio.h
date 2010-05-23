@@ -11,6 +11,7 @@
 #include <sdbespacio.h>
 #include <sdbproceso.h>
 #include <thash.h>
+#include <mpi.h>
 
 /* TABLESIZE : Númrto de claves en las tablas hash utilizadas */
 
