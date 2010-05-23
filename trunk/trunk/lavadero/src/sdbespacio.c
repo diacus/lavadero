@@ -86,7 +86,7 @@ int sdbespacio_start() {
 	estado *edo = sdbproceso_estado();
 	/* char *message; */
 
-	while( edo->tag != FIN ) {
+	while( edo->tag != END ) {
 
 	}
 
@@ -109,8 +109,8 @@ unsigned int sdbespacio_atiendeGrab( char *key, unsigned int src ) {
 	data = thash_read( tabla, &size, key );
 
 	if( size ) {
-		MPI_Send( &size, 1, MPI_INT, src, TALLA, MPI_COMM_WORLD );
-		MPI_Send( data, size, MPI_CHAR, src, DATO, MPI_COMM_WORLD );
+		MPI_Send( &size, 1, MPI_INT, src, SIZE, MPI_COMM_WORLD );
+		MPI_Send( data, size, MPI_CHAR, src, DATA, MPI_COMM_WORLD );
 	} else {
 		pendientes = sdbespacio_getpendientes();
 	}
