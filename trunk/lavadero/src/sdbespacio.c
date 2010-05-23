@@ -68,6 +68,7 @@ int sdbespacio_start() {
 	etiqueta (tag) del mensaje */
 
 
+	printf("hay %d procesos \n", n);
 	while( n > 0 ) {
 
 
@@ -87,7 +88,7 @@ int sdbespacio_start() {
 			break;
 
 		case STORE :
-
+			printf("Recibi mensaje STORE de proc %d\n", source);
 			sdbespacio_atiendeStore( buffer, nbytes );
 
 			break;

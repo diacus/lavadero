@@ -9,7 +9,6 @@
 #include <sdblinda.h>
 #include <sdbproceso.h>
 #include <sdbespacio.h>
-#include <sdbesclavo.h>
 #include <mpi.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,6 +34,12 @@ int sdblinda_start( int argc, char *argv[] ) {
 
 	edo->tag = BEGIN;
 
+	/*arranque del espacio de tuplas para atención de peticiones*/
+	if (SOYESPACIO(edo)){
+		printf("Iniciando Espacio de Tuplas\n");
+		sdbespacio_start();
+	}
+
 	return 0;
 }
 
@@ -56,6 +61,9 @@ int sdblinda_store( void *data, unsigned int nbytes, char *key ) {
 	/*envia a LINDA el mensaje (message) de tamaño nbytes para almacenarlo (STORE)*/
 	MPI_Send( message, nbytes, MPI_CHAR, LINDA, STORE, MPI_COMM_WORLD );
 	/*regresa 0 si la operación fue exitosa*/
+
+	printf("se enviaron %d bytes a linda\n", nbytes);
+
 	return 0;
 }
 
