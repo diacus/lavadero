@@ -11,16 +11,15 @@
 #include <mpi.h>
 #include <string.h>
 
-#define LINDA      0
-#define ENVIA    100
-#define SOLICITA 101
-#define RETIRA   102
-#define ELIMINA	 103
-#define TALLA	 104
-#define DATO	 105
-#define INICIO   106
-#define FIN      107
-#define ELIMINA  105
+#define LINDA      0 /* Identificador del proceso que administra el espacio de tuplas.     */
+#define ENVIA    100 /* Etiqueta para un mensaje que envía una tupla para que se almacene. */
+#define SOLICITA 101 /* Etiqueta para un mensaje de solicitud de tupla.                    */
+#define RETIRA   102 /* Etiqueta para un mensaje que busca eliminar una tupla del espacio. */
+#define ELIMINA	 103 /* Etiqueta para un mensaje que busca eliminar una tupla del espacio. */
+#define TALLA	 104 /* Etiqueta para un mensaje que transmite el tamaño de un dato.       */
+#define DATO	 105 /* Etiqueta para un mensaje que transmite una tupla.                  */
+#define INICIO   106 /* Etiqueta inicial.                                                  */
+#define FIN      107 /* Etiqueta final.                                                    */
 
 #define SOYMAESTRO(e) !(e->my_rank)
 

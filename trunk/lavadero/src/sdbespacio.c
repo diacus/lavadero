@@ -6,8 +6,31 @@
  */
 
 #include <sdbespacio.h>
+#include <stdlib.h>
 
-#define TABLESIZE 1000
+/* pendiente *sdbespacio_newpendiente()
+ *
+ * Función para crear un nuevo registro de solicitudes
+ * pendientes.
+ *
+ * Devuelve un apuntador al registro recién creado.
+ */
+
+pendiente *sdbespacio_newpendiente() {
+	pendiente *res = (pendiente *) malloc( sizeof(pendiente) );
+	return res;
+}
+
+/* int sdbespacio_deletependiente( pendiente *p )
+ *
+ * Función para liberar el espacio de memoria donde se almacena
+ * una solicitud pendiente.
+ *
+ * Devuelve un entero igual a cero en caso de éxito, y un entero
+ * distinto de cero en caso de error.
+ */
+
+int sdbespacio_deletependiente( pendiente *p ) { free(p); return 0; }
 
 /* thash *sdbespacio_gethash()
  *
@@ -71,12 +94,26 @@ int sdbespacio_start() {
 }
 
 
-/* int sdbespacio_atiendeGrab( char *key, unsigned int src )
+/* unsigned int sdbespacio_atiendeGrab( char *key, unsigned int src )
  *
  * Rutina para atender la petición Grab de un cliente, y
  * proporcionarle la tupla que solicitó.
  */
 
-int sdbespacio_atiendeGrab( char *key, unsigned int src ) {
-	return 0;
+unsigned int sdbespacio_atiendeGrab( char *key, unsigned int src ) {
+
+	thash *tabla, *pendientes;
+	unsigned int size;
+	void *data;
+	tabla = sdbespacio_gethash();
+	data = thash_read( tabla, &size, key );
+
+	if( size ) {
+		MPI_Send( &size, 1, MPI_INT, src, TALLA, MPI_COMM_WORLD );
+		MPI_Send( data, size, MPI_CHAR, src, DATO, MPI_COMM_WORLD );
+	} else {
+		pendientes = sdbespacio_getpendientes();
+	}
+
+	return size;
 }
