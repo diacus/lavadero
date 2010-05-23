@@ -21,7 +21,7 @@
 #define BEGIN    106 /* Etiqueta inicial.                                                  */
 #define END      107 /* Etiqueta final.                                                    */
 
-#define SOYMAESTRO(e) !(e->my_rank)
+#define SOYESPACIO(e) !(e->my_rank)
 
 /* Registro: estado
  *

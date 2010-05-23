@@ -62,8 +62,8 @@ int sdblinda_store( void *data, unsigned int size, char *key ) {
  * en el espacio de memoria apuntado por data.  Esta función elimina los datos
  * del espacio de tuplas.
  *
- * El valor de retorno le notifica al programador acerca del éxito o fracaso
- * de la operación.
+ * El valor de retorno le notifica al programador acerca la cantidad de bytes
+ * recibidos exitosamente.
  */
 
 int sdblinda_grab( void **data, char *key ) {
@@ -93,8 +93,8 @@ int sdblinda_grab( void **data, char *key ) {
  * en el espacio de memoria apuntado por data.  Esta función es parecida a sdblinda_grab,
  * sólo que NO elimina los datos del espacio de tuplas.
  *
- * El valor de retorno le notifica al programador acerca del éxito o fracaso
- * de la operación.
+ * El valor de retorno le notifica al programador acerca la cantidad de bytes
+ * recibidos exitosamente.
  */
 
 int sdblinda_read( void **data, char *key ) {
@@ -141,7 +141,7 @@ int sdblinda_stop() {
 
 	estado *edo = sdbproceso_estado();
 
-	if ( SOYMAESTRO(edo) ) {
+	if ( SOYESPACIO(edo) ) {
 		thash_delete( sdbespacio_gethash() );
 		thash_delete( sdbespacio_getpendientes() );
 	}
