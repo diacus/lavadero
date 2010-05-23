@@ -5,7 +5,7 @@
  *      Author: diacus
  */
 
-#include <sdbmaestro.h>
+#include <sdbespacio.h>
 
 #define TABLESIZE 1000
 

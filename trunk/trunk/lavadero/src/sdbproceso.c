@@ -85,3 +85,19 @@ int sdbproceso_unpack( void * data, unsigned int *nbytes, char **key, char *msg 
 	return 0;
 
 }
+
+/* int cpy_tupla (void * or, unsigned int size, void ** de)
+ *
+ * función para copiar una tupla recibida del espacio a una variable local
+ *
+ * Devuelve la tupla destino ( ** de) inicializada con respecto al tamaño (size)
+ * de la tupla origen (* or)
+ *
+ */
+int cpy_tupla (void * or, unsigned int size, void ** de){
+	char * buffer;
+	buffer = (char *) calloc( size, sizeof(char) );
+	memcpy( buffer , or , size );
+	*de = buffer;
+	return 0;
+}
