@@ -9,13 +9,13 @@
 
 #define TABLESIZE 1000
 
-/* thash *sdbmaestro_gethash()
+/* thash *sdbespacio_gethash()
  *
  * Función para obtener una referencia a la tabla hash en la
  * que almacenan las tuplas.
  */
 
-thash *sdbmaestro_gethash() {
+thash *sdbespacio_gethash() {
 	static int creadaHash = 0;
 	static thash *tabla = NULL;
 
@@ -29,20 +29,31 @@ thash *sdbmaestro_gethash() {
 	return tabla;
 }
 
-/* int sdbmaestro_start()
+/* int sdbespacio_start()
  *
  * Función para inicializar el especio de tuplas.
  */
 
-int sdbmaestro_start() {
+int sdbespacio_start() {
 
-	thash *tabla = sdbmaestro_gethash();
+	/* thash *tabla = sdbespacio_gethash();*/
 	estado *edo = sdbproceso_estado();
-	char *message;
+	/* char *message; */
 
 	while( edo->tag != FIN ) {
 
 	}
 
+	return 0;
+}
+
+
+/* int sdbespacio_atiendeGrab( char *key, unsigned int src )
+ *
+ * Rutina para atender la petición Grab de un cliente, y
+ * proporcionarle la tupla que solicitó.
+ */
+
+int sdbespacio_atiendeGrab( char *key, unsigned int src ) {
 	return 0;
 }
