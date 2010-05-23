@@ -29,6 +29,29 @@ thash *sdbespacio_gethash() {
 	return tabla;
 }
 
+
+/* thash *sdbespacio_getpendientes()
+ *
+ * Funcipon para obtener una referencia al espacio en el que
+ * se van a almacenar las peticiones pendientes.
+ */
+
+thash *sdbespacio_getpendientes() {
+
+	static int creadaPendientes = 0;
+	static thash *pendientes = NULL;
+
+
+	if( ! creadaPendientes ) {
+		creadaPendientes ++;
+		/* Esta parte puede ser parametrizada con */
+		/* un archivo de configuración            */
+		pendientes = thash_new(TABLESIZE);
+	}
+
+	return pendientes;
+}
+
 /* int sdbespacio_start()
  *
  * Función para inicializar el especio de tuplas.

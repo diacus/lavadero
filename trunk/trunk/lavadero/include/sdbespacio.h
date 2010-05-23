@@ -20,6 +20,14 @@
 
 thash *sdbespacio_gethash();
 
+/* thash *sdbespacio_getpendientes()
+ *
+ * Funcipon para obtener una referencia al espacio en el que
+ * se van a almacenar las peticiones pendientes.
+ */
+
+thash *sdbespacio_getpendientes();
+
 /* sdbespacio_start()
  *
  * Función para inicializar el proceso maestro.
