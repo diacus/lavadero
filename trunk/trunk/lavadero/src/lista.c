@@ -107,7 +107,7 @@ lista *lista_remove( lista *lst, char *k ) {
 
 void *lista_find( lista *lst, unsigned int *sz, char *k ) {
 
-	void *res;
+	void *res = NULL;
 
 	if(lst) {
 		if( strcmp(k, lst->key) )
@@ -117,10 +117,8 @@ void *lista_find( lista *lst, unsigned int *sz, char *k ) {
 			memcpy( res, lst->info, lst->size );
 			*sz = lst->size;
 		}
-	} else {
-		res = NULL;
+	} else
 		*sz = 0;
-	}
 
 	return res;
 }
