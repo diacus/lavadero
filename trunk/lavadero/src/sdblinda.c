@@ -46,7 +46,7 @@ int sdblinda_start( int argc, char *argv[] ) {
  * de la operación.
  */
 
-int sdblinda_store( void *data, unsigned int size, const char *key ) {
+int sdblinda_store( void *data, unsigned int size, char *key ) {
 
 	unsigned int bytes;
 	char *message = sdbproceso_pack( &bytes, data, size, key);
@@ -66,22 +66,22 @@ int sdblinda_store( void *data, unsigned int size, const char *key ) {
  * de la operación.
  */
 
-int sdblinda_grab( void **data, const char *key ) {
+int sdblinda_grab( void **data, char *key ) {
 	unsigned int nbytes;
 	char *buffer;
 	estado *edo;
 	edo = sdbproceso_estado();
-	//Envia un petición al repositorio del tamaño (talla) del dato con clave (key)
+	/* Envia un petición al repositorio del tamaño (talla) del dato con clave (key) */
 	MPI_Send( key, strlen(key) + 1 , MPI_CHAR, LINDA, TALLA, MPI_COMM_WORLD );
-	//Espera respuesta sobre la existencia de la clave, si ésta existe se almacena en nbytes
+	/* Espera respuesta sobre la existencia de la clave, si ésta existe se almacena en nbytes */
 	MPI_Recv( &nbytes, sizeof(unsigned int), MPI_INT, LINDA, TALLA, MPI_COMM_WORLD, &(edo->status) );
-	//Reserva memoria para el guardar el dato con clave key
+	/* Reserva memoria para el guardar el dato con clave key */
 	buffer = (char *) calloc( nbytes, sizeof(char) );
-	//Almacena el dato con clave key en buffer
+	/* Almacena el dato con clave key en buffer */
 	MPI_Recv( buffer, sizeof(buffer), MPI_CHAR, LINDA, DATO, MPI_COMM_WORLD, &(edo->status) );
-	//Iguala las direcciones del buffer almacenado con la dirección de la tupla pasada por referencia
+	/* Iguala las direcciones del buffer almacenado con la dirección de la tupla pasada por referencia */
 	*data = buffer;
-	//Elimina la tupla del espacio
+	/* Elimina la tupla del espacio */
 	sdblinda_drop( key );
 	return 0;
 }
@@ -97,20 +97,20 @@ int sdblinda_grab( void **data, const char *key ) {
  * de la operación.
  */
 
-int sdblinda_read( void **data, const char *key ) {
+int sdblinda_read( void **data, char *key ) {
 	unsigned int nbytes;
 	char *buffer;
 	estado *edo;
 	edo = sdbproceso_estado();
-	//Envia un petición al repositorio del tamaño (talla) del dato con clave (key)
+	/* Envia un petición al repositorio del tamaño (talla) del dato con clave (key) */
 	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, TALLA, MPI_COMM_WORLD );
-	//Espera respuesta sobre la existencia de la clave, si ésta existe se almacena en nbytes
+	/* Espera respuesta sobre la existencia de la clave, si ésta existe se almacena en nbytes */
 	MPI_Recv( &nbytes, sizeof(unsigned int), MPI_INT, LINDA, TALLA, MPI_COMM_WORLD, &(edo->status) );
-	//Reserva memoria para el guardar el dato con clave key
+	/* Reserva memoria para el guardar el dato con clave key */
 	buffer = (char *) calloc( nbytes, sizeof(char) );
-	//Almacena el dato con clave key en buffer
+	/* Almacena el dato con clave key en buffer */
 	MPI_Recv( buffer, sizeof(buffer), MPI_CHAR, LINDA, DATO, MPI_COMM_WORLD, &(edo->status) );
-	//Iguala las direcciones del buffer almacenado con la dirección de la tupla pasada por referencia
+	/* Iguala las direcciones del buffer almacenado con la dirección de la tupla pasada por referencia */
 	*data = buffer;
 	return 0;
 }
@@ -126,7 +126,7 @@ int sdblinda_read( void **data, const char *key ) {
  * de la operación.
  */
 
-int sdblinda_drop( const char *key ) {
+int sdblinda_drop( char *key ) {
 	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, RETIRA, MPI_COMM_WORLD );
 	return 0;
 }
@@ -141,8 +141,10 @@ int sdblinda_stop() {
 
 	estado *edo = sdbproceso_estado();
 
-	if ( SOYMAESTRO(edo) )
+	if ( SOYMAESTRO(edo) ) {
 		thash_delete( sdbespacio_gethash() );
+		thash_delete( sdbespacio_getpendientes() );
+	}
 
 	MPI_Finalize();
 	return 0;
