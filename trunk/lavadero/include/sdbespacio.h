@@ -44,26 +44,26 @@ typedef struct pnd {
 	operacion op;
 } pendiente;
 
-/* pendiente *sdbespacio_newpendiente()
+
+/* NEWPENDIENTE(x)
  *
- * Función para crear un nuevo registro de solicitudes
+ * Macro para crear un nuevo registro de solicitudes
  * pendientes.
  *
- * Devuelve un apuntador al registro recién creado.
+ * Requiere que el parámetro sea un apuntador a pendiente.
  */
 
-pendiente *sdbespacio_newpendiente();
+#define NEWPENDIENTE(x) x = (pendiente *) malloc(sizeof(pendiente))
 
-/* int sdbespacio_deletependiente( pendiente *p )
+/* DELETEPENDIENTE(x)
  *
- * Función para liberar el espacio de memoria donde se almacena
- * una solicitud pendiente.
+ * Macro para liberar el espacio de memoria ocupado
+ * por un pendiente.
  *
- * Devuelve un entero igual a cero en caso de éxito, y un entero
- * distinto de cero en caso de error.
+ * Requiere que el parámetro sea un apuntador a pendiente.
  */
 
-int sdbespacio_deletependiente( pendiente *p );
+#define DELETEPENDIENTE(x) free(x)
 
 /* thash *sdbespacio_gethash()
  *
@@ -94,6 +94,21 @@ int sdbespacio_start();
  * proporcionarle la tupla que solicitó.
  */
 
-unsigned int sdbespacio_atiendeGrab( char *key, unsigned int src );
+int sdbespacio_atiendeGrab( char *key, unsigned int src );
+
+/* int sdbespacio_atiendeRead( char *key, unsigned int src )
+ *
+ * Rutina para atender la petición Read de un cliente, y
+ * proporcionarle la tupla que solicitó.
+ */
+
+int sdbespacio_atiendeRead( char *key, unsigned int src );
+
+/* int sdbespacio_atiendeDrop( char *key )
+ *
+ * Rutina para atender la petición Drop.
+ */
+
+int sdbespacio_atiendeDrop( char *key );
 
 #endif /* SDBMAESTRO_H_ */
