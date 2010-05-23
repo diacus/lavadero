@@ -9,13 +9,17 @@
 #define SDBPROCESO_H_
 
 #include <mpi.h>
+#include <string.h>
 
 #define LINDA      0
 #define ENVIA    100
 #define SOLICITA 101
 #define RETIRA   102
-#define INICIO   103
-#define FIN      104
+#define ELIMINA	 103
+#define TALLA	 104
+#define DATO	 105
+#define INICIO   106
+#define FIN      107
 #define ELIMINA  105
 
 #define SOYMAESTRO(e) !(e->my_rank)
@@ -68,5 +72,16 @@ char *sdbproceso_pack( unsigned int *nbytes, void *data, unsigned int sz, char *
  */
 
 int sdbproceso_unpack( void *data, unsigned int *nbytes, char **key, char *msg );
+
+
+/* int cpy_tupla (void * or, unsigned int size, void ** de)
+ *
+ * función para copiar una tupla recibida del espacio a una variable local
+ *
+ * Devuelve la tupla destino ( ** de) inicializada con respecto al tamaño (size)
+ * de la tupla origen (* or)
+ *
+ */
+int cpy_tupla (void * or, unsigned int size, void ** de);
 
 #endif /* SDBPROCESO_H_ */
