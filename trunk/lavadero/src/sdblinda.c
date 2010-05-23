@@ -7,9 +7,11 @@
 
 #include <sdblinda.h>
 #include <sdbproceso.h>
-#include <sdbmaestro.h>
+#include <sdbespacio.h>
 #include <sdbesclavo.h>
 #include <mpi.h>
+#include <stdlib.h>
+#include <string.h>
 
 
 /* int sdblinda_start( int argc, char *argv[] )
@@ -47,37 +49,10 @@ int sdblinda_start( int argc, char *argv[] ) {
 int sdblinda_store( void *data, unsigned int size, const char *key ) {
 
 	unsigned int bytes;
-	char *message = sdbproceso_pack( &bytes, data, size, key );
+	char *message = sdbproceso_pack( &bytes, data, size, key);
 
 	MPI_Send( message, bytes, MPI_CHAR, LINDA, ENVIA, MPI_COMM_WORLD );
 
-	return 0;
-}
-
-
-/* int sdblinda_read( void **data, const char *key )
- *
- * Función para recuperar los datos almacenados bajo la clave key, y recibirlos
- * en el espacio de memoria apuntado por data. Es parecida a grab, sólo que en ésta
- * no se elimina la tupla del espacio.
- *
- * El valor de retorno le notifica al programador acerca del éxito o fracaso
- * de la operación.
- */
-
-int sdblinda_read( void *data, const char *key ) {
-	unsigned int bytes;
-	char *buffer;
-	//envia la clave a LINDA
-	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, DAME, MPI_COMM_WORLD );
-	//recibe de LINDA el tamaño (TALLA) a almacenar
-	MPI_Recv( &bytes, sizeof(unsigned int), MPI_INT, LINDA, TALLA, MPI_COMM_WORLD );
-	//reserva memoria para almacenar los datos
-	*buffer = (char *) calloc( bytes, sizeof(char) );
-	//recibe los datos de LINDA
-	MPI_Recv(buffer, bytes, MPI_CHAR, LINDA, RETIRA, MPI_COMM_WORLD );
-	//iguala las direcciones del buffer recibido y los datos
-	data = buffer;
 	return 0;
 }
 
@@ -91,23 +66,56 @@ int sdblinda_read( void *data, const char *key ) {
  * de la operación.
  */
 
-int sdblinda_grab( void *data, const char *key ) {
-	unsigned int bytes;
+int sdblinda_grab( void **data, const char *key ) {
+	unsigned int nbytes;
 	char *buffer;
-	//envia la clave a LINDA
-	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, DAME, MPI_COMM_WORLD );
-	//recibe de LINDA el tamaño (TALLA) a almacenar
-	MPI_Recv( &bytes, sizeof(unsigned int), MPI_INT, LINDA, TALLA, MPI_COMM_WORLD );
-	//reserva memoria para almacenar los datos
-	*buffer = (char *) calloc( bytes, sizeof(char) );
-	//recibe los datos de LINDA
-	MPI_Recv(buffer, bytes, MPI_CHAR, LINDA, RETIRA, MPI_COMM_WORLD );
-	//iguala las direcciones del buffer recibido y los datos
-	data = buffer;
-	//elimina la tupla con clave key
+	estado *edo;
+	edo = sdbproceso_estado();
+	//Envia un petición al repositorio del tamaño (talla) del dato con clave (key)
+	MPI_Send( key, strlen(key) + 1 , MPI_CHAR, LINDA, TALLA, MPI_COMM_WORLD );
+	//Espera respuesta sobre la existencia de la clave, si ésta existe se almacena en nbytes
+	MPI_Recv( &nbytes, sizeof(unsigned int), MPI_INT, LINDA, TALLA, MPI_COMM_WORLD, &(edo->status) );
+	//Reserva memoria para el guardar el dato con clave key
+	buffer = (char *) calloc( nbytes, sizeof(char) );
+	//Almacena el dato con clave key en buffer
+	MPI_Recv( buffer, sizeof(buffer), MPI_CHAR, LINDA, DATO, MPI_COMM_WORLD, &(edo->status) );
+	//Iguala las direcciones del buffer almacenado con la dirección de la tupla pasada por referencia
+	*data = buffer;
+	//Elimina la tupla del espacio
 	sdblinda_drop( key );
 	return 0;
 }
+
+
+/* int sdblinda_read( void **data, const char *key )
+ *
+ * Función para recuperar los datos almacenados bajo la clave key, y recibirlos
+ * en el espacio de memoria apuntado por data.  Esta función es parecida a sdblinda_grab,
+ * sólo que NO elimina los datos del espacio de tuplas.
+ *
+ * El valor de retorno le notifica al programador acerca del éxito o fracaso
+ * de la operación.
+ */
+
+int sdblinda_read( void **data, const char *key ) {
+	unsigned int nbytes;
+	char *buffer;
+	estado *edo;
+	edo = sdbproceso_estado();
+	//Envia un petición al repositorio del tamaño (talla) del dato con clave (key)
+	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, TALLA, MPI_COMM_WORLD );
+	//Espera respuesta sobre la existencia de la clave, si ésta existe se almacena en nbytes
+	MPI_Recv( &nbytes, sizeof(unsigned int), MPI_INT, LINDA, TALLA, MPI_COMM_WORLD, &(edo->status) );
+	//Reserva memoria para el guardar el dato con clave key
+	buffer = (char *) calloc( nbytes, sizeof(char) );
+	//Almacena el dato con clave key en buffer
+	MPI_Recv( buffer, sizeof(buffer), MPI_CHAR, LINDA, DATO, MPI_COMM_WORLD, &(edo->status) );
+	//Iguala las direcciones del buffer almacenado con la dirección de la tupla pasada por referencia
+	*data = buffer;
+	return 0;
+}
+
+
 
 /* int sdblinda_drop( const char *key )
  *
@@ -119,7 +127,7 @@ int sdblinda_grab( void *data, const char *key ) {
  */
 
 int sdblinda_drop( const char *key ) {
-	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, ELIMINA, MPI_COMM_WORLD );
+	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, RETIRA, MPI_COMM_WORLD );
 	return 0;
 }
 
