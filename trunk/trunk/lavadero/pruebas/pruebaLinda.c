@@ -17,7 +17,7 @@ int prueba_linda( int argc, char *argv[] ) {
 	estado *edo = sdbproceso_estado();
 	sdblinda_start( argc, argv );
 
-	if( SOYMAESTRO(edo) ) {
+	if( SOYESPACIO(edo) ) {
 		printf("Soy un proceso maestro\n");
 	} else {
 		printf("Soy el proceso esclavo numero %d\n", edo->my_rank );
