@@ -67,23 +67,23 @@ int sdblinda_store( void *data, unsigned int size, char *key ) {
  */
 
 int sdblinda_grab( void **data, char *key ) {
-	unsigned int nbytes;
-	char *buffer;
-	estado *edo;
-	edo = sdbproceso_estado();
-	/* Envia un petición al repositorio del tamaño (talla) del dato con clave (key) */
-	MPI_Send( key, strlen(key) + 1 , MPI_CHAR, LINDA, SIZE, MPI_COMM_WORLD );
-	/* Espera respuesta sobre la existencia de la clave, si ésta existe se almacena en nbytes */
-	MPI_Recv( &nbytes, sizeof(unsigned int), MPI_INT, LINDA, SIZE, MPI_COMM_WORLD, &(edo->status) );
-	/* Reserva memoria para el guardar el dato con clave key */
-	buffer = (char *) calloc( nbytes, sizeof(char) );
-	/* Almacena el dato con clave key en buffer */
-	MPI_Recv( buffer, sizeof(buffer), MPI_CHAR, LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
-	/* Iguala las direcciones del buffer almacenado con la dirección de la tupla pasada por referencia */
-	*data = buffer;
-	/* Elimina la tupla del espacio */
-	sdblinda_drop( key );
-	return 0;
+
+	int nbytes;
+	estado *edo = sdbproceso_estado();
+
+	/*Solicitando el dato con clave key para escritura */
+	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, GRAB, MPI_COMM_WORLD );
+
+	/* Preparando la recepción del mensaje */
+	MPI_Probe( LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
+	MPI_Get_count( &(edo->status) , MPI_INT, &nbytes );
+	*data = calloc( nbytes, sizeof(char) );
+
+	/* Recibiendo la tupla solicitada */
+	MPI_Recv( *data, nbytes, MPI_CHAR, LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
+
+	return nbytes;
+
 }
 
 
@@ -98,21 +98,21 @@ int sdblinda_grab( void **data, char *key ) {
  */
 
 int sdblinda_read( void **data, char *key ) {
-	unsigned int nbytes;
-	char *buffer;
-	estado *edo;
-	edo = sdbproceso_estado();
-	/* Envia un petición al repositorio del tamaño (talla) del dato con clave (key) */
-	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, SIZE, MPI_COMM_WORLD );
-	/* Espera respuesta sobre la existencia de la clave, si ésta existe se almacena en nbytes */
-	MPI_Recv( &nbytes, sizeof(unsigned int), MPI_INT, LINDA, SIZE, MPI_COMM_WORLD, &(edo->status) );
-	/* Reserva memoria para el guardar el dato con clave key */
-	buffer = (char *) calloc( nbytes, sizeof(char) );
-	/* Almacena el dato con clave key en buffer */
-	MPI_Recv( buffer, sizeof(buffer), MPI_CHAR, LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
-	/* Iguala las direcciones del buffer almacenado con la dirección de la tupla pasada por referencia */
-	*data = buffer;
-	return 0;
+	int nbytes;
+	estado *edo = sdbproceso_estado();
+
+	/*Solicitando el dato con clave key para lectura */
+	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, READ, MPI_COMM_WORLD );
+
+	/* Preparando la recepción del mensaje */
+	MPI_Probe( LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
+	MPI_Get_count( &(edo->status) , MPI_INT, &nbytes );
+	*data = calloc( nbytes, sizeof(char) );
+
+	/* Recibiendo la tupla solicitada */
+	MPI_Recv( *data, nbytes, MPI_CHAR, LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
+
+	return nbytes;
 }
 
 
