@@ -5,6 +5,7 @@
  *      Author: diacus
  */
 
+#include <stdio.h>
 #include <sdblinda.h>
 #include <sdbproceso.h>
 #include <sdbespacio.h>
@@ -37,6 +38,7 @@ int sdblinda_start( int argc, char *argv[] ) {
 	return 0;
 }
 
+
 /* int sdblinda_store( void *data, unsigned int size, const char *key )
  *
  * Función para almacenar los size bytes de datos apuntados por data, bajo
@@ -46,13 +48,14 @@ int sdblinda_start( int argc, char *argv[] ) {
  * de la operación.
  */
 
-int sdblinda_store( void *data, unsigned int size, char *key ) {
-
-	unsigned int bytes;
-	char *message = sdbproceso_pack( &bytes, data, size, key);
-
-	MPI_Send( message, bytes, MPI_CHAR, LINDA, STORE, MPI_COMM_WORLD );
-
+int sdblinda_store( void *data, unsigned int nbytes, char *key ) {
+	/*empaquetado del mensaje que se enviará al espacio de tuplas*/
+	char *message = sdbproceso_pack( data, nbytes, key);
+	/*nbytes almacenará el tamaño del mensaje a enviar*/
+	nbytes += strlen(key) + 1;
+	/*envia a LINDA el mensaje (message) de tamaño nbytes para almacenarlo (STORE)*/
+	MPI_Send( message, nbytes, MPI_CHAR, LINDA, STORE, MPI_COMM_WORLD );
+	/*regresa 0 si la operación fue exitosa*/
 	return 0;
 }
 
@@ -140,11 +143,13 @@ int sdblinda_drop( char *key ) {
 int sdblinda_stop() {
 
 	estado *edo = sdbproceso_estado();
+	int message;
 
 	if ( SOYESPACIO(edo) ) {
 		thash_delete( sdbespacio_gethash() );
 		thash_delete( sdbespacio_getpendientes() );
-	}
+	} else
+		MPI_Send( &message, 1, MPI_INT, LINDA, END, MPI_COMM_WORLD );
 
 	MPI_Finalize();
 	return 0;
