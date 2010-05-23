@@ -39,7 +39,7 @@ lista *lista_insert( lista *lst, lista *item ) {
 	if ( lst ) {
 
 		dif = strcmp ( lst->key, item->key );
-		if( dif > 0 ) {
+		if( dif >= 0 ) {
 
 			res = item;
 			item->next = lst;
@@ -49,7 +49,7 @@ lista *lista_insert( lista *lst, lista *item ) {
 			res = lst;
 			lst->next = lista_insert( lst->next, item );
 
-		} else {
+		}/* else {
 
 			fprintf(
 				stderr,
@@ -58,7 +58,7 @@ lista *lista_insert( lista *lst, lista *item ) {
 			);
 			res = lst;
 
-		}
+		}*/
 
 	} else
 		res = item;
