@@ -56,8 +56,8 @@ int sdblinda_drop( char *key );
  * en el espacio de memoria apuntado por data.  Esta función es parecida a sdblinda_grab,
  * sólo que NO elimina los datos del espacio de tuplas.
  *
- * El valor de retorno le notifica al programador acerca del éxito o fracaso
- * de la operación.
+ * El valor de retorno le notifica al programador el tamaño en bytes de la tupla
+ * solicitada
  */
 
 int sdblinda_read( void **data, char *key );

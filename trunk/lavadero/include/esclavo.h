@@ -18,6 +18,23 @@ void *sdbesclavo_pack( void *data, unsigned int sz, char *key);
 
 double *suma( double *col1, double *col2, unsigned int size );
 
+/* int esclavo_listen()
+ *
+ */
+
 int esclavo_listen();
+
+/* int ejecuta_suma( int shift )
+ *
+ */
+
+int ejecuta_suma( int shift );
+
+/* void array_print( double *arr, unsigned int sz )
+ *
+ */
+
+void array_print( double *arr, unsigned int sz );
+
 
 #endif /* SDBESCLAVO_H_ */
