@@ -38,7 +38,8 @@ matriz *matriz_new( unsigned int r, unsigned int c ) {
 int matriz_getRen( double **ren, matriz *m, int R ) {
 
 	*ren = (double *) calloc( m->cols, sizeof(double) );
-	memcpy( *ren, (m->coef + m->cols * m->rens), m->cols * sizeof(double) );
+	memcpy( *ren, (m->coef + m->cols*R), m->cols * sizeof(double) );
+
 	return 0;
 }
 
@@ -125,6 +126,18 @@ int matriz_print( matriz *m) {
 	}
 	putchar('\n');
 	return 0;
+}
+
+
+/* void array_print( double *arr, unsigned int sz )
+ *
+ * Imprime en pantalla un vector *arr de tamaño sz
+ */
+void array_print( double *arr, unsigned int sz ) {
+	int i;
+	for( i = 0; i < sz; i++ )
+		printf("% .3f", arr[i]);
+	putchar('\n');
 }
 
 /* int matriz_delete( matriz *m )

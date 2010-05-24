@@ -30,11 +30,5 @@ int esclavo_listen();
 
 int ejecuta_suma( int shift );
 
-/* void array_print( double *arr, unsigned int sz )
- *
- */
-
-void array_print( double *arr, unsigned int sz );
-
 
 #endif /* SDBESCLAVO_H_ */

@@ -8,6 +8,7 @@
 #include <sdbproceso.h>
 #include <sdblinda.h>
 #include <esclavo.h>
+#include <matriz.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -59,16 +60,17 @@ int ejecuta_suma( int shift ) {
 
 		sprintf( key, "resultadoC%d", i );
 		sdblinda_store( renC, size, key );
+		printf("ESCLAVO %d: envie el renglon %s al espacio de tuplas \n", edo->my_rank, key );
 		key[0] = '\0';
-
-		printf("%d: Renglon %dA ", edo->my_rank, i );
+/*
+		printf("Esclavo %d: Renglon %dA ", edo->my_rank, i );
 		array_print(renA, size / sizeof(double) );
 
-		printf("%d: Renglon %dB ", edo->my_rank, i );
+		printf("Esclavo %d: Renglon %dB ", edo->my_rank, i );
 		array_print(renB, size / sizeof(double) );
 
-		printf("%d: Renglon %dC ", edo->my_rank, i );
-		array_print(renC, size / sizeof(double) );
+		printf("Esclavo %d: Renglon %dC ", edo->my_rank, i );
+		array_print(renC, size / sizeof(double) );*/
 
 		free(renA); free(renB); free(renC);
 
@@ -76,12 +78,4 @@ int ejecuta_suma( int shift ) {
 
 	return 0;
 
-}
-
-void array_print( double *arr, unsigned int sz ) {
-	double *ini, *fin;
-	fin = arr + sz;
-	for( ini = arr; ini < fin; ini++ )
-		printf("% .3f", *ini);
-	putchar('\n');
 }

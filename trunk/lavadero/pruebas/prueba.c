@@ -37,9 +37,8 @@ int prueba( int argc, char *argv[] ) {
 
 	if( edo->my_rank == 1 )
 		maestro_init_suma();
-	else
+	else if(edo->my_rank > 1)
 		esclavo_listen();
-
 	sdblinda_stop();
 	return 0;
 }
