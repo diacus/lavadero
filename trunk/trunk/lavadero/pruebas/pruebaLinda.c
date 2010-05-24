@@ -37,8 +37,9 @@
 	return 0;
 }*/
 
+
 int prueba_linda( int argc, char *argv[] ) {
-	char *s1 = "saludo";
+	char *s1 = "fecha";
 	estado *edo = sdbproceso_estado();
 	sdblinda_start( argc, argv );
 
@@ -46,11 +47,11 @@ int prueba_linda( int argc, char *argv[] ) {
 		printf("Soy el espacio\n");
 	}
 	else {
-		printf("soy %d, long = %d\n",edo->my_rank,strlen(s1)+1);
+		printf("soy %d, envie tupla de tamaño long = %d\n",edo->my_rank,strlen(s1));
 		if(edo->my_rank==1)
-			sdblinda_store(s1 , strlen(s1) + 1, "HELLO" );
+			sdblinda_store( s1 , strlen(s1) + 1, "fecha 1" );
 		else
-			sdblinda_store(s1 , strlen(s1) + 1, "HOLA" );
+			sdblinda_store( s1 , strlen(s1) + 1, "fecha 2" );
 	}
 
 	sdblinda_stop();
