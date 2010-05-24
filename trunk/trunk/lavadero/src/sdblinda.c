@@ -62,7 +62,7 @@ int sdblinda_store( void *data, unsigned int nbytes, char *key ) {
 	MPI_Send( message, nbytes, MPI_CHAR, LINDA, STORE, MPI_COMM_WORLD );
 	/*regresa 0 si la operación fue exitosa*/
 
-	printf("se enviaron %d bytes a linda\n", nbytes);
+	/* printf("se enviaron %d bytes a linda\n", nbytes); */
 
 	return 0;
 }
@@ -87,11 +87,11 @@ int sdblinda_grab( void **data, char *key ) {
 
 	/* Preparando la recepción del mensaje */
 	MPI_Probe( LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
-	MPI_Get_count( &(edo->status) , MPI_INT, &nbytes );
+	MPI_Get_count( &(edo->status) , MPI_BYTE, &nbytes );
 	*data = calloc( nbytes, sizeof(char) );
 
 	/* Recibiendo la tupla solicitada */
-	MPI_Recv( *data, nbytes, MPI_CHAR, LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
+	MPI_Recv( *data, nbytes, MPI_BYTE, LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
 
 	return nbytes;
 
@@ -115,9 +115,21 @@ int sdblinda_read( void **data, char *key ) {
 	/*Solicitando el dato con clave key para lectura */
 	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, READ, MPI_COMM_WORLD );
 
+
+	/*
+	 *		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &(edo->status));
+		source = (edo->status).MPI_SOURCE;
+		tag = (edo->status).MPI_TAG;
+		MPI_Get_count(&(edo->status), MPI_BYTE, &nbytes);
+		printf("bytes a recibir = %d\n", nbytes);
+		buffer = (char *) calloc( nbytes, sizeof(char) );
+		MPI_Recv( buffer, nbytes, MPI_BYTE, source, tag, MPI_COMM_WORLD, &(edo->status) );
+	*/
+
+
 	/* Preparando la recepción del mensaje */
 	MPI_Probe( LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
-	MPI_Get_count( &(edo->status) , MPI_INT, &nbytes );
+	MPI_Get_count( &(edo->status) , MPI_BYTE, &nbytes );
 	*data = calloc( nbytes, sizeof(char) );
 
 	/* Recibiendo la tupla solicitada */
@@ -153,10 +165,11 @@ int sdblinda_stop() {
 	estado *edo = sdbproceso_estado();
 	int message;
 
-	if ( SOYESPACIO(edo) ) {
-		thash_delete( sdbespacio_gethash() );
-		thash_delete( sdbespacio_getpendientes() );
-	} else
+	if ( SOYESPACIO(edo) )
+		printf("SERVER: Finalizando el espacio de tuplas\n");
+		/* thash_delete( sdbespacio_gethash() ); */
+		/* thash_delete( sdbespacio_getpendientes() ); */
+	 else
 		MPI_Send( &message, 1, MPI_INT, LINDA, END, MPI_COMM_WORLD );
 
 	MPI_Finalize();
