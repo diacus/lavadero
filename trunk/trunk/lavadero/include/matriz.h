@@ -85,4 +85,10 @@ int matriz_print( matriz *m);
 
 int matriz_delete( matriz *m );
 
+/* void array_print( double *arr, unsigned int sz )
+ *
+ * Imprime en pantalla un vector *arr de tamaño sz
+ */
+void array_print( double *arr, unsigned int sz );
+
 #endif /* MATRIZ_H_ */
