@@ -165,6 +165,8 @@ int sdblinda_stop() {
 	estado *edo = sdbproceso_estado();
 	int message;
 
+	MPI_Barrier(MPI_COMM_WORLD);
+
 	if ( SOYESPACIO(edo) )
 		printf("SERVER: Finalizando el espacio de tuplas\n");
 		/* thash_delete( sdbespacio_gethash() ); */
