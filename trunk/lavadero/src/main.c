@@ -11,6 +11,6 @@ int main(int argc, char *argv[]) {
 
 	/*return pruebahash( argc, argv ); */
 	/* return pruebabit(); */
-	return prueba_linda( argc, argv );
+	return prueba( argc, argv );
 	/* return prueba1(); */
 }

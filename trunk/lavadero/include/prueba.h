@@ -8,7 +8,7 @@
 #ifndef PRUEBA_H_
 #define PRUEBA_H_
 
-int prueba1();
+int prueba( int argc, char *argv[] );
 
 /* int pruebalista( int argc, char *argv[] )
  *
