@@ -107,7 +107,7 @@ int sdbespacio_start() {
 		case DROP :
 			printf("Recibi mensaje DROP de proc %d\n", source);
 			/* int sdbespacio_atiendeDrop( char *key )*/
-			/*sdb_espacio_atiendeDrop ( buffer );*/
+			sdbespacio_atiendeDrop ( buffer );
 
 
 		default:
@@ -136,6 +136,7 @@ unsigned int sdbespacio_atiendeStore( char * message, int sz ){
 	void * data; /* Tupla a almacenar */
 	char *key;	/* Clave de la tupla */
 	int indice, tam; /* índice de la tabla en el que se almacenará la tupla y tamaño de la tupla*/
+	unsigned int size;
 	/* Proceso para desempaquetar la tupla se recibe el tamaño de la tupla*/
 	tam = sdbproceso_unpack( message, sz, &key, &data);
 	/* Se obtiene la dirección de la tabla hash */
@@ -147,12 +148,22 @@ unsigned int sdbespacio_atiendeStore( char * message, int sz ){
 	/* Revisando el tabla de pendiente*/
 	poratender = sdbespacio_getpendientes();
 
-	/* void *thash_read( thash *t, unsigned int *sz, char *key ) */
-	p = thash_remove( poratender, sizeof(pendiente), key);
+	/* Se recibe un puntero a un pendiente si es que existe */
+	p = thash_remove( poratender, &size, key);
 
-
-
-
+	/*Si lo hay se checa si el pendiente es GRAB o READ*/
+	if(p)
+		switch(p->op){
+			/* Si el pendiente es GRAB se invoca a la función GRAB*/
+			case GRAB :
+				sdbespacio_atiendeGrab( key, p->cliente );
+				break;
+			/* Si el pendiente es READ se invoca a la función READ*/
+			case READ :
+				sdbespacio_atiendeRead( key, p->cliente );
+				break;
+		}
+	free(p);
 	return 0;
 }
 
