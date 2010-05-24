@@ -37,6 +37,14 @@
 	return 0;
 }*/
 
+typedef struct fech{
+
+	int dia;
+	float mes;
+	double anio;
+
+
+} fecha;
 
 int prueba_linda( int argc, char *argv[] ) {
 	char *s1 = "PING";
@@ -44,6 +52,11 @@ int prueba_linda( int argc, char *argv[] ) {
 	char *s5 = "USAR DROP";
 	char *s3, *s4;
 	estado *edo = sdbproceso_estado();
+	fecha actual, *hoy;
+	actual.dia=24;
+	actual.anio=20.10;
+	actual.mes=5.7;
+
 	sdblinda_start( argc, argv );
 
 	if( SOYESPACIO(edo) ) {
@@ -60,6 +73,8 @@ int prueba_linda( int argc, char *argv[] ) {
 			printf("soy: %d Recibi %s\n", edo->my_rank, s3 );
 			sdblinda_store( s5 , strlen(s1) + 1, "borrar" );
 			printf("soy: %d Envie %s\n", edo->my_rank, s5 );
+			sdblinda_store( &actual , sizeof(fecha), "fecha" );
+			printf("soy: %d Envie fecha\n", edo->my_rank);
 		}
 		else{
 
@@ -69,6 +84,9 @@ int prueba_linda( int argc, char *argv[] ) {
 			printf("soy: %d Recibi %s\n", edo->my_rank, s4 );
 			sdblinda_drop( "borrar" );
 			printf("soy: %d Borre tupla con clave borrar\n", edo->my_rank);
+			sdblinda_grab( &hoy, "fecha" );
+			printf("soy: %d Recibi fecha\n", edo->my_rank);
+			printf("%d / %f / %lf \n", hoy->dia, hoy->mes, hoy->anio);
 
 		}
 	}
