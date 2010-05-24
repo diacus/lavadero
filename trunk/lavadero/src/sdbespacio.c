@@ -90,12 +90,30 @@ int sdbespacio_start() {
 		case STORE :
 			printf("Recibi mensaje STORE de proc %d\n", source);
 			sdbespacio_atiendeStore( buffer, nbytes );
-
 			break;
+
+		case GRAB :
+			printf("Recibi mensaje GRAB de proc %d\n", source);
+			/* int sdbespacio_atiendeGrab( char *key, unsigned int src )*/
+			sdbespacio_atiendeGrab( buffer, source);
+			break;
+
+		case READ :
+			printf("Recibi mensaje READ de proc %d\n", source);
+			/* int sdbespacio_atiendeRead( char *key, unsigned int src ) */
+			sdbespacio_atiendeRead( buffer, source );
+			break;
+
+		case DROP :
+			printf("Recibi mensaje DROP de proc %d\n", source);
+			/* int sdbespacio_atiendeDrop( char *key )*/
+			/*sdb_espacio_atiendeDrop ( buffer );*/
+
 
 		default:
 			n=0;
 			printf("Error de aplicación terminando\n");
+
 		}
 
 	}
@@ -113,7 +131,8 @@ int sdbespacio_start() {
  */
 unsigned int sdbespacio_atiendeStore( char * message, int sz ){
 
-	thash *tabla; /* Creación de apuntador a la tabla hash*/
+	thash *tabla, *poratender; /* Creación de apuntador a la tabla hash de indices y tabla de pendientes*/
+	pendiente *p; /* apuntador a la estructura pendiente */
 	void * data; /* Tupla a almacenar */
 	char *key;	/* Clave de la tupla */
 	int indice, tam; /* índice de la tabla en el que se almacenará la tupla y tamaño de la tupla*/
@@ -123,7 +142,17 @@ unsigned int sdbespacio_atiendeStore( char * message, int sz ){
 	tabla = sdbespacio_gethash();
 	/* se inserta en la tabla hash (tabla), el dato (data), de tamaño (tam) con clave (key)*/
 	indice = thash_insert( tabla, data, tam, key);
-	printf("Tupla %s insertada en el indice %d con clave %s\n", (char *)data, indice, key);
+	printf("Tupla insertada en el indice %d con clave %s\n", indice, key);
+
+	/* Revisando el tabla de pendiente*/
+	poratender = sdbespacio_getpendientes();
+
+	/* void *thash_read( thash *t, unsigned int *sz, char *key ) */
+	p = thash_remove( poratender, sizeof(pendiente), key);
+
+
+
+
 	return 0;
 }
 
