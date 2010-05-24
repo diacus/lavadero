@@ -8,6 +8,8 @@
 #ifndef SDBESCLAVO_H_
 #define SDBESCLAVO_H_
 
+#include <sdblinda.h>
+
 void *sdbesclavo_pack( void *data, unsigned int sz, char *key);
 
 /* int suma( int *col1, int *col2, unsigned int size )
@@ -15,5 +17,7 @@ void *sdbesclavo_pack( void *data, unsigned int sz, char *key);
  */
 
 double *suma( double *col1, double *col2, unsigned int size );
+
+int esclavo_listen();
 
 #endif /* SDBESCLAVO_H_ */

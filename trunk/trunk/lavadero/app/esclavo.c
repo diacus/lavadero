@@ -10,7 +10,8 @@
 
 double *suma( double *col1, double *col2, unsigned int size ) {
 
-	int i, *res;
+	int i;
+	double *res;
 
 	res = (double *) calloc( size, sizeof(double) );
 
@@ -18,4 +19,8 @@ double *suma( double *col1, double *col2, unsigned int size ) {
 		res[i] = col1[i] + col2[i];
 
 	return res;
+}
+
+int esclavo_listen() {
+	return 0;
 }
