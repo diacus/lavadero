@@ -5,8 +5,11 @@
  *      Author: diacus
  */
 
+#include <sdbproceso.h>
+#include <sdblinda.h>
 #include <esclavo.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 double *suma( double *col1, double *col2, unsigned int size ) {
 
@@ -22,5 +25,7 @@ double *suma( double *col1, double *col2, unsigned int size ) {
 }
 
 int esclavo_listen() {
+	estado *edo = sdbproceso_estado();
+	printf("Esclavo %d esperando instrucciones\n", edo->my_rank );
 	return 0;
 }
