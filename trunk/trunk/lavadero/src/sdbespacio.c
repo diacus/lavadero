@@ -149,6 +149,9 @@ int sdbespacio_atiendeGrab( char *key, unsigned int src ) {
 	} else {
 		poratender = sdbespacio_getpendientes();
 		NEWPENDIENTE(p);
+		p->key = strdup(key);
+		p->cliente = src;
+		p->op = GRAB;
 		thash_insert(poratender, p, sizeof(pendiente), key );
 	}
 
@@ -177,6 +180,9 @@ int sdbespacio_atiendeRead( char *key, unsigned int src ) {
 	} else {
 		poratender = sdbespacio_getpendientes();
 		NEWPENDIENTE(p);
+		p->key = strdup(key);
+		p->cliente = src;
+		p->op = READ;
 		thash_insert(poratender, p, sizeof(pendiente), key );
 	}
 

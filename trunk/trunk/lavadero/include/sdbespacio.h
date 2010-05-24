@@ -17,18 +17,6 @@
 
 #define TABLESIZE 1000
 
-/* Tipo: operacion
- *
- * Es una de las dos operaciones que pueden provocar el bloqueo de una
- * tarea.
- *
- *   Valores
- *     - LEER     : Cuando la tarea solicita una tupla en modo lectura.
- *     - Eliminar : Cuando la tarea solicita una tupla en modo escritura.
- */
-
-typedef enum oper { LEER = 200, ELIMINAR = 201 } operacion;
-
 /* Registro: pendiente
  *
  * Estructura para almacenar las solicigudes pendientes.
@@ -42,7 +30,7 @@ typedef enum oper { LEER = 200, ELIMINAR = 201 } operacion;
 typedef struct pnd {
 	char *key;
 	unsigned int cliente;
-	operacion op;
+	int op;
 } pendiente;
 
 
