@@ -14,6 +14,6 @@ void *sdbesclavo_pack( void *data, unsigned int sz, char *key);
  *
  */
 
-int suma( int *col1, int *col2, unsigned int size );
+double *suma( double *col1, double *col2, unsigned int size );
 
 #endif /* SDBESCLAVO_H_ */
