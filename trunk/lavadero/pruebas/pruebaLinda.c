@@ -39,7 +39,10 @@
 
 
 int prueba_linda( int argc, char *argv[] ) {
-	char *s1 = "fecha";
+	char *s1 = "PING";
+	char *s2 = "PONG";
+	char *s5 = "USAR DROP";
+	char *s3, *s4;
 	estado *edo = sdbproceso_estado();
 	sdblinda_start( argc, argv );
 
@@ -47,11 +50,27 @@ int prueba_linda( int argc, char *argv[] ) {
 		printf("Soy el espacio\n");
 	}
 	else {
-		printf("soy %d, envie tupla de tamaño long = %d\n",edo->my_rank,strlen(s1));
-		if(edo->my_rank==1)
-			sdblinda_store( s1 , strlen(s1) + 1, "fecha 1" );
-		else
-			sdblinda_store( s1 , strlen(s1) + 1, "fecha 2" );
+		/*printf("soy %d, envie tupla de tamaño long = %d\n",edo->my_rank,strlen(s1));*/
+		/* printf("Iniciando comunicación entre procesos\n"); */
+		if(edo->my_rank==1){
+
+			sdblinda_store( s1 , strlen(s1) + 1, "ida" );
+			printf("soy: %d Envie %s\n", edo->my_rank, s1 );
+			sdblinda_grab( &s3, "vuelta" );
+			printf("soy: %d Recibi %s\n", edo->my_rank, s3 );
+			sdblinda_store( s5 , strlen(s1) + 1, "borrar" );
+			printf("soy: %d Envie %s\n", edo->my_rank, s5 );
+		}
+		else{
+
+			sdblinda_store( s2 , strlen(s2) + 1, "vuelta" );
+			printf("soy: %d Envie %s\n", edo->my_rank, s2 );
+			sdblinda_read( &s4, "ida" );
+			printf("soy: %d Recibi %s\n", edo->my_rank, s4 );
+			sdblinda_drop( "borrar" );
+			printf("soy: %d Borre tupla con clave borrar\n", edo->my_rank);
+
+		}
 	}
 
 	sdblinda_stop();
