@@ -87,5 +87,3 @@ int sdbproceso_unpack( char *msg, unsigned int sz, char **key, void **data) {
 	return sz - shift;
 
 }
-
-
