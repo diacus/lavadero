@@ -101,7 +101,7 @@ int matriz_fill( matriz *m ) {
 
 	double *ini, *fin, *dob;
 
-	srand( time(NULL) );
+	srand( (unsigned int) m );
 	ini = m->coef;
 	fin = ini + (m->rens *m->cols);
 
@@ -122,7 +122,7 @@ int matriz_print( matriz *m) {
 	for( i = 0; i < lim; i++ ) {
 		if( i % m->cols == 0)
 			putchar('\n');
-		printf(" %.03f", *(m->coef + i) );
+		printf(" %3.1f", *(m->coef + i) );
 	}
 	putchar('\n');
 	return 0;

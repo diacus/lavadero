@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <constantes.h>
+
 double *suma( double *col1, double *col2, unsigned int size ) {
 
 	int i;
@@ -32,7 +34,7 @@ int esclavo_listen() {
 	if( edo->my_rank == 2 )
 		ejecuta_suma(0);
 	else if( edo->my_rank == 3 )
-		ejecuta_suma(3);
+		ejecuta_suma(MATRIZCUT);
 
 	printf( "%d: He terminado mi suma\n", edo->my_rank );
 	return 0;
@@ -42,7 +44,7 @@ int ejecuta_suma( int shift ) {
 
 	char key[256] = "";
 	double *renA, *renB, *renC;
-	int i, size, lim = shift + 3;
+	int i, size, lim = shift + MATRIZCUT;
 
 	estado *edo = sdbproceso_estado();
 

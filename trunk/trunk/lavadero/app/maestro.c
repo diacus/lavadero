@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <constantes.h>
+
 /* int maestro_init_suma()
  *
  */
@@ -16,11 +18,11 @@
 int maestro_init_suma() {
 
 	char key[256] = "";
-	int i, shift = 3;
+	int i;
 	double *renA, *renB, *renC;
 	matriz *mA, *mB, *mC;
-	maestro_generaMatrices( &mA, &mB, 6, 6 );
-	mC = matriz_new(6,6);
+	maestro_generaMatrices( &mA, &mB, MATRIZTAM, MATRIZTAM );
+	mC = matriz_new( MATRIZTAM,MATRIZTAM );
 
 	printf("Matriz A\n");
 	matriz_print(mA);
@@ -28,7 +30,7 @@ int maestro_init_suma() {
 	printf("Matriz B\n");
 	matriz_print(mB);
 
-	for( i = 0; i < 6; i++) {
+	for( i = 0; i < MATRIZTAM; i++) {
 
 		matriz_getRen( &renA, mA, i );
 		matriz_getRen( &renB, mB, i );
@@ -50,7 +52,7 @@ int maestro_init_suma() {
 	}
 
 
-	for( i = 0; i < 6; i++ ) {
+	for( i = 0; i < MATRIZTAM; i++ ) {
 
 		key[0] = '\0';
 		sprintf( key, "resultadoC%d", i );
