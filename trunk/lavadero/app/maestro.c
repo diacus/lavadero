@@ -46,7 +46,7 @@ int maestro_init_suma() {
 		sprintf( key, "B%dRenglon", i );
 		sdblinda_store(renB, mB->cols * sizeof(double), key );
 		printf("MASTER: Envie renglon renB con clave %s\n", key);
-		array_print( renB, mB->cols);
+		/*array_print( renB, mB->cols);*/
 		key[0] = '\0';
 		free(renB);
 	}
