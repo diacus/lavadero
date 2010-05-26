@@ -10,6 +10,7 @@
 
 #include <mpi.h>
 #include <string.h>
+#include <tupla.h>
 
 #define LINDA      0 /* Identificador del proceso que administra el espacio de tuplas.     */
 #define STORE    100 /* Etiqueta para un mensaje que envía una tupla para que se almacene. */
@@ -22,6 +23,7 @@
 #define END      107 /* Etiqueta final.                                                    */
 
 #define SOYESPACIO(e) !(e->my_rank)
+#define DELETE_MESSAGE(s) {free(s); s = NULL;}
 
 /* Registro: estado
  *
@@ -30,13 +32,13 @@
  */
 
 typedef struct edo {
-	int			my_rank;		/* Identificador de proceso                */
-	int			num_procs;		/* Número de procesos activos              */
-	int			source;			/* Identificador del proceso emisor        */
-	int			dest;    		/* Identificador del proceso destino       */
-	int			tag;    		/* Etiqueta para el mensaje                */
-	char		*message;   	/* Apuntador al mensaje a enviar o recibir */
-	MPI_Status	status ;		/* Estado de la comunicación               */
+	int			my_rank;	/* Identificador de proceso                */
+	int			num_procs;	/* Número de procesos activos              */
+	int			source;		/* Identificador del proceso emisor        */
+	int			dest;    	/* Identificador del proceso destino       */
+	int			tag;    	/* Etiqueta para el mensaje                */
+	char		*message;   /* Apuntador al mensaje a enviar o recibir */
+	MPI_Status	status ;	/* Estado de la comunicación               */
 } estado;
 
 /* estado *sdbproceso_estado()
@@ -48,11 +50,10 @@ typedef struct edo {
  */
 estado *sdbproceso_estado();
 
-/* char *sdbproceso_pack( void *data, unsigned int sz, char *key )
+/* char *sdbproceso_pack( char *key, tupla *data )
  *
- * Función para empaquetar los sz bytes apuntados por data y su
- * clave key, en una sola porción de memoria, para ser enviados
- * a la memoria compartida.
+ * Función para empaquetar la tupla data y su clave key, en una sola
+ * porción de memoria, para ser enviados a la memoria compartida.
  *
  * +-------+-----------------------------------------+
  * | clave |                  tupla                  |
@@ -65,7 +66,7 @@ estado *sdbproceso_estado();
  *
  */
 
-char *sdbproceso_pack( void *data, unsigned int sz, char *key );
+char *sdbproceso_pack( char *key, tupla data );
 
 /* int sdbproceso_unpack( char *msg, unsigned int sz, char **key, void **data)
  *

@@ -10,6 +10,9 @@
 #include <string.h>
 #include <sdbproceso.h>
 
+#include <tupla.h>
+
+
 /* estado *sdbproceso_estado()
  *
  * Función para crear las variables de estado del proceso
@@ -30,11 +33,10 @@ estado *sdbproceso_estado() {
 	return est;
 }
 
-/* char *sdbproceso_pack( void *data, unsigned int sz, char *key )
+/* char *sdbproceso_pack( char *key, tupla *data )
  *
- * Función para empaquetar los sz bytes apuntados por data y su
- * clave key, en una sola porción de memoria, para ser enviados
- * a la memoria compartida.
+ * Función para empaquetar la tupla data y su clave key, en una sola
+ * porción de memoria, para ser enviados a la memoria compartida.
  *
  * +-------+-----------------------------------------+
  * | clave |                  tupla                  |
@@ -47,16 +49,15 @@ estado *sdbproceso_estado() {
  *
  */
 
-char *sdbproceso_pack( void *data, unsigned int sz, char *key ) {
-	/*tamaño (shift) en bytes de la clave*/
-	unsigned int shift = strlen(key) + 1;
-	/*tamaño del paquete a enviar*/
-	unsigned int pack_size = sz + shift;
-	/*Reservación de memoria para el paquete*/
-	char *package = (char *) calloc( pack_size, sizeof(char) );
+char *sdbproceso_pack( char *key, tupla data ) {
 
-	/* Copiando la clave de la tupla */
-	strcpy( package, key );
+	int sz = TUPLA_SIZE(data);
+	unsigned int shift = strlen(key) + 1;						/*tamaño (shift) en bytes de la clave*/
+	unsigned int pack_size = sz + shift;						/*tamaño del paquete a enviar*/
+	char *package = (char *) calloc( pack_size, sizeof(char) );	/*Reservación de memoria para el paquete*/
+
+
+	strcpy( package, key );										/* Copiando la clave de la tupla */
 
 	/* Copiando la tupla al paquete */
 	memcpy( package + shift, data, sz );

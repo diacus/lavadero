@@ -14,12 +14,12 @@
 #include <string.h>
 
 
-/* int sdblinda_start( int argc, char *argv[] )
+/* int sdblinda_iniciar( int argc, char *argv[] )
  *
  * Función para inicializar el espacio de tuplas
  */
 
-int sdblinda_start( int argc, char *argv[] ) {
+int sdblinda_iniciar( int argc, char *argv[] ) {
 
 	estado *edo;
 
@@ -37,14 +37,14 @@ int sdblinda_start( int argc, char *argv[] ) {
 	/*arranque del espacio de tuplas para atención de peticiones*/
 	if (SOYESPACIO(edo)){
 		printf("Iniciando Espacio de Tuplas\n");
-		sdbespacio_start();
+		sdbespacio_iniciar();
 	}
 
 	return 0;
 }
 
 
-/* int sdblinda_store( void *data, unsigned int size, const char *key )
+/* int sdblinda_meter( void *data, unsigned int size, const char *key )
  *
  * Función para almacenar los size bytes de datos apuntados por data, bajo
  * la clave key.
@@ -53,21 +53,24 @@ int sdblinda_start( int argc, char *argv[] ) {
  * de la operación.
  */
 
-int sdblinda_store( void *data, unsigned int nbytes, char *key ) {
-	/*empaquetado del mensaje que se enviará al espacio de tuplas*/
-	char *message = sdbproceso_pack( data, nbytes, key);
-	/*nbytes almacenará el tamaño del mensaje a enviar*/
-	nbytes += strlen(key) + 1;
-	/*envia a LINDA el mensaje (message) de tamaño nbytes para almacenarlo (STORE)*/
-	MPI_Send( message, nbytes, MPI_CHAR, LINDA, STORE, MPI_COMM_WORLD );
-	/*regresa 0 si la operación fue exitosa*/
+int sdblinda_meter( char *key, tupla data ) {
 
-	/* printf("se enviaron %d bytes a linda\n", nbytes); */
+	estado *edo = sdbproceso_estado();
+	/* nbytes almacenará el tamaño del mensaje a enviar */
+	int nbytes = strlen(key) + 1 + TUPLA_SIZE(data);
+
+	/* Empaquetado del mensaje que se enviará al espacio de tuplas */
+	if( !edo->message )
+		DELETE_MESSAGE(edo->message);
+	edo->message = sdbproceso_pack( key, data );
+
+	/* Envia a LINDA el mensaje (message) de tamaño nbytes para almacenarlo (STORE)*/
+	MPI_Send( edo->message, nbytes, MPI_CHAR, LINDA, STORE, MPI_COMM_WORLD );
 
 	return 0;
 }
 
-/* int sdblinda_grab( void **data, const char *key )
+/* int sdblinda_sacar( void **data, const char *key )
  *
  * Función para recuperar los datos almacenados bajo la clave key, y recibirlos
  * en el espacio de memoria apuntado por data.  Esta función elimina los datos
@@ -77,70 +80,53 @@ int sdblinda_store( void *data, unsigned int nbytes, char *key ) {
  * recibidos exitosamente.
  */
 
-int sdblinda_grab( void **data, char *key ) {
+int sdblinda_sacar( tupla data, char *key ) {
 
-	int nbytes;
 	estado *edo = sdbproceso_estado();
 
-	/*Solicitando el dato con clave key para escritura */
+	/* Solicitando el dato con clave key para escritura */
 	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, GRAB, MPI_COMM_WORLD );
 
-	/* Preparando la recepción del mensaje */
-	MPI_Probe( LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
-	MPI_Get_count( &(edo->status) , MPI_BYTE, &nbytes );
-	*data = calloc( nbytes, sizeof(char) );
-
 	/* Recibiendo la tupla solicitada */
-	MPI_Recv( *data, nbytes, MPI_BYTE, LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
+	MPI_Recv( TUPLA_INFO(data), TUPLA_BYTES(data), MPI_BYTE, LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
 
-	return nbytes;
+	return TUPLA_BYTES(data);
 
 }
 
-
-/* int sdblinda_read( void **data, const char *key )
+/* int sdblinda_leer( void **data, const char *key )
  *
  * Función para recuperar los datos almacenados bajo la clave key, y recibirlos
- * en el espacio de memoria apuntado por data.  Esta función es parecida a sdblinda_grab,
+ * en el espacio de memoria apuntado por data.  Esta función es parecida a sdblinda_sacar,
  * sólo que NO elimina los datos del espacio de tuplas.
  *
  * El valor de retorno le notifica al programador acerca la cantidad de bytes
  * recibidos exitosamente.
  */
 
-int sdblinda_read( void **data, char *key ) {
-	int nbytes;
+int sdblinda_leer( char *key, tupla data ) {
+
 	estado *edo = sdbproceso_estado();
 
 	/*Solicitando el dato con clave key para lectura */
 	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, READ, MPI_COMM_WORLD );
 
-
-	/*
-	 *		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &(edo->status));
-		source = (edo->status).MPI_SOURCE;
-		tag = (edo->status).MPI_TAG;
-		MPI_Get_count(&(edo->status), MPI_BYTE, &nbytes);
-		printf("bytes a recibir = %d\n", nbytes);
-		buffer = (char *) calloc( nbytes, sizeof(char) );
-		MPI_Recv( buffer, nbytes, MPI_BYTE, source, tag, MPI_COMM_WORLD, &(edo->status) );
-	*/
-
-
-	/* Preparando la recepción del mensaje */
-	MPI_Probe( LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
-	MPI_Get_count( &(edo->status) , MPI_BYTE, &nbytes );
-	*data = calloc( nbytes, sizeof(char) );
-
 	/* Recibiendo la tupla solicitada */
-	MPI_Recv( *data, nbytes, MPI_CHAR, LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
+	MPI_Recv( TUPLA_INFO(data),
+			  TUPLA_BYTES(data),
+			  MPI_CHAR,
+			  LINDA,
+			  DATA,
+			  MPI_COMM_WORLD,
+			  &(edo->status)
+			);
 
-	return nbytes;
+	return TUPLA_BYTES(data);
 }
 
 
 
-/* int sdblinda_drop( const char *key )
+/* int sdblinda_suprimir( const char *key )
  *
  * Función para eliminar los datos guardados bajo la clave key almacenados en el
  * espacio de tuplas. Una vez borrados los datos, no se recuperarán.
@@ -149,32 +135,31 @@ int sdblinda_read( void **data, char *key ) {
  * de la operación.
  */
 
-int sdblinda_drop( char *key ) {
+int sdblinda_suprimir( char *key ) {
 	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, DROP, MPI_COMM_WORLD );
 	return 0;
 }
 
-/* int sdblinda_stop()
+/* int sdblinda_detener()
  *
  * Una vez terminada la aplicación, esta función destruye el espacio
  * de tuplas.
  */
 
-int sdblinda_stop() {
+int sdblinda_detener() {
 
-	estado *edo = sdbproceso_estado();
-	int message;
+	/* estado *edo = sdbproceso_estado();
+	int message; */
 
 
-	if ( SOYESPACIO(edo) )
+	/*if ( SOYESPACIO(edo) )
 		printf("SERVER: Finalizando el espacio de tuplas\n");
-		/* thash_delete( sdbespacio_gethash() ); */
-		/* thash_delete( sdbespacio_getpendientes() ); */
-	 else
-		MPI_Send( &message, 1, MPI_INT, LINDA, END, MPI_COMM_WORLD );
+		/ * thash_delete( sdbespacio_gethash() ); * /
+		/ * thash_delete( sdbespacio_getpendientes() ); * /
+	else
+		MPI_Send( &message, 1, MPI_INT, LINDA, END, MPI_COMM_WORLD );*/
 
 	MPI_Barrier(MPI_COMM_WORLD);
-
 	MPI_Finalize();
 	return 0;
 }

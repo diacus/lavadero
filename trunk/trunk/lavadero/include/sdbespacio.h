@@ -10,6 +10,7 @@
 
 #include <sdbespacio.h>
 #include <sdbproceso.h>
+#include <tupla.h>
 #include <thash.h>
 #include <mpi.h>
 
@@ -70,40 +71,40 @@ thash *sdbespacio_gethash();
 
 thash *sdbespacio_getpendientes();
 
-/* sdbespacio_start()
+/* sdbespacio_iniciar()
  *
  * Función para inicializar el proceso maestro.
  */
 
-int sdbespacio_start();
+int sdbespacio_iniciar();
 
-/* unsigned int sdbespacio_atiendeStore( char * message, int sz )
+/* unsigned int sdbespacio_atiendeMeter( char * message, int sz )
  *
  */
 
-unsigned int sdbespacio_atiendeStore( char * message, int sz );
+unsigned int sdbespacio_atiendeMeter( char * message, int sz );
 
-/* int sdbespacio_atiendeGrab( char *key, unsigned int src )
+/* int sdbespacio_atiendeSacar( char *key, unsigned int src )
  *
- * Rutina para atender la petición Grab de un cliente, y
+ * Rutina para atender la petición Sacar de un cliente, y
  * proporcionarle la tupla que solicitó.
  */
 
-int sdbespacio_atiendeGrab( char *key, unsigned int src );
+int sdbespacio_atiendeSacar( char *key, unsigned int src );
 
-/* int sdbespacio_atiendeRead( char *key, unsigned int src )
+/* int sdbespacio_atiendeLeer( char *key, unsigned int src )
  *
- * Rutina para atender la petición Read de un cliente, y
+ * Rutina para atender la petición Leer de un cliente, y
  * proporcionarle la tupla que solicitó.
  */
 
-int sdbespacio_atiendeRead( char *key, unsigned int src );
+int sdbespacio_atiendeLeer( char *key, unsigned int src );
 
-/* int sdbespacio_atiendeDrop( char *key )
+/* int sdbespacio_atiendeSuprimir( char *key )
  *
- * Rutina para atender la petición Drop.
+ * Rutina para atender la petición Suprimir.
  */
 
-int sdbespacio_atiendeDrop( char *key );
+int sdbespacio_atiendeSuprimir( char *key );
 
 #endif /* SDBMAESTRO_H_ */

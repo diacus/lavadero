@@ -32,14 +32,14 @@ int prueba( int argc, char *argv[] ) {
 
 	estado *edo;
 
-	sdblinda_start(argc, argv);
+	sdblinda_iniciar(argc, argv);
 	edo = sdbproceso_estado();
 
 	if( edo->my_rank == 1 )
 		maestro_init_suma();
 	else if(edo->my_rank > 1)
 		esclavo_listen();
-	sdblinda_stop();
+	sdblinda_detener();
 	return 0;
 }
 

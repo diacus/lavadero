@@ -8,39 +8,89 @@
 #ifndef TUPLA_H_
 #define TUPLA_H_
 
-typedef void* item;
-typedef item* tupla;
+#include <stdlib.h>
+#include <string.h>
 
-/* tupla *tupla_newd( unsigned int k, void *val )
+typedef char * tupla;
+
+/* TUPLA_NEW(t, N)
  *
+ * Macro para crear una tupla que almacene N bytes.
+ *
+ * Recibe
+ *   t: Tiene que ser una variable de tipo tupla, es la tupla
+ *      que se va a crear.
+ *
+ *   N: Tiene que ser una varable de tipo int, que indica el
+ *      tamaño en bytes que podrá almacenar la tupla t.
  */
 
-tupla tupla_new_d( unsigned int N, ... );
+#define TUPLA_NEW(t, N) \
+	t = (tupla) calloc( N + sizeof(int), sizeof(char) ); \
+	*((int *) t) = N;
+	/*memcpy(tupla, &N, sizeof(int))*/
 
-/* tupla *tupla_newi( unsigned int k, void *val )
+/* TUPLA_READ(a,t)
  *
+ * Macro utilizada para leer el contenido de la tupla t.
+ *
+ * Recibe:
+ *   a: Debe ser un apuntador al espacio de memoria en el
+ *      que se va a almacenar el contenido de la tupla t.
+ *      el apuntador a, debe señalar a un espacio de memoria
+ *      suficiente para escribir los datos almacenados en t.
+ *
+ *   t: Debe ser una variable de tipo tupla.
  */
 
-tupla tupla_new_i( unsigned int N, ... );
+#define TUPLA_READ(a,t) \
+{\
+	int size; \
+	void *temp = t + sizeof(int); \
+	size = *((int*) t); \
+	memcpy(a, temp, size); \
+}
 
-/* tupla *tupla_newi( unsigned int k, void *val )
+/* TUPLA_WRITE(t,a)
  *
+ * Macro utilizada para escribir en la tupla t, los datos
+ * en el espacio de memoria apuntado por a.
+ *
+ * Recibe:
+ *   t: Debe ser una variable de tipo tupla, del tamaño de
+ *      los datos que se pretenden escribir en ella.
+ *
+ *   a: Apunta a los datos que se van a copiar a la tupla.
  */
 
-tupla tupla_new_v( const char * types , ... );
+#define TUPLA_WRITE(t,a) \
+{\
+	int size; \
+	void *temp = t + sizeof(int); \
+	memcpy( &size, t, sizeof(int) ); \
+	memcpy(temp, a, size); \
+}
 
+#define TUPLA_INFO(t) t + *((int *)t)
+#define TUPLA_BYTES(t) *((int *) t)
 
-/* int tupla_print( tupla *t )
+/* TUPLA_SIZE(t)
  *
+ * Macro utilizada para calcular el tamaño en bytes
+ * ocupado por la tupla t.
+ *
+ * Requiere que el parámetro sea una variable de tipo
+ * tupla.
  */
 
-int tupla_print( tupla *t );
+#define TUPLA_SIZE(t) *((int*) t) + sizeof(int)
 
-/* int tupla_delete( tupla *t )
+/* TUPLA_DELETE(t)
  *
+ * Macro utilizada para eliminar la tupla t.
  */
-int tupla_delete( tupla *t );
 
-int count_porcent(const char * s);
+#define TUPLA_DELETE(t) free(t)
+
 
 #endif /* TUPLA_H_ */
