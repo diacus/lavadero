@@ -52,12 +52,12 @@ thash *sdbespacio_getpendientes() {
 	return pendientes;
 }
 
-/* int sdbmaestro_start()
+/* int sdbmaestro_iniciar()
  *
  * Función para inicializar el especio de tuplas.
  */
 
-int sdbespacio_start() {
+int sdbespacio_iniciar() {
 
 	/* thash *tabla = sdbespacio_gethash(); / * apuntador a tabla hash */
 	estado *edo = sdbproceso_estado(); /* apuntador a estado (propio de LINDA) */
@@ -89,25 +89,25 @@ int sdbespacio_start() {
 
 		case STORE :
 			printf("SERVER: Recibi mensaje STORE de proc %d\n", source);
-			sdbespacio_atiendeStore( buffer, nbytes );
+			sdbespacio_atiendeMeter( buffer, nbytes );
 			break;
 
 		case GRAB :
 			printf("SERVER: Recibi mensaje GRAB de proc %d\n", source);
-			/* int sdbespacio_atiendeGrab( char *key, unsigned int src )*/
-			sdbespacio_atiendeGrab( buffer, source);
+			/* int sdbespacio_atiendeSacar( char *key, unsigned int src )*/
+			sdbespacio_atiendeSacar( buffer, source);
 			break;
 
 		case READ :
 			printf("SERVER: Recibi mensaje READ de proc %d para leer clave %s\n", source, buffer);
-			/* int sdbespacio_atiendeRead( char *key, unsigned int src ) */
-			sdbespacio_atiendeRead( buffer, source );
+			/* int sdbespacio_atiendeLeer( char *key, unsigned int src ) */
+			sdbespacio_atiendeLeer( buffer, source );
 			break;
 
 		case DROP :
 			printf("SERVER: Recibi mensaje DROP de proc %d para borrar tupla con clave %s\n", source, buffer);
-			/* int sdbespacio_atiendeDrop( char *key )*/
-			sdbespacio_atiendeDrop ( buffer );
+			/* int sdbespacio_atiendeSuprimir( char *key )*/
+			sdbespacio_atiendeSuprimir ( buffer );
 			break;
 
 		default:
@@ -123,28 +123,26 @@ int sdbespacio_start() {
 }
 
 
-/* unsigned int sdbespacio_atiendeStore( char * message, int sz )
+/* unsigned int sdbespacio_atiendeMeter( char * message, int sz )
  *
  * Función que recibe un mensaje y el tamaño en bytes de éste
  * almacena en la tabla hash la tupla contenida en el mensaje
  * empleando la clave también empaquetada en el mensaje
  *
  */
-unsigned int sdbespacio_atiendeStore( char * message, int sz ){
+unsigned int sdbespacio_atiendeMeter( char * message, int sz ){
 
-	thash *tabla, *poratender; /* Creación de apuntador a la tabla hash de indices y tabla de pendientes*/
-	pendiente *p; /* apuntador a la estructura pendiente */
-	void * data; /* Tupla a almacenar */
-	char *key;	/* Clave de la tupla */
-	int indice, tam; /* índice de la tabla en el que se almacenará la tupla y tamaño de la tupla*/
+	thash        *tabla, *poratender;	/* Creación de apuntador a la tabla hash de indices y tabla de pendientes*/
+	pendiente    *p;					/* apuntador a la estructura pendiente */
+	void         *data;					/* Tupla a almacenar */
+	char         *key;					/* Clave de la tupla */
+	int          indice, tam;			/* índice de la tabla en el que se almacenará la tupla y tamaño de la tupla*/
 	unsigned int size;
-	/* Proceso para desempaquetar la tupla se recibe el tamaño de la tupla*/
-	tam = sdbproceso_unpack( message, sz, &key, &data);
-	/* Se obtiene la dirección de la tabla hash */
-	tabla = sdbespacio_gethash();
-	/* se inserta en la tabla hash (tabla), el dato (data), de tamaño (tam) con clave (key)*/
+
+	tam    = sdbproceso_unpack( message, sz, &key, &data);
+	tabla  = sdbespacio_gethash();
 	indice = thash_insert( tabla, data, tam, key);
-	printf("SERVER: Tupla insertada en el indice %d con clave %s\n", indice, key);
+
 
 	/* Revisando el tabla de pendiente*/
 	poratender = sdbespacio_getpendientes();
@@ -158,12 +156,12 @@ unsigned int sdbespacio_atiendeStore( char * message, int sz ){
 			/* Si el pendiente es GRAB se invoca a la función GRAB*/
 			case GRAB :
 				printf("SERVER: resolviendo GRAB de %d\n", p->cliente);
-				sdbespacio_atiendeGrab( key, p->cliente );
+				sdbespacio_atiendeSacar( key, p->cliente );
 				break;
 			/* Si el pendiente es READ se invoca a la función READ*/
 			case READ :
 				printf("SERVER: resolviendo READ de %d\n", p->cliente);
-				sdbespacio_atiendeRead( key, p->cliente );
+				sdbespacio_atiendeLeer( key, p->cliente );
 				break;
 		}
 	else
@@ -172,13 +170,13 @@ unsigned int sdbespacio_atiendeStore( char * message, int sz ){
 	return 0;
 }
 
-/* int sdbespacio_atiendeGrab( char *key, unsigned int src )
+/* int sdbespacio_atiendeSacar( char *key, unsigned int src )
  *
- * Rutina para atender la petición Grab de un cliente, y
+ * Rutina para atender la petición Sacar de un cliente, y
  * proporcionarle la tupla que solicitó.
  */
 
-int sdbespacio_atiendeGrab( char *key, unsigned int src ) {
+int sdbespacio_atiendeSacar( char *key, unsigned int src ) {
 
 	thash *tabla, *poratender;
 	pendiente *p;
@@ -205,13 +203,13 @@ int sdbespacio_atiendeGrab( char *key, unsigned int src ) {
 	return 0;
 }
 
-/* int sdbespacio_atiendeRead( char *key, unsigned int src )
+/* int sdbespacio_atiendeLeer( char *key, unsigned int src )
  *
- * Rutina para atender la petición Read de un cliente, y
+ * Rutina para atender la petición Leer de un cliente, y
  * proporcionarle la tupla que solicitó.
  */
 
-int sdbespacio_atiendeRead( char *key, unsigned int src ) {
+int sdbespacio_atiendeLeer( char *key, unsigned int src ) {
 
 	thash *tabla, *poratender;
 	pendiente *p;
@@ -238,12 +236,12 @@ int sdbespacio_atiendeRead( char *key, unsigned int src ) {
 	return 0;
 }
 
-/* int sdbespacio_atiendeDrop( char *key )
+/* int sdbespacio_atiendeSuprimir( char *key )
  *
- * Rutina para atender la petición Drop.
+ * Rutina para atender la petición Suprimir.
  */
 
-int sdbespacio_atiendeDrop( char *key ) {
+int sdbespacio_atiendeSuprimir( char *key ) {
 
 	thash *tabla = sdbespacio_gethash();
 	unsigned int size;

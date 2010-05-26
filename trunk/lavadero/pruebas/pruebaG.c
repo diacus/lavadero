@@ -9,7 +9,7 @@
 #include <stdarg.h>
 #include <tupla.h>
 
-void pruebaG(){
+/*void pruebaG(){
 	tupla tupla_int, tupla_double, tupla_var;
 	int i;
 	printf("Esto es una prueba\n");
@@ -25,3 +25,4 @@ void pruebaG(){
 	printf("tupla_var[0] = %s\ntupla_var[1] = %c\ntupla_var[2] = %f\nntupla_var[3] = %s\n",
 	(char *)(tupla_var[0]),*(char *)(tupla_var[1]),*(double *)(tupla_var[2]),(char *)(tupla_var[3]));
 }
+*/

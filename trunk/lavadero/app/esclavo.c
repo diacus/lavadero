@@ -42,42 +42,5 @@ int esclavo_listen() {
 
 int ejecuta_suma( int shift ) {
 
-	char key[256] = "";
-	double *renA, *renB, *renC;
-	int i, size, lim = shift + MATRIZCUT;
-
-	estado *edo = sdbproceso_estado();
-
-	for( i = shift; i < lim ; i++ ) {
-
-		sprintf( key, "RenglonA%d", i );
-		size = sdblinda_read( (void **) &renA, key );
-		key[0] = '\0';
-
-		sprintf( key, "B%dRenglon", i );
-		sdblinda_read( (void **) &renB, key );
-		key[0] = '\0';
-
-		renC = suma( renA, renB, size / sizeof(double) );
-
-		sprintf( key, "resultadoC%d", i );
-		sdblinda_store( renC, size, key );
-		printf("ESCLAVO %d: envie el renglon %s al espacio de tuplas \n", edo->my_rank, key );
-		key[0] = '\0';
-/*
-		printf("Esclavo %d: Renglon %dA ", edo->my_rank, i );
-		array_print(renA, size / sizeof(double) );
-
-		printf("Esclavo %d: Renglon %dB ", edo->my_rank, i );
-		array_print(renB, size / sizeof(double) );
-
-		printf("Esclavo %d: Renglon %dC ", edo->my_rank, i );
-		array_print(renC, size / sizeof(double) );*/
-
-		free(renA); free(renB); free(renC);
-
-	}
-
 	return 0;
-
 }

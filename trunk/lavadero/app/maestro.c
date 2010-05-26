@@ -17,56 +17,6 @@
 
 int maestro_init_suma() {
 
-	char key[256] = "";
-	int i;
-	double *renA, *renB, *renC;
-	matriz *mA, *mB, *mC;
-	maestro_generaMatrices( &mA, &mB, MATRIZTAM, MATRIZTAM );
-	mC = matriz_new( MATRIZTAM,MATRIZTAM );
-
-	printf("Matriz A\n");
-	matriz_print(mA);
-
-	printf("Matriz B\n");
-	matriz_print(mB);
-
-	for( i = 0; i < MATRIZTAM; i++) {
-
-		matriz_getRen( &renA, mA, i );
-		matriz_getRen( &renB, mB, i );
-
-		sprintf( key, "RenglonA%d", i );
-		sdblinda_store(renA, mA->cols * sizeof(double), key );
-		/*void array_print( double *arr, unsigned int sz )*/
-		printf("MASTER: Envie renglon renA con clave %s\n", key);
-		array_print( renA, mA->cols);
-		key[0] = '\0';
-		free(renA);
-
-		sprintf( key, "B%dRenglon", i );
-		sdblinda_store(renB, mB->cols * sizeof(double), key );
-		printf("MASTER: Envie renglon renB con clave %s\n", key);
-		/*array_print( renB, mB->cols);*/
-		key[0] = '\0';
-		free(renB);
-	}
-
-
-	for( i = 0; i < MATRIZTAM; i++ ) {
-
-		key[0] = '\0';
-		sprintf( key, "resultadoC%d", i );
-		sdblinda_read( (void **) &renC, key );
-		matriz_setRen( renC, mC, i );
-		/*array_print( renC, mC->cols);*/
-		printf("MASTER: Recibi renglon %s de matriz C\n", key);
-		free(renC);
-
-	}
-
-	printf("Matriz C\n");
-	matriz_print(mC);
-
 
 	return 0;
 }
