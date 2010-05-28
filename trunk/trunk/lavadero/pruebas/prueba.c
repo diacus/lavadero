@@ -20,7 +20,7 @@
 	a = (int *) malloc(sizeof(int))
 
 #define BORRA_ENTERO(a) \
-	free(a)
+	free(a); a = NULL
 
 struct registro{
 	int numero;
