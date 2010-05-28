@@ -120,6 +120,7 @@ int sdblinda_leer( char *key, tupla data ) {
 			  MPI_COMM_WORLD,
 			  &(edo->status)
 			);
+	printf("se recibieron %d bytes\n",TUPLA_BYTES(data));
 
 	return TUPLA_BYTES(data);
 }

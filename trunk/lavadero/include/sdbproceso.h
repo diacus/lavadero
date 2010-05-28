@@ -12,8 +12,8 @@
 #include <string.h>
 #include <tupla.h>
 
-#define MAESTRO    0 /* Identificador del proceso que administra la aplicación             */
-#define LINDA      1 /* Identificador del proceso que administra el espacio de tuplas.     */
+#define MAESTRO    1 /* Identificador del proceso que administra la aplicación             */
+#define LINDA      0 /* Identificador del proceso que administra el espacio de tuplas.     */
 #define STORE    100 /* Etiqueta para un mensaje que envía una tupla para que se almacene. */
 #define GRAB     101 /* Etiqueta para un mensaje de solicitud de tupla.                    */
 #define READ     102 /* Etiqueta para un mensaje que busca eliminar una tupla del espacio. */
@@ -23,8 +23,8 @@
 #define BEGIN    106 /* Etiqueta inicial.                                                  */
 #define END      107 /* Etiqueta final.                                                    */
 
-#define SOYESPACIO(e) e->my_rank == 1
-#define SOYMAESTRO(e) e->my_rank == 0
+#define SOYESPACIO(e) e->my_rank == 0
+#define SOYMAESTRO(e) e->my_rank == 1
 #define DELETE_MESSAGE(s) {free(s); s = NULL;}
 
 /* Registro: estado
