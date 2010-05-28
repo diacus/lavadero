@@ -8,9 +8,5 @@
 #include <prueba.h>
 
 int main(int argc, char *argv[]) {
-
-	/*return prueba_linda( argc, argv );*/
-	/* return pruebabit(); */
 	return prueba( argc, argv );
-	/* return prueba1(); */
 }

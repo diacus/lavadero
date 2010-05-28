@@ -76,16 +76,17 @@ lista *lista_remove( lista *lst, char *k ) {
 
 	if( lst ) {
 
-		if ( !strcmp( k, lst->key ) ) { 		/* si las claves coinciden */
+		if ( !strcmp( k, lst->key ) ) { 		/* si las claves coinciden       */
 
-			res = lst->next;					/* se elimina el nodo actual */
+			res = lst->next;					/* se elimina el nodo actual     */
 			lst->next = NULL;
 			lista_delete( lst );
 
-		} else {								/* En caso de que no coincidan */
+		} else {								/* En caso de que no coincidan   */
 			res = lst;							/* el nodo a remover se busca en */
-			lst->next = lista_remove(lst, k);	/* el resto de la lista */
+			lst->next = lista_remove(lst, k);	/* el resto de la lista          */
 		}
+
 	} else {
 		res = NULL;
 		fprintf(

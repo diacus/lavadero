@@ -148,16 +148,11 @@ int sdblinda_suprimir( char *key ) {
 
 int sdblinda_detener() {
 
-	/* estado *edo = sdbproceso_estado();
-	int message; */
+	estado *edo = sdbproceso_estado();
+	char c = '\0';
 
-
-	/*if ( SOYESPACIO(edo) )
-		printf("SERVER: Finalizando el espacio de tuplas\n");
-		/ * thash_delete( sdbespacio_gethash() ); * /
-		/ * thash_delete( sdbespacio_getpendientes() ); * /
-	else
-		MPI_Send( &message, 1, MPI_INT, LINDA, END, MPI_COMM_WORLD );*/
+	if( SOYMAESTRO(edo) )
+		MPI_Send( &c, 1, MPI_CHAR, LINDA, END, MPI_COMM_WORLD );
 
 	MPI_Barrier(MPI_COMM_WORLD);
 	MPI_Finalize();
