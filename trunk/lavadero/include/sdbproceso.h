@@ -23,8 +23,29 @@
 #define BEGIN    106 /* Etiqueta inicial.                                                  */
 #define END      107 /* Etiqueta final.                                                    */
 
+/* SOYESPACIO(e) e->my_rank
+ *
+ * Predicado que es verdadero si el proceso es quien
+ * administra el espacio de tuplas.
+ */
+
 #define SOYESPACIO(e) e->my_rank == 0
+
+/* SOYMAESTRO(e) e->my_rank
+ *
+ * Predicado que es verdadero si el proceso es quien
+ * administra la aplicación que es soportada por el
+ * middleware.
+ */
+
 #define SOYMAESTRO(e) e->my_rank == 1
+
+/* DELETE_MESSAGE(s)
+ *
+ * Libera la memoria apuntada por s memoria de forma
+ * segura.
+ */
+
 #define DELETE_MESSAGE(s) {free(s); s = NULL;}
 
 /* Registro: estado
@@ -36,8 +57,6 @@
 typedef struct edo {
 	int			my_rank;	/* Identificador de proceso                */
 	int			num_procs;	/* Número de procesos activos              */
-	int			source;		/* Identificador del proceso emisor        */
-	int			dest;    	/* Identificador del proceso destino       */
 	int			tag;    	/* Etiqueta para el mensaje                */
 	char		*message;   /* Apuntador al mensaje a enviar o recibir */
 	MPI_Status	status ;	/* Estado de la comunicación               */
