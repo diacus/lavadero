@@ -52,7 +52,7 @@ int prueba_linda( int argc, char *argv[] ) {
 	char *s5 = "USAR DROP";
 	char *s3, *s4;*/
 	estado *edo = sdbproceso_estado();
-	fecha actual, *hoy;
+	fecha actual;
 	actual.dia=24;
 	actual.anio=20.10;
 	actual.mes=5.7;

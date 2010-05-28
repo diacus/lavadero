@@ -9,7 +9,7 @@
 
 int main( int argc, char *argv[] ) {
 
-	Madelbrot_distribuido( argc, argv );
+	/*Madelbrot_distribuido( argc, argv );*/
 
 	return 0;
 }
