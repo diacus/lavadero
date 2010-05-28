@@ -34,12 +34,12 @@ thash *sdbespacio_gethash();
 
 thash *sdbespacio_getpendientes();
 
-/* sdbespacio_iniciar()
+/* void sdbespacio_iniciar()
  *
  * Función para inicializar el proceso maestro.
  */
 
-int sdbespacio_iniciar();
+void sdbespacio_iniciar();
 
 /* unsigned int sdbespacio_atiendeMeter( char * message, int sz, thash *tabla )
  *

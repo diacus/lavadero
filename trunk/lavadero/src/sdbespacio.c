@@ -52,58 +52,45 @@ thash *sdbespacio_getpendientes() {
 	return pendientes;
 }
 
-/* int sdbmaestro_iniciar()
+/* void sdbmaestro_iniciar()
  *
  * Función para inicializar el especio de tuplas.
  */
 
-int sdbespacio_iniciar() {
-
+void sdbespacio_iniciar() {
 	thash  *tabla   = sdbespacio_gethash();	/* Apuntador a tabla hash */
 	estado *edo     = sdbproceso_estado();	/* Apuntador a estado (propio de LINDA) */
 	char   *buffer;							/* Buffer de mensaje a recibir */
-	int     nbytes;
-	int     source, tag; 					/* Tamaño (nbytes) del buffer a recibir, identidad (source) del emisor y etiqueta (tag) del mensaje */
+	int     nbytes, source, tag;			/* Tamaño (nbytes) del buffer a recibir, identidad (source) del emisor y etiqueta (tag) del mensaje */
 
 	while( edo->tag != END ) {
-
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &(edo->status));
 		source = (edo->status).MPI_SOURCE;
 		tag = (edo->status).MPI_TAG;
 		MPI_Get_count(&(edo->status), MPI_BYTE, &nbytes);
-
 		buffer = (char *) calloc( nbytes, sizeof(char) );
 		MPI_Recv( buffer, nbytes, MPI_BYTE, source, tag, MPI_COMM_WORLD, &(edo->status) );
 
 		switch(tag) {
-
 		case END :
 			edo->tag = END;
 			break;
-
 		case STORE :
 			sdbespacio_atiendeMeter( buffer, nbytes, tabla );
 			break;
-
 		case GRAB :
 			sdbespacio_atiendeSacar( buffer, source, tabla);
 			break;
-
 		case READ :
 			sdbespacio_atiendeLeer( buffer, source, tabla );
 			break;
-
 		case DROP :
 			sdbespacio_atiendeSuprimir ( buffer, tabla );
 			break;
-
 		default:
 			fprintf( stderr, "Error de aplicación\n" );
-
 		}
-
 	}
-	return 0;
 }
 
 
