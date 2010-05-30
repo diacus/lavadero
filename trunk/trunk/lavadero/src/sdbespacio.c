@@ -84,7 +84,7 @@ void sdbespacio_iniciar() {
 			sdbespacio_atiendeSacar( buffer, source, tabla);
 			break;
 		case READ :
-			printf( "SERVER: Recibi %d bytes de %d para tirar\n", nbytes, source );
+			printf( "SERVER: Recibi %d bytes de %d para leer\n", nbytes, source );
 			sdbespacio_atiendeLeer( buffer, source, tabla );
 			break;
 		case DROP :

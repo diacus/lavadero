@@ -114,14 +114,7 @@ int sdblinda_leer( char *key, tupla data ) {
 	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, READ, MPI_COMM_WORLD );
 
 	/* Recibiendo la tupla solicitada */
-	MPI_Recv( TUPLA_INFO(data),
-			  TUPLA_BYTES(data),
-			  MPI_CHAR,
-			  LINDA,
-			  DATA,
-			  MPI_COMM_WORLD,
-			  &(edo->status)
-			);
+	MPI_Recv( data , TUPLA_BYTES(data) + sizeof(int), MPI_BYTE, LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
 	printf("se recibieron %d bytes\n",TUPLA_BYTES(data));
 
 	return TUPLA_BYTES(data);

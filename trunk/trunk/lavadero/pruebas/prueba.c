@@ -54,7 +54,7 @@ void coordinador(){
 	for( j=0; j<3; j++){
 		sdblinda_meter( "saludo", t );
 		printf( "Coordinador: Meti Entero i = %d\n", i);
-		sdblinda_sacar( "respuesta", t );
+		sdblinda_leer( "respuesta", t );
 		TUPLA_READ ( &i, t );
 		printf( "Coordinador: Recibi i modificado %d\n", i );
 	}
@@ -68,7 +68,7 @@ void esclavo(){
 	int i, j;
 	TUPLA_NEW( t, sizeof(i) );
 	for(j = 0; j < 3; j++) {
-		sdblinda_sacar( "saludo", t );
+		sdblinda_leer( "saludo", t );
 		TUPLA_READ( &i, t );
 		printf( "Esclavo: Recibi i = %d\n", i );
 		i++;
