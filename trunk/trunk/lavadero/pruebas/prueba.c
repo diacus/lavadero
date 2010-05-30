@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <prueba.h>
 #include <string.h>
-
+#include <tupla.h>
 #include <sdbproceso.h>
 #include <sdbespacio.h>
 #include <sdblinda.h>
@@ -36,11 +36,47 @@ int prueba( int argc, char *argv[] ) {
 	edo = sdbproceso_estado();
 
 	if( edo->my_rank == 1 )
-		maestro_init_suma();
-	else if(edo->my_rank > 1)
-		esclavo_listen();
+		coordinador();
+	else if( edo->my_rank > 1 )
+		esclavo();
+
 	sdblinda_detener();
+	printf("LA PRUEBA A TERMINADO\n");
 	return 0;
+}
+
+void coordinador(){
+
+	tupla t;
+	int i = 0, j;
+	TUPLA_NEW ( t, sizeof(i) );
+	TUPLA_WRITE ( t, &i);
+	for( j=0; j<3; j++){
+		sdblinda_meter( "saludo", t );
+		printf( "Coordinador: Meti Entero i = %d\n", i);
+		sdblinda_sacar( "respuesta", t );
+		TUPLA_READ ( &i, t );
+		printf( "Coordinador: Recibi i modificado %d\n", i );
+	}
+
+
+}
+
+void esclavo(){
+
+	tupla t;
+	int i, j;
+	TUPLA_NEW( t, sizeof(i) );
+	for(j = 0; j < 3; j++) {
+		sdblinda_sacar( "saludo", t );
+		TUPLA_READ( &i, t );
+		printf( "Esclavo: Recibi i = %d\n", i );
+		i++;
+		TUPLA_WRITE ( t, &i);
+		sdblinda_meter( "respuesta", t );
+		printf( "Esclavo: Envie entero incrementado\n" );
+	}
+
 }
 
 /*int prueblista( int argc, char *argv[] ) {

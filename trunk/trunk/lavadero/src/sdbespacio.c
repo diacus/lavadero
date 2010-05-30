@@ -70,18 +70,21 @@ void sdbespacio_iniciar() {
 		MPI_Get_count(&(edo->status), MPI_BYTE, &nbytes);
 		buffer = (char *) calloc( nbytes, sizeof(char) );
 		MPI_Recv( buffer, nbytes, MPI_BYTE, source, tag, MPI_COMM_WORLD, &(edo->status) );
-
 		switch(tag) {
 		case END :
+			printf( "SERVER: Recibi mensaje de END\n", nbytes, source );
 			edo->tag = END;
 			break;
 		case STORE :
+			printf( "SERVER: Recibi %d bytes de %d para meter\n", nbytes, source );
 			sdbespacio_atiendeMeter( buffer, nbytes, tabla );
 			break;
 		case GRAB :
+			printf( "SERVER: Recibi %d bytes de %d para sacar\n", nbytes, source );
 			sdbespacio_atiendeSacar( buffer, source, tabla);
 			break;
 		case READ :
+			printf( "SERVER: Recibi %d bytes de %d para tirar\n", nbytes, source );
 			sdbespacio_atiendeLeer( buffer, source, tabla );
 			break;
 		case DROP :

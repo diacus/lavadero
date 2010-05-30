@@ -57,7 +57,7 @@ char *sdbproceso_pack( char *key, tupla data ) {
 	char *package = (char *) calloc( pack_size, sizeof(char) );	/*Reservación de memoria para el paquete*/
 
 
-	strcpy( package, key );										/* Copiando la clave de la tupla */
+	memcpy( package, key, shift );										/* Copiando la clave de la tupla */
 
 	/* Copiando la tupla al paquete */
 	memcpy( package + shift, data, sz );
