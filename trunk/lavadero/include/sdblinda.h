@@ -41,7 +41,7 @@ int sdblinda_meter( char *key, tupla data );
  * de la operación.
  */
 
-int sdblinda_sacar( tupla data, char *key );
+int sdblinda_sacar( char *key, tupla data );
 
 /* int sdblinda_suprimir( const char *key )
  *

@@ -71,7 +71,7 @@ typedef char * tupla;
 	memcpy(temp, a, size); \
 }
 
-#define TUPLA_INFO(t) t + *((int *)t)
+#define TUPLA_INFO(t) t + sizeof ( int )
 #define TUPLA_BYTES(t) *((int *) t)
 
 /* TUPLA_SIZE(t)

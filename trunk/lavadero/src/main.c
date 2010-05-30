@@ -5,11 +5,11 @@
  *      Author: diacus
  */
 
-#include <mandelbrot.h>
+#include <prueba.h>
 
 int main( int argc, char *argv[] ) {
 
-	/*Madelbrot_distribuido( argc, argv );*/
+	prueba( argc, argv );
 
 	return 0;
 }

@@ -10,6 +10,9 @@
 
 int prueba( int argc, char *argv[] );
 
+void coordinador();
+void esclavo();
+
 /* int pruebalista( int argc, char *argv[] )
  *
  * Función para probar la lista
