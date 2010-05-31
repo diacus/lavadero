@@ -24,7 +24,6 @@ typedef struct pixel_mandelbrot{
 	unsigned char rojo;
 	unsigned char verde;
 	unsigned char azul;
-	int ren;
 	complex C;
 
 } pixel;
@@ -32,7 +31,7 @@ typedef struct pixel_mandelbrot{
 typedef struct fila_matriz{
 
 	double x, y, inc;
-	int renglon, bandera;
+	int renglon, ancho;
 
 } row;
 

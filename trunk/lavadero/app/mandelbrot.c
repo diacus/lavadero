@@ -21,7 +21,7 @@ void Madelbrot_distribuido( int argc, char *argv[] ) {
 	edo = sdbproceso_estado();
 	if ( SOYMAESTRO( edo ) )
 		mandelbrot_Coordinador();
-	else
+	else if( SOYESCLAVO( edo ))
 		mandelbrot_CalculaRenglones();
 
 	sdblinda_detener();
@@ -32,57 +32,51 @@ void mandelbrot_Coordinador(){
 	unsigned int AnchoIm =11, AltoIm=11; /*dimensiones de la imagen*/
 	double x1=-2, x2=2, y1=-2, y2=2; /*límites x1, x2 corresponden al dominio; y1, y2 al rango de la imagen*/
 	pixel ** imagen;
-	cadena nombre;
-	tupla t;
-	TUPLA_NEW( t, sizeof( unsigned int ) );
+	cadena nombre = "fractal";
 	/* mandelbrot_Menu( &AltoIm, &AnchoIm, &x1, &x2, &y1, &y2, nombre); */
-	TUPLA_WRITE( t, &AnchoIm );
-	sdblinda_meter( "ancho", t );
-	printf("guarde ancho\n");
-	/*
 	imagen = mandelbrot_CreaMatrizPixel ( AltoIm, AnchoIm );
-
 	mandelbrot_EnviaRenglones( AltoIm, AltoIm, x1, x2, y1, y2 );
 	mandelbrot_RecibeRenglones( imagen, AltoIm, AnchoIm );
 	mandelbrot_GuardarImagen( nombre, imagen, AltoIm, AnchoIm );
-	mandelbrot_DestruyeMatrizPixel ( imagen );*/
+	mandelbrot_DestruyeMatrizPixel ( imagen );
 }
 
 void mandelbrot_CalculaRenglones( ){
 
 	int bandera = 1;
-	unsigned int ancho;
-	tupla t1, t2, t3;
-	row r;
-	pixel *vector;
-	TUPLA_NEW( t3, sizeof( unsigned int ) );
-	sdblinda_leer( "ancho", t3 );
-	TUPLA_READ ( &ancho, t3 );
-	printf("ancho = % d\n", ancho);/*
+	tupla t1 = NULL, t2 = NULL;
+	row fila;
+	pixel *vector = NULL;
+	char *paquete = NULL;
 	TUPLA_NEW( t1, sizeof( row ) );
-	TUPLA_NEW( t2, sizeof( pixel) * ancho );
-	vector = calloc( ancho, sizeof( pixel ) );
 
 	while ( bandera ){
 		sdblinda_sacar( t1, "renglon" );
-		TUPLA_READ ( &r, t1 );
-		if ( r.bandera ){
-			mandelbrot_CalculaComplejos ( vector, ancho, r.x, r.y, r.inc );
-			mandelbrot_CalculaColor ( vector, ancho );
-			vector->ren = r.renglon;
-			TUPLA_WRITE( t2, vector );
+		TUPLA_READ ( &fila, t1 );
+		if( vector == NULL){
+			vector = calloc( fila.ancho, sizeof( pixel ) );
+			paquete = calloc( fila.ancho * sizeof( pixel ) + sizeof(int), sizeof(char) );
+			TUPLA_NEW( t2, sizeof( pixel ) * fila.ancho + sizeof( int ));
+		}
+		if ( fila.inc ){
+			mandelbrot_CalculaComplejos ( vector, fila.ancho, fila.x, fila.y, fila.inc );
+			mandelbrot_CalculaColor ( vector, fila.ancho );
+			*(int *) paquete = fila.ancho;
+			memcpy ( paquete + sizeof(int), vector, fila.ancho * sizeof( pixel ) );
+			TUPLA_WRITE( t2, paquete );
 			sdblinda_meter( "renglonlisto", t2 );
 		}
 		else{
-			r.bandera = 0;
-			TUPLA_WRITE( t1, &r );
+			fila.inc = 0;
+			TUPLA_WRITE( t1, &fila );
 			sdblinda_meter( "renglon", t1 );
 			bandera = 0;
 		}
 	}
+	free ( paquete );
 	free ( vector );
 	TUPLA_DELETE( t1 );
-	TUPLA_DELETE( t2 );*/
+	TUPLA_DELETE( t2 );
 
 }
 
@@ -208,18 +202,19 @@ void mandelbrot_DestruyeMatrizPixel( pixel ** imagen ){
 
 void mandelbrot_EnviaRenglones( unsigned int alto, unsigned int ancho, double limx1, double limx2, double limy1, double limy2 ){
 
-	int i, tam;
+	int i;
 	row datos_renglon; /* [ x1, y1, ancho, incx] */
 	double incx, decy;
 	tupla fila;
 
-	tam = sizeof( row );
-	TUPLA_NEW( fila, tam );
+	TUPLA_NEW( fila, sizeof(row) );
+
 	incx = fabs( limx2 - limx1 ) / ( alto - 1 );
 	decy = fabs( limy2 - limy1 ) / ( ancho - 1 );
+
 	datos_renglon.x = limx1;
+	datos_renglon.ancho = ancho;
 	datos_renglon.inc = incx;
-	datos_renglon.bandera = 1;
 
 	for ( i = 0; i < alto; i ++){
 
@@ -236,26 +231,23 @@ void mandelbrot_EnviaRenglones( unsigned int alto, unsigned int ancho, double li
 void mandelbrot_RecibeRenglones( pixel ** matriz, unsigned int  alto, unsigned int ancho ){
 
 	int i;
-	pixel *vector = calloc( ancho, sizeof ( pixel ) );
-	pixel ** aux = matriz;
 	tupla t;
-	cadena clave = "renglonlisto";
 	row datos;
+	char *paquete = calloc( sizeof( pixel ) * ancho + sizeof( int ), sizeof( char ));
 
-	TUPLA_NEW( t, sizeof( pixel ) * ancho );
+	TUPLA_NEW( t, sizeof( pixel ) * ancho + sizeof( int ) );
 	for ( i = 0; i < alto; i++ ){
 
-		sdblinda_sacar( t, clave );
-		TUPLA_READ( vector, t );
-		memcpy ( aux + ancho * (vector->ren), vector, TUPLA_BYTES ( t ) );
-		aux = matriz;
+		sdblinda_sacar( "renglonlisto", t );
+		TUPLA_READ( paquete, t );
+		memcpy ( matriz + ancho * (*( int *) paquete), paquete + sizeof(int), ancho * sizeof ( pixel ) );
 
 	}
 
-
+	free ( paquete );
 	TUPLA_DELETE( t );
 	TUPLA_NEW( t, sizeof( row ) );
-	datos.bandera = 0;
+	datos.inc = 0;
 	TUPLA_WRITE( t, &datos );
 	sdblinda_meter( "renglon", t );
 	TUPLA_DELETE( t );
