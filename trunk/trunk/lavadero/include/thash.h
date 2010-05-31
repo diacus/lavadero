@@ -68,11 +68,12 @@ thash *thash_new( unsigned int sz );
 
 unsigned int thash_insert( thash *t, void *value, unsigned int sz, char *key );
 
-/* void *thash_remove( thash *t, char *key )
+/* void *thash_remove( thash *t, unsigned int *sz, char *key )
  *
  * Retira el dato etiquetado con la clave key de la tabla apuntada por t.
  *
- * Devuelve un apuntador al dato retirado de la tabla
+ * Devuelve un apuntador al dato retirado de la tabla, y escribe el tamaño
+ * del dato en el entenro apuntado por sz.
  */
 
 void *thash_remove( thash *t, unsigned int *sz, char *key );

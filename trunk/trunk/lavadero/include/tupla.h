@@ -90,7 +90,7 @@ typedef char * tupla;
  * Macro utilizada para eliminar la tupla t.
  */
 
-#define TUPLA_DELETE(t) free(t)
+#define TUPLA_DELETE(t) { free(t); t = NULL; }
 
 
 #endif /* TUPLA_H_ */

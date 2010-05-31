@@ -12,8 +12,8 @@
 #include <string.h>
 #include <tupla.h>
 
-#define MAESTRO    1 /* Identificador del proceso que administra la aplicación             */
 #define LINDA      0 /* Identificador del proceso que administra el espacio de tuplas.     */
+#define MAESTRO    1 /* Identificador del proceso que administra la aplicación             */
 #define STORE    100 /* Etiqueta para un mensaje que envía una tupla para que se almacene. */
 #define GRAB     101 /* Etiqueta para un mensaje de solicitud de tupla.                    */
 #define READ     102 /* Etiqueta para un mensaje que busca eliminar una tupla del espacio. */
