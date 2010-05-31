@@ -23,6 +23,15 @@
 #define BEGIN    106 /* Etiqueta inicial.                                                  */
 #define END      107 /* Etiqueta final.                                                    */
 
+/* SOYESCLAVO(e) e->my_rank
+ *
+ * Predicado que es verdadero si el proceso es quien
+ * realiza el trabajo.
+ */
+
+#define SOYESCLAVO(e) e->my_rank > 1
+
+
 /* SOYESPACIO(e) e->my_rank
  *
  * Predicado que es verdadero si el proceso es quien
