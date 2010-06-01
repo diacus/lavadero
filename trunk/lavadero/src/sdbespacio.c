@@ -115,7 +115,6 @@ unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 	int           indice, tam;	/* índice de la tabla en el que se almacenará la tupla y tamaño de la tupla */
 
 	tam    = sdbproceso_unpack( message, sz, &key, &data);
-	printf("Funcion atiendeMeter. Clave: %s, bytes: %d\n", key, tam );
 	indice = ght_insert( tabla, data, strlen(key), key);
 
 	poratender = sdbespacio_getpendientes();

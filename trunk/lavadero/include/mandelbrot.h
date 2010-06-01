@@ -35,76 +35,71 @@ typedef struct fila_matriz{
 
 } row;
 
-/* void Dibuja_Mandelbrot();
- * Función que genera una imagen que representa el fractal de Mandelbrot y la almacena en una archivo
+/* void mandelbrot_Distribuido( int argc, char *argv[] )
+ * Función que genera una imagen que representa el fractal de Mandelbrot de manera distribuida y la almacena en una archivo
  * .ppm (Portable Pixel Map)
  */
-void Dibuja_Mandelbrot();
+void mandelbrot_Distribuido( int argc, char *argv[] );
 
-/* void mandelbrot_Menu( int * ancho, int * alto, double * limx1, double * limx2, double * limy1, double * limy2 )
- * función que recibe del usuario el ancho y alto de la imagen, el dominio (limx1, limx2) y el rango (limy1, limy2)
- * sobre el cual se calculará el conjunto de Mandelbrot, así como el nombre con el que se guardará la imagen
+/* void mandelbrot_Coordinador();
+ * Función encargada de obtener la información suficiente ( ancho de la imagen, x1, y1, inc ), para que los esclavos puedan generar
+ * un renglon de la matriz que se empleará para almacenar los datos del fractal
  */
-void mandelbrot_Menu( unsigned int * alto, unsigned int * ancho, double * limx1, double * limx2, double * limy1, double * limy2, char * nombre );
+void mandelbrot_Coordinador();
 
+/* void mandelbrot_CalculaRenglones()
+ * Función que se encargar de llenar los datos del fractal correspondientes a un renglon de la matriz
+ */
+void mandelbrot_CalculaRenglones();
+
+/* void mandelbrot_Menu( unsigned int * alto, unsigned int * ancho, double * limx1, double * limx2, double * limy1, double * limy2, cadena nombre )
+ * Función con la que se obtiene del usuario los datos necesarios para generar el fractal
+ */
+void mandelbrot_Menu( unsigned int * alto, unsigned int * ancho, double * limx1, double * limx2, double * limy1, double * limy2, cadena nombre );
 
 /* pixel ** mandelbrot_CreaMatrizPixel ( unsigned int alto, unsigned int ancho )
- * función que reserva memoria para crear una matriz de pixeles de mandelbrot, recibe el número de renglones (alto) y el número de columnas
- * (ancho) y regresa el apuntador de la matriz creada
+ * Función para reservar memoria para almacenar la matriz
  */
 pixel ** mandelbrot_CreaMatrizPixel ( unsigned int alto, unsigned int ancho );
 
-/* void mandelbrot_CalculaComplejos ( pixel * vector, unsigned int ancho, double limx1, double limy1, double incx)
- * función que llena el campo correspondiente al número complejo dependiendo el dominio, rango y tamaño de la imagen proporcionado por el usuario
- *
+/* void mandelbrot_CalculaComplejos ( pixel * vector, unsigned int ancho, double limx1, double limy1, double incx){
+ * Función que calcula las coordenadas del plano complejo correspondientes a la dimensión que el usuario proporcionó
  */
 void mandelbrot_CalculaComplejos ( pixel * vector, unsigned int ancho, double limx1, double limy1, double incx);
 
 /* void mandelbrot_CalculaColor (pixel *vector, unsigned int ancho )
- * función que asigna color a un pixel dependiendo si esta o no en el conjunto de mandelbrot
+ * Función con la que se calcula si un punto del plano complejo corresponde al conjunto de Mandelbrot y dependiendo de
+ * la distancia y el numero de iteraciones asigna el color a la imagen
  */
 void mandelbrot_CalculaColor (pixel *vector, unsigned int ancho );
 
-/* void mandelbrot_AsignaColor ( pixel * fractal, int cuenta )
- * asigna un color RGB al pixel apuntado por fractal, el color será rojo oscuro si el número está dentro del conjunto de Mandelbrot,
- * naranja si esta muy cerca del conjunto, amarillo si esta cerca y negro si no esta cerca
- *
+/* void mandelbrot_AsignaColor ( pixel * fractal, int cuenta, double distancia )
+ * Función que llena el campo correspondiente al color en la imagen
  */
 void mandelbrot_AsignaColor ( pixel * fractal, int cuenta, double distancia );
 
 /* int mandelbrot_GuardarImagen( cadena nombre, pixel ** imagen, unsigned int alto, unsigned int ancho )
- * Función para guardar imagen en un archivo nombre.ppm (PORTABLE PIXEL MAP), se le agrega como cabecera
- * P3
- * # comentario
- * ancho alto
- * intensidad (0-255)
+ * Funcion con la que se guarda en un archivo .ppm la imagen del fractal generada
  */
 int mandelbrot_GuardarImagen( cadena nombre, pixel ** imagen, unsigned int alto, unsigned int ancho );
 
 /* void mandelbrot_DestruyeMatrizPixel( pixel ** imagen )
- * función para liberar la matriz creada apuntada por imagen
+ * Función que libera el espacio de memoria reservado para manipular la matriz de pixeles
  */
 void mandelbrot_DestruyeMatrizPixel( pixel ** imagen );
 
-/* void mandelbrot_EnviaRenglones( unsigned int alto, unsigned int anchoIm, double x1, double x2, double y1, double y2 );
- * Función que envia renglones al espacio de tuplas para que los trabajdores puedan procesar los pixeles de
- * la imagen
+/* void mandelbrot_EnviaRenglones( unsigned int alto, unsigned int ancho, double limx1, double limx2, double limy1, double limy2 )
+ * Función empleada por el coordinador para enviar al espacio de tuplas los renglones a calcular
  */
-void mandelbrot_EnviaRenglones( unsigned int alto, unsigned int ancho, double x1, double x2, double y1, double y2 );
+void mandelbrot_EnviaRenglones( unsigned int alto, unsigned int ancho, double limx1, double limx2, double limy1, double limy2 );
 
-/* void mandelbrot_RecibeRenglones( pixel ** matriz, unsigned int  Alto, unsigned int Ancho );
- * Función que guarda en una matriz de tipo pixel los renglones procesados por un esclavo
+/* void mandelbrot_RecibeRenglones( pixel ** matriz, unsigned int  alto, unsigned int ancho )
+ *
  */
 void mandelbrot_RecibeRenglones( pixel ** matriz, unsigned int  alto, unsigned int ancho );
 
-/* void mandel_brot_CalculaRenglones();
- * Función que se encargar de calcular si los números complejos almacenados en un vector de pixeles forman parte del conjunto
- * de Mandelbrot, dependiendo del número asigna un color al vector
+/* void mandelbrot_ImprimeVector ( pixel * vector, unsigned int ancho )
+ *
  */
-void mandelbrot_CalculaRenglones();
-
-/* void mandelbrot_Coordinador()
- * función coordinadora
- */
-void mandelbrot_Coordinador();
+void mandelbrot_ImprimeVector ( pixel * vector, unsigned int ancho );
 #endif /* MANDELBROT_H_ */
