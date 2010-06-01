@@ -149,6 +149,11 @@ int sdblinda_detener() {
 
 	if( SOYMAESTRO(edo) )
 		MPI_Send( &c, 1, MPI_CHAR, LINDA, END, MPI_COMM_WORLD );
+	else if( SOYESPACIO(edo) ){
+		ght_finalize( sdbespacio_gethash() );
+		ght_finalize( sdbespacio_getpendientes() );
+	}
+
 
 	MPI_Barrier(MPI_COMM_WORLD);
 	MPI_Finalize();
