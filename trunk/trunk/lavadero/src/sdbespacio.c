@@ -10,6 +10,7 @@
 #include <pendiente.h>
 #include <sdbproceso.h>
 #include <sdbespacio.h>
+#include <ght_hash_table.h>
 
 
 /* thash *sdbespacio_gethash()
@@ -24,8 +25,8 @@ thash *sdbespacio_gethash() {
 	static thash *tabla = NULL;
 
 	if( ! creadaHash ) {
-		creadaHash ++;                /* Esta parte puede ser parametrizada con */
-		tabla = thash_new(TABLESIZE); /* un archivo de configuración            */
+		creadaHash ++;                	/* Esta parte puede ser parametrizada con */
+		tabla = ght_create(TABLESIZE);	/* un archivo de configuración            */
 	}
 
 	return tabla;
@@ -45,8 +46,8 @@ thash *sdbespacio_getpendientes() {
 
 
 	if( ! creadaPendientes ) {
-		creadaPendientes ++;               /* Esta parte puede ser parametrizada con */
-		pendientes = thash_new(TABLESIZE); /* un archivo de configuración            */
+		creadaPendientes ++;               	/* Esta parte puede ser parametrizada con */
+		pendientes = ght_create(TABLESIZE);	/* un archivo de configuración            */
 	}
 
 	return pendientes;
@@ -58,9 +59,9 @@ thash *sdbespacio_getpendientes() {
  */
 
 void sdbespacio_iniciar() {
-	thash  *tabla   = sdbespacio_gethash();	/* Apuntador a tabla hash */
-	estado *edo     = sdbproceso_estado();	/* Apuntador a estado (propio de LINDA) */
-	char   *buffer;							/* Buffer de mensaje a recibir */
+	thash  *tabla   = sdbespacio_gethash();	/* Apuntador a tabla hash 																			*/
+	estado *edo     = sdbproceso_estado();	/* Apuntador a estado (propio de LINDA)																*/
+	char   *buffer;							/* Buffer de mensaje a recibir																		*/
 	int     nbytes, source, tag;			/* Tamaño (nbytes) del buffer a recibir, identidad (source) del emisor y etiqueta (tag) del mensaje */
 
 	while( edo->tag != END ) {
@@ -72,7 +73,7 @@ void sdbespacio_iniciar() {
 		MPI_Recv( buffer, nbytes, MPI_BYTE, source, tag, MPI_COMM_WORLD, &(edo->status) );
 		switch(tag) {
 		case END :
-			printf( "SERVER: Recibi mensaje de END\n", nbytes, source );
+			printf( "SERVER: Recibi mensaje END\n" );
 			edo->tag = END;
 			break;
 		case STORE :
@@ -93,6 +94,7 @@ void sdbespacio_iniciar() {
 		default:
 			fprintf( stderr, "Error de aplicación\n" );
 		}
+		DELETE_MESSAGE(buffer);
 	}
 }
 
@@ -108,16 +110,16 @@ unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 
 	thash        *poratender;	/* Creación de apuntador a la tabla hash de indices y tabla de pendientes   */
 	pendiente    *p;			/* apuntador a la estructura pendiente                                      */
-	void         *data;			/* Tupla a almacenar                                                        */
+	tupla         data;			/* Tupla a almacenar                                                        */
 	char         *key;			/* Clave de la tupla                                                        */
 	int           indice, tam;	/* índice de la tabla en el que se almacenará la tupla y tamaño de la tupla */
-	unsigned int  size;
 
 	tam    = sdbproceso_unpack( message, sz, &key, &data);
-	indice = thash_insert( tabla, data, tam, key);
+	printf("Funcion atiendeMeter. Clave: %s, bytes: %d\n", key, tam );
+	indice = ght_insert( tabla, data, strlen(key), key);
 
 	poratender = sdbespacio_getpendientes();
-	p = thash_remove( poratender, &size, key);
+	p = ght_remove( poratender, strlen(key), key );
 
 	if( p ) {
 		switch( p->op ) {
@@ -147,13 +149,12 @@ int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla ) {
 
 	thash 		 *poratender;
 	pendiente	 *p;
-	unsigned int  size;
-	void		 *data;
+	tupla		 *data;
 
-	data = thash_remove( tabla, &size, key );
+	data = ght_remove( tabla, strlen(key), key );
 
-	if( size ) {
-		MPI_Send( data, size, MPI_CHAR, src, DATA, MPI_COMM_WORLD );
+	if( data ) {
+		MPI_Send( data, TUPLA_SIZE(data), MPI_CHAR, src, DATA, MPI_COMM_WORLD );
 		DELETE_MESSAGE(data);
 	} else {
 		poratender = sdbespacio_getpendientes();
@@ -161,7 +162,7 @@ int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla ) {
 		p->key = strdup(key);
 		p->cliente = src;
 		p->op = GRAB;
-		thash_insert(poratender, p, sizeof(pendiente), key );
+		ght_insert(poratender, p, strlen(key), key );
 	}
 
 	return 0;
@@ -177,21 +178,20 @@ int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla ) {
 
 	thash *poratender;
 	pendiente *p;
-	unsigned int size;
-	void *data;
+	tupla data;
 
-	data = thash_read( tabla, &size, key );
+	data = ght_get( tabla, strlen(key), key );
 
-	if( size ) {
-		MPI_Send( data, size, MPI_CHAR, src, DATA, MPI_COMM_WORLD );
-		DELETE_MESSAGE(data);
+	if( data ) {
+		MPI_Send( data, TUPLA_SIZE(data), MPI_CHAR, src, DATA, MPI_COMM_WORLD );
+		TUPLA_DELETE(data);
 	} else {
 		poratender = sdbespacio_getpendientes();
 		NEWPENDIENTE(p);
 		p->key = strdup(key);
 		p->cliente = src;
 		p->op = READ;
-		thash_insert(poratender, p, sizeof(pendiente), key );
+		ght_insert(poratender, p, strlen(key), key );
 	}
 
 	return 0;
@@ -204,12 +204,11 @@ int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla ) {
 
 int sdbespacio_atiendeSuprimir( char *key, thash *tabla ) {
 
-	unsigned int size;
-	void *data;
+	tupla *data;
 
-	data = thash_remove( tabla, &size, key );
+	data = ght_remove( tabla, strlen(key), key );
 
-	if( size )
+	if( data )
 		DELETE_MESSAGE(data)
 	else
 		fprintf( stderr, "SERVER: Operacion de borrado fallida, no se encontro la tupla\n");
