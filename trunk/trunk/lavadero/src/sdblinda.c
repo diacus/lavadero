@@ -65,7 +65,6 @@ int sdblinda_meter( char *key, tupla data ) {
 	edo->message = sdbproceso_pack( key, data );
 
 	/* Envia a LINDA el mensaje (message) de tamaño nbytes para almacenarlo (STORE)*/
-	printf( "Enviando %d bytes al repositorio\n", nbytes );
 	MPI_Send( edo->message, nbytes, MPI_CHAR, LINDA, STORE, MPI_COMM_WORLD );
 
 	return 0;
@@ -90,10 +89,7 @@ int sdblinda_sacar( char *key, tupla data ) {
 	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, GRAB, MPI_COMM_WORLD );
 	/* Recibiendo la tupla solicitada */
 	MPI_Recv( data , TUPLA_SIZE(data), MPI_BYTE, LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
-	if( SOYMAESTRO (edo) )
-		printf( "Coordinador: Recibiendo dato %d del repositorio\n", *(int *)(data + 4) );
-	else if( SOYESCLAVO( edo ))
-		printf( "Esclavo: Recibiendo dato %d del repositorio\n", *(int *)(data + 4) );
+
 	return TUPLA_BYTES(data);
 
 }
@@ -117,7 +113,6 @@ int sdblinda_leer( char *key, tupla data ) {
 
 	/* Recibiendo la tupla solicitada */
 	MPI_Recv( data , TUPLA_SIZE(data), MPI_BYTE, LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
-	printf("se recibieron %d bytes\n",TUPLA_BYTES(data));
 
 	return TUPLA_BYTES(data);
 }
