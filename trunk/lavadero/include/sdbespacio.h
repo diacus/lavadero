@@ -11,10 +11,12 @@
 #include <sdbespacio.h>
 #include <sdbproceso.h>
 #include <tupla.h>
-#include <thash.h>
+#include <ght_hash_table.h>
 #include <mpi.h>
 
-/* TABLESIZE : Númrto de claves en las tablas hash utilizadas */
+typedef ght_hash_table_t thash;
+
+/* TABLESIZE : Número de claves en las tablas hash utilizadas */
 
 #define TABLESIZE 1000
 

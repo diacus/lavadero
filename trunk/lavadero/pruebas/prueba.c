@@ -4,7 +4,6 @@
  *  Created on: 06/05/2010
  *      Author: diacus
  */
-#include <stdio.h>
 #include <prueba.h>
 #include <string.h>
 #include <tupla.h>
@@ -22,6 +21,7 @@
 #define BORRA_ENTERO(a) \
 	free(a); a = NULL
 
+#include <stdio.h>
 struct registro{
 	int numero;
 	char palabra[10];
@@ -51,7 +51,7 @@ void coordinador(){
 	int i = 0, j;
 	TUPLA_NEW ( t, sizeof(i) );
 	TUPLA_WRITE ( t, &i);
-	for( j=0; j<1; j++){
+	for( j=0; j<10; j++){
 		sdblinda_meter( "saludo", t );
 		printf( "Coordinador: Meti Entero i = %d\n", i);
 		sdblinda_leer( "respuesta", t );
@@ -67,7 +67,7 @@ void esclavo(){
 	tupla t;
 	int i, j;
 	TUPLA_NEW( t, sizeof(i) );
-	for(j = 0; j < 1; j++) {
+	for(j = 0; j < 10; j++) {
 		sdblinda_leer( "saludo", t );
 		TUPLA_READ( &i, t );
 		printf( "Esclavo: Recibi i = %d\n", i );

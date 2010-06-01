@@ -98,7 +98,7 @@ estado *sdbproceso_estado();
 
 char *sdbproceso_pack( char *key, tupla data );
 
-/* int sdbproceso_unpack( char *msg, unsigned int sz, char **key, void **data)
+/* int sdbproceso_unpack( char *msg, unsigned int sz, char **key, tupla *data)
  *
  * Función para descomponer el mensaje apuntado por msg de tamaño sz.
  *
@@ -106,7 +106,7 @@ char *sdbproceso_pack( char *key, tupla data );
  * apuntada por key con la clave de la tupla y el tamaño en bytes de la tupla
  */
 
-int sdbproceso_unpack( char *msg, unsigned int sz, char **key, void **data);
+int sdbproceso_unpack( char *msg, unsigned int sz, char **key, tupla *data);
 
 
 

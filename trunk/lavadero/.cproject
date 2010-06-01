@@ -42,6 +42,7 @@
 </option>
 <option id="gnu.c.link.option.libs.1923177330" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
 <listOptionValue builtIn="false" value="mpi"/>
+<listOptionValue builtIn="false" value="ghthash"/>
 </option>
 <inputType id="cdt.managedbuild.tool.gnu.c.linker.input.1289494967" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
 <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>

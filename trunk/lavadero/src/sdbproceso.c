@@ -73,18 +73,15 @@ char *sdbproceso_pack( char *key, tupla data ) {
  * apuntada por key con la clave de la tupla y el tamaño en bytes de la tupla
  */
 
-int sdbproceso_unpack( char *msg, unsigned int sz, char **key, void **data) {
-	/*Calculado el tamaño de la clave*/
+int sdbproceso_unpack( char *msg, unsigned int sz, char **key, tupla *data) {
+
 	unsigned int shift = strlen(msg) + 1;
-	/*Reservando memoria para almacenar la clave*/
 	*key = (char *) calloc( shift, sizeof(char) );
-	/*Reservando memoria para almacenar la tupla*/
-	*data = (char *) calloc( sz - shift, sizeof(char) );
-	/*copiando la clave del mensaje*/
+
 	strcpy( *key, msg );
-	/*copiando la tupla del mensaje*/
-	memcpy( *data, msg + shift,  sz - shift);
-	/*regresa el tamaño de la tupla*/
-	return sz - shift;
+	TUPLA_NEW(*data, sz - shift - sizeof(int) );
+	TUPLA_WRITE( *data, msg + shift );
+
+	return TUPLA_BYTES(*data);
 
 }
