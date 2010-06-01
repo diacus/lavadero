@@ -90,8 +90,10 @@ int sdblinda_sacar( char *key, tupla data ) {
 	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA, GRAB, MPI_COMM_WORLD );
 	/* Recibiendo la tupla solicitada */
 	MPI_Recv( data , TUPLA_SIZE(data), MPI_BYTE, LINDA, DATA, MPI_COMM_WORLD, &(edo->status) );
-	printf( "Recibiendo %d bytes del repositorio\n", TUPLA_BYTES(data) );
-
+	if( SOYMAESTRO (edo) )
+		printf( "Coordinador: Recibiendo dato %d del repositorio\n", *(int *)(data + 4) );
+	else if( SOYESCLAVO( edo ))
+		printf( "Esclavo: Recibiendo dato %d del repositorio\n", *(int *)(data + 4) );
 	return TUPLA_BYTES(data);
 
 }

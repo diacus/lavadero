@@ -80,7 +80,7 @@ int sdbproceso_unpack( char *msg, unsigned int sz, char **key, tupla *data) {
 
 	strcpy( *key, msg );
 	TUPLA_NEW(*data, sz - shift - sizeof(int) );
-	TUPLA_WRITE( *data, msg + shift );
+	TUPLA_WRITE( *data, msg + shift + sizeof(int) );
 
 	return TUPLA_BYTES(*data);
 
