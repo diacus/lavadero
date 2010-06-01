@@ -35,9 +35,9 @@ int prueba( int argc, char *argv[] ) {
 	sdblinda_iniciar(argc, argv);
 	edo = sdbproceso_estado();
 
-	if( edo->my_rank == 1 )
+	if( SOYMAESTRO(edo) )
 		coordinador();
-	else if( edo->my_rank > 1 )
+	else if( SOYESCLAVO(edo) )
 		esclavo();
 
 	sdblinda_detener();
@@ -74,7 +74,7 @@ void esclavo(){
 		i++;
 		TUPLA_WRITE ( t, &i);
 		sdblinda_meter( "respuesta", t );
-		printf( "Esclavo: Envie entero incrementado\n" );
+		printf( "Esclavo: Envie entero incrementado %d\n", *(TUPLA_INFO(t)) );
 	}
 
 }
