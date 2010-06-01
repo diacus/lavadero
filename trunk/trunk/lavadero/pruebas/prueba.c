@@ -35,9 +35,9 @@ int prueba( int argc, char *argv[] ) {
 	sdblinda_iniciar(argc, argv);
 	edo = sdbproceso_estado();
 
-	if( SOYMAESTRO(edo) )
+	if( edo->my_rank == 1 )
 		coordinador();
-	else if( SOYESCLAVO(edo) )
+	else if( edo->my_rank > 1 )
 		esclavo();
 
 	sdblinda_detener();
@@ -53,10 +53,10 @@ void coordinador(){
 	TUPLA_WRITE ( t, &i);
 	for( j=0; j<10; j++){
 		sdblinda_meter( "saludo", t );
-		printf( "Coordinador: Meti Entero i = %d\n", i);
-		sdblinda_leer( "respuesta", t );
+		printf( "Coordinador: Meti Entero i = %d\n", *(int *)(t+4) );
+		sdblinda_sacar( "respuesta", t );
 		TUPLA_READ ( &i, t );
-		printf( "Coordinador: Recibi i modificado %d\n", i );
+		printf( "Coordinador: Recibi i modificado %d\n", *(int *)(t+4) );
 	}
 
 
@@ -68,13 +68,13 @@ void esclavo(){
 	int i, j;
 	TUPLA_NEW( t, sizeof(i) );
 	for(j = 0; j < 10; j++) {
-		sdblinda_leer( "saludo", t );
+		sdblinda_sacar( "saludo", t );
 		TUPLA_READ( &i, t );
-		printf( "Esclavo: Recibi i = %d\n", i );
+		printf( "Esclavo: Recibi i = %d\n", *(int *)(t+4) );
 		i++;
 		TUPLA_WRITE ( t, &i);
 		sdblinda_meter( "respuesta", t );
-		printf( "Esclavo: Envie entero incrementado %d\n", *(TUPLA_INFO(t)) );
+		printf( "Esclavo: Envie entero i = %d incrementado\n", *(int *)(t+4) );
 	}
 
 }
