@@ -182,15 +182,14 @@ int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla ) {
 
 	data = ght_get( tabla, strlen(key), key );
 
-	if( data ) {
+	if( data )
 		MPI_Send( data, TUPLA_SIZE(data), MPI_CHAR, src, DATA, MPI_COMM_WORLD );
-		TUPLA_DELETE(data);
-	} else {
+	else {
 		poratender = sdbespacio_getpendientes();
 		NEWPENDIENTE(p);
-		p->key = strdup(key);
+		p->key     = strdup(key);
 		p->cliente = src;
-		p->op = READ;
+		p->op      = READ;
 		ght_insert(poratender, p, strlen(key), key );
 	}
 
