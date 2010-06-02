@@ -5,16 +5,14 @@
  *      Author: diacus
  */
 
-#ifndef SDBMAESTRO_H_
-#define SDBMAESTRO_H_
+#ifndef SDBESPACIO_H_
+#define SDBESPACIO_H_
 
-#include <sdbespacio.h>
 #include <sdbproceso.h>
 #include <tupla.h>
-#include <ght_hash_table.h>
 #include <mpi.h>
+#include <thash.h>
 
-typedef ght_hash_table_t thash;
 
 /* TABLESIZE : Número de claves en las tablas hash utilizadas */
 
@@ -72,4 +70,4 @@ int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla );
 
 int sdbespacio_atiendeSuprimir( char *key, thash *tabla );
 
-#endif /* SDBMAESTRO_H_ */
+#endif /* SDBESPACIO_H_ */

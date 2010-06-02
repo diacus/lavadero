@@ -11,6 +11,8 @@
 #include <string.h>
 #include <thash.h>
 
+#ifdef HECHIZA
+
 /* void rotabit( char *c, unsigned int shift )
  *
  */
@@ -65,18 +67,18 @@ thash *thash_new( unsigned int sz ) {
  *
  */
 
-unsigned int thash_insert( thash *t, void *value, unsigned int sz, char *key ) {
+unsigned int thash_insert( thash *t, void *value, char *key ) {
 
 	unsigned int index = hash( key, t->size, SHIFT );
 	lista **selected, *elem;
-	elem = lista_new(value, sz, key);
+	elem = lista_new(value, key);
 	selected = t->table + index;
 	*selected = lista_insert( *selected, elem );
 
 	return index;
 }
 
-/* void *thash_remove( thash *t, unsigned int *sz, char *key )
+/* void *thash_remove( thash *t, char *key )
  *
  * Retira el dato etiquetado con la clave key de la tabla apuntada por t.
  *
@@ -84,14 +86,17 @@ unsigned int thash_insert( thash *t, void *value, unsigned int sz, char *key ) {
  * del dato en el entenro apuntado por sz.
  */
 
-void *thash_remove( thash *t, unsigned int *sz, char *key ) {
+void *thash_remove( thash *t, char *key ) {
 
 	unsigned int index = hash( key, t->size, SHIFT );
 	lista *selected = *(t->table + index);
-	void *res = lista_find( selected, sz, key );
+	void *res = lista_find( selected, key );
 
-	if( res )
+	printf("thash_remove: elemento hasheado - %s, %d\n", key, index );
+	if( res ) {
 		selected = lista_remove( selected, key );
+	} else
+		printf( "thash_remove: El elemento con clave %s no fue encontrado\n", key );
 
 	return res;
 }
@@ -100,9 +105,9 @@ void *thash_remove( thash *t, unsigned int *sz, char *key ) {
  *
  */
 
-void *thash_read( thash *t, unsigned int *sz, char *key ) {
+void *thash_read( thash *t, char *key ) {
 	unsigned int index = hash( key, t->size, SHIFT );
-	void *res = lista_find( *(t->table + index), sz, key );
+	void *res = lista_find( *(t->table + index), key );
 	return res;
 }
 
@@ -116,7 +121,7 @@ int thash_flush( thash *t ) {
 	fin = t->table + t->size;
 	for( ini = t->table; ini < fin; ini ++ ) {
 		if( *ini ) {
-			lista_delete(*ini);
+			lista_finalize(*ini);
 			*ini = NULL;
 		}
 	}
@@ -125,11 +130,11 @@ int thash_flush( thash *t ) {
 
 }
 
-/* thash *thash_delete( thash *t )
+/* thash *thash_finalize( thash *t )
  *
  */
 
-thash *thash_delete( thash *t ) {
+thash *thash_finalize( thash *t ) {
 
 	thash_flush( t );
 	free( t->table );
@@ -137,3 +142,5 @@ thash *thash_delete( thash *t ) {
 
 	return NULL;
 }
+
+#endif

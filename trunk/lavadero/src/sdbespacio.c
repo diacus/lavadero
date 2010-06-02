@@ -10,7 +10,7 @@
 #include <pendiente.h>
 #include <sdbproceso.h>
 #include <sdbespacio.h>
-#include <ght_hash_table.h>
+#include <thash.h>
 
 
 /* thash *sdbespacio_gethash()
@@ -26,7 +26,7 @@ thash *sdbespacio_gethash() {
 
 	if( ! creadaHash ) {
 		creadaHash ++;                	/* Esta parte puede ser parametrizada con */
-		tabla = ght_create(TABLESIZE);	/* un archivo de configuración            */
+		tabla = thash_new(TABLESIZE);	/* un archivo de configuración            */
 	}
 
 	return tabla;
@@ -47,7 +47,7 @@ thash *sdbespacio_getpendientes() {
 
 	if( ! creadaPendientes ) {
 		creadaPendientes ++;               	/* Esta parte puede ser parametrizada con */
-		pendientes = ght_create(TABLESIZE);	/* un archivo de configuración            */
+		pendientes = thash_new(TABLESIZE);	/* un archivo de configuración            */
 	}
 
 	return pendientes;
@@ -114,11 +114,11 @@ unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 	char         *key;			/* Clave de la tupla                                                        */
 	int           indice, tam;	/* índice de la tabla en el que se almacenará la tupla y tamaño de la tupla */
 
-	tam    = sdbproceso_unpack( message, sz, &key, &data);
-	indice = ght_insert( tabla, data, strlen(key), key);
-
 	poratender = sdbespacio_getpendientes();
-	p = ght_remove( poratender, strlen(key), key );
+	tam    = sdbproceso_unpack( message, sz, &key, &data);
+
+	indice = thash_insert(tabla, data, key );
+	p = thash_remove( poratender, key );
 
 	if( p ) {
 		switch( p->op ) {
@@ -150,7 +150,9 @@ int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla ) {
 	pendiente	 *p;
 	tupla		 *data;
 
-	data = ght_remove( tabla, strlen(key), key );
+	printf( "atiendeSacar: Preparandose para sacar el item %s para %d\n", key, src );
+	data = thash_remove( tabla, key );
+	printf( "atiendeSacar: Se ha sacado el item %s para %d\n", key, src );
 
 	if( data ) {
 		MPI_Send( data, TUPLA_SIZE(data), MPI_CHAR, src, DATA, MPI_COMM_WORLD );
@@ -161,7 +163,8 @@ int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla ) {
 		p->key = strdup(key);
 		p->cliente = src;
 		p->op = GRAB;
-		ght_insert(poratender, p, strlen(key), key );
+
+		thash_insert(poratender, p, key );
 	}
 
 	return 0;
@@ -179,7 +182,7 @@ int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla ) {
 	pendiente *p;
 	tupla data;
 
-	data = ght_get( tabla, strlen(key), key );
+	data = thash_read( tabla, key );
 
 	if( data )
 		MPI_Send( data, TUPLA_SIZE(data), MPI_CHAR, src, DATA, MPI_COMM_WORLD );
@@ -189,7 +192,7 @@ int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla ) {
 		p->key     = strdup(key);
 		p->cliente = src;
 		p->op      = READ;
-		ght_insert(poratender, p, strlen(key), key );
+		thash_insert(poratender, p, key );
 	}
 
 	return 0;
@@ -204,7 +207,7 @@ int sdbespacio_atiendeSuprimir( char *key, thash *tabla ) {
 
 	tupla *data;
 
-	data = ght_remove( tabla, strlen(key), key );
+	data = thash_remove( tabla, key );
 
 	if( data )
 		DELETE_MESSAGE(data)
