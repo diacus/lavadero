@@ -7,8 +7,8 @@
 
 #ifndef THASH_H_
 #define THASH_H_
-/*#define HECHIZA*/
-
+/*#define HECHIZA*/   /* <--- Descomentar esta linea ara sar la implementación */
+                      /*      de tabla hash creada desde cero por diacus.      */
 
 #include <lista.h>
 
