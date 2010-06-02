@@ -53,16 +53,17 @@ thash *sdbespacio_getpendientes() {
 	return pendientes;
 }
 
-/* void sdbmaestro_iniciar()
+/* int sdbmaestro_iniciar()
  *
  * Función para inicializar el especio de tuplas.
  */
 
-void sdbespacio_iniciar() {
+int sdbespacio_iniciar() {
 	thash  *tabla   = sdbespacio_gethash();	/* Apuntador a tabla hash 																			*/
 	estado *edo     = sdbproceso_estado();	/* Apuntador a estado (propio de LINDA)																*/
 	char   *buffer;							/* Buffer de mensaje a recibir																		*/
 	int     nbytes, source, tag;			/* Tamaño (nbytes) del buffer a recibir, identidad (source) del emisor y etiqueta (tag) del mensaje */
+	int error = 0;
 
 	while( edo->tag != END ) {
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &(edo->status));
@@ -73,19 +74,15 @@ void sdbespacio_iniciar() {
 		MPI_Recv( buffer, nbytes, MPI_BYTE, source, tag, MPI_COMM_WORLD, &(edo->status) );
 		switch(tag) {
 		case END :
-			printf( "SERVER: Recibi mensaje END\n" );
 			edo->tag = END;
 			break;
 		case STORE :
-			printf( "SERVER: Recibi %d bytes de %d para meter\n", nbytes, source );
 			sdbespacio_atiendeMeter( buffer, nbytes, tabla );
 			break;
 		case GRAB :
-			printf( "SERVER: Recibi %d bytes de %d para sacar\n", nbytes, source );
 			sdbespacio_atiendeSacar( buffer, source, tabla);
 			break;
 		case READ :
-			printf( "SERVER: Recibi %d bytes de %d para leer\n", nbytes, source );
 			sdbespacio_atiendeLeer( buffer, source, tabla );
 			break;
 		case DROP :
@@ -93,9 +90,11 @@ void sdbespacio_iniciar() {
 			break;
 		default:
 			fprintf( stderr, "Error de aplicación\n" );
+			error++;
 		}
 		DELETE_MESSAGE(buffer);
 	}
+	return error;
 }
 
 
@@ -113,6 +112,7 @@ unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 	tupla         data;			/* Tupla a almacenar                                                        */
 	char         *key;			/* Clave de la tupla                                                        */
 	int           indice, tam;	/* índice de la tabla en el que se almacenará la tupla y tamaño de la tupla */
+	int error = 0;
 
 	poratender = sdbespacio_getpendientes();
 	tam    = sdbproceso_unpack( message, sz, &key, &data);
@@ -133,9 +133,10 @@ unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 		}
 
 		DELETEPENDIENTE(p);
+		error++;
 	}
 
-	return 0;
+	return error;
 }
 
 /* int sdbespacio_atiendeSacar( char *key, unsigned int src )
@@ -146,13 +147,12 @@ unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 
 int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla ) {
 
+	int error = 0;
 	thash 		 *poratender;
 	pendiente	 *p;
 	tupla		 *data;
 
-	printf( "atiendeSacar: Preparandose para sacar el item %s para %d\n", key, src );
 	data = thash_remove( tabla, key );
-	printf( "atiendeSacar: Se ha sacado el item %s para %d\n", key, src );
 
 	if( data ) {
 		MPI_Send( data, TUPLA_SIZE(data), MPI_CHAR, src, DATA, MPI_COMM_WORLD );
@@ -165,9 +165,10 @@ int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla ) {
 		p->op = GRAB;
 
 		thash_insert(poratender, p, key );
+		error++;
 	}
 
-	return 0;
+	return error;
 }
 
 /* int sdbespacio_atiendeLeer( char *key, unsigned int src )
@@ -178,6 +179,7 @@ int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla ) {
 
 int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla ) {
 
+	int error = 0;
 	thash *poratender;
 	pendiente *p;
 	tupla data;
@@ -193,9 +195,10 @@ int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla ) {
 		p->cliente = src;
 		p->op      = READ;
 		thash_insert(poratender, p, key );
+		error++;
 	}
 
-	return 0;
+	return error;
 }
 
 /* int sdbespacio_atiendeSuprimir( char *key )
@@ -205,6 +208,7 @@ int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla ) {
 
 int sdbespacio_atiendeSuprimir( char *key, thash *tabla ) {
 
+	int error = 0;
 	tupla *data;
 
 	data = thash_remove( tabla, key );
@@ -212,7 +216,7 @@ int sdbespacio_atiendeSuprimir( char *key, thash *tabla ) {
 	if( data )
 		DELETE_MESSAGE(data)
 	else
-		fprintf( stderr, "SERVER: Operacion de borrado fallida, no se encontro la tupla\n");
+		error++;
 
-	return 0;
+	return error;
 }

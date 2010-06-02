@@ -29,7 +29,7 @@ void mandelbrot_Distribuido( int argc, char *argv[] ) {
 
 void mandelbrot_Coordinador(){
 
-	unsigned int AnchoIm =300, AltoIm=300; /*dimensiones de la imagen*/
+	unsigned int AnchoIm =1280, AltoIm=800; /*dimensiones de la imagen*/
 	double x1=-2, x2=2, y1=-2, y2=2; /*límites x1, x2 corresponden al dominio; y1, y2 al rango de la imagen*/
 	pixel ** imagen;
 	cadena nombre = "fractal";
@@ -44,15 +44,16 @@ void mandelbrot_Coordinador(){
 
 void mandelbrot_Menu( unsigned int * alto, unsigned int * ancho, double * limx1, double * limx2, double * limy1, double * limy2, cadena nombre ){
 
+	int tmp;
 	printf( "Programa generador de Fractal de Mandelbrot\n" );
 	printf( "Dame las dimensiones de la imagen (alto, ancho)\n" );
-	scanf( "%u%u", alto, ancho );
+	tmp = scanf( "%u%u", alto, ancho );
 	printf( "Dame el dominio de la imagen ej(-2,2)\n");
-	scanf( "%lf%lf", limx1, limx2 );
+	tmp = scanf( "%lf%lf", limx1, limx2 );
 	printf( "Dame el rango de la imagen ej(-2,2)\n");
-	scanf( "%lf%lf", limy1, limy2 );
+	tmp = scanf( "%lf%lf", limy1, limy2 );
 	printf( "Nombre de la imagen: " );
-	scanf( "%s", nombre );
+	tmp = scanf( "%s", nombre );
 	printf( "\n" );
 
 }
@@ -67,7 +68,7 @@ pixel ** mandelbrot_CreaMatrizPixel ( unsigned int alto, unsigned int ancho ){
 	for( i = 0; i < alto ; i++ )
 		apaux[i] = ( pixel * ) malloc ( sizeof( pixel ) * alto );
 	if( ap == NULL )
-		printf( "Memoria insuficiente\n" );
+		fprintf( stderr, "Memoria insuficiente\n" );
 
 	return ap;
 
@@ -114,7 +115,6 @@ void mandelbrot_RecibeRenglones( pixel ** matriz, unsigned int  alto, unsigned i
 
 		sdblinda_sacar( "renglonlisto", t );
 		TUPLA_READ( paquete, t );
-		printf( "Recibi renglon %d\n", *( int *) paquete);
 		renglon = *( int *) paquete;
 		vector = (pixel *)(paquete + sizeof( int ));
 		mandelbrot_ImprimeVector( vector, ancho );
@@ -237,7 +237,7 @@ int mandelbrot_GuardarImagen( cadena nombre, pixel ** imagen, unsigned int alto,
 
 	strcat(nombre, ".ppm");
 	if ( ( fichero = fopen ( nombre, "w" ) ) == NULL ){
-		printf( "No se puede abrir archivo %s\n" ,nombre );
+		fprintf( stderr, "No se puede abrir archivo %s\n" ,nombre );
 		return 1;
 	}
 
@@ -271,7 +271,7 @@ void mandelbrot_ImprimeVector ( pixel * vector, unsigned int ancho ){
 	int i;
 
 	for( i = 0; i < ancho; i++){
-		printf( "vector[%d] -> rojo = %i, verde = %i, azul = %i, real = %lf, im = %lf\n",
+		printf( "vector[%d] -> rojo = %i, verde = %i, azul = %i, real = %f, im = %f\n",
 				i,
 				vector[i].rojo,
 				vector[i].verde,
