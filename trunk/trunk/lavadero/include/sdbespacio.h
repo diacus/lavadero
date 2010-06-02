@@ -39,7 +39,7 @@ thash *sdbespacio_getpendientes();
  * Función para inicializar el proceso maestro.
  */
 
-void sdbespacio_iniciar();
+int sdbespacio_iniciar();
 
 /* unsigned int sdbespacio_atiendeMeter( char * message, int sz, thash *tabla )
  *
