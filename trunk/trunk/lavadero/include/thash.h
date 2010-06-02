@@ -7,21 +7,15 @@
 
 #ifndef THASH_H_
 #define THASH_H_
+/*#define HECHIZA*/
+
 
 #include <lista.h>
 
+#ifdef HECHIZA
+
 #define GOLD 1.6180339887498949
 #define SHIFT 10e7
-
-/* #define ROTAR( c, n )
- *
- * Esta macro gira los bits de c en dirección a los bits menos significativos
- * n lugares.
- *
- */
-
-#define ROTAR( c, n ) \
-	c = (c >> (n%8)) ^ ((c % (1 << (n%8)) << (8 - (n%8))))
 
 /* Type thash
  *
@@ -33,6 +27,24 @@ typedef struct th {
 	unsigned int size;
 	lista **table;
 } thash;
+
+#else
+
+#include <ght_hash_table.h>
+
+typedef ght_hash_table_t thash;
+
+#endif
+
+/* #define ROTAR( c, n )
+ *
+ * Esta macro gira los bits de c en dirección a los bits menos significativos
+ * n lugares.
+ *
+ */
+
+#define ROTAR( c, n ) \
+	c = (c >> (n%8)) ^ ((c % (1 << (n%8)) << (8 - (n%8))))
 
 /* void rotabit( char *c, unsigned int shift )
  *
@@ -60,15 +72,15 @@ unsigned int hash( char *key, unsigned int sz, unsigned int shift );
 
 thash *thash_new( unsigned int sz );
 
-/* unsigned int thash_insert( thash *t, void *value, char *key )
+/* unsigned int thash_insert( thash *t, tupla value, char *key )
  *
- * Almacena el valor apuntado por value, etiquetado con la clave key
+ * Almacena la tupla value, etiquetado con la clave key
  * y de tamaño sz, dentro de la tabla hash apuntada por t.
  */
 
-unsigned int thash_insert( thash *t, void *value, unsigned int sz, char *key );
+unsigned int thash_insert( thash *t, void *value, char *key );
 
-/* void *thash_remove( thash *t, unsigned int *sz, char *key )
+/* tupla thash_remove( thash *t, char *key )
  *
  * Retira el dato etiquetado con la clave key de la tabla apuntada por t.
  *
@@ -76,18 +88,17 @@ unsigned int thash_insert( thash *t, void *value, unsigned int sz, char *key );
  * del dato en el entenro apuntado por sz.
  */
 
-void *thash_remove( thash *t, unsigned int *sz, char *key );
+void *thash_remove( thash *t, char *key );
 
-/* void *thash_read( thash *t, unsigned int *sz, char *key )
+/* tupla thash_read( thash *t, char *key )
  *
  * Busca en la tabla apuntada por t, el dato etiquetado con la
  * clave key.
  *
- * La función devuelve un apuntador al objeto encontrado, y escribe
- * en el entero apuntado por sz, el tamaño de este.
+ * La función devuelve un apuntador a la tupla encontrada.
  */
 
-void *thash_read( thash *t, unsigned int *sz, char *key );
+void *thash_read( thash *t, char *key );
 
 /* int thash_flush( thash *t )
  *
@@ -97,10 +108,10 @@ void *thash_read( thash *t, unsigned int *sz, char *key );
 
 int thash_flush( thash *t );
 
-/* thash *thash_delete( thash *t )
+/* thash *thash_finalize( thash *t )
  *
  */
 
-thash *thash_delete( thash *t );
+thash *thash_finalize( thash *t );
 
 #endif /* THASH_H_ */

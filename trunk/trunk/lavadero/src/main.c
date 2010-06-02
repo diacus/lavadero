@@ -6,10 +6,12 @@
  */
 
 #include <mandelbrot.h>
+#include <prueba.h>
 
 int main( int argc, char *argv[] ) {
 
-	mandelbrot_Distribuido( argc, argv );
+	/*mandelbrot_Distribuido( argc, argv );*/
+	prueba(argc, argv);
 
 	return 0;
 }
