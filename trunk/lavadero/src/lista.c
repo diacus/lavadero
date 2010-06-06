@@ -76,13 +76,13 @@ lista *lista_remove( lista *lst, char *k ) {
 			          								/* el nodo a remover se busca en */
 			lst->next = lista_remove(lst->next, k);	/* el resto de la lista          */
 
-	} else {
+	} /*else {
 		fprintf(
 			stderr,
 			"Error: no hay elementos etiquetados con la clave %s en la tabla.\n",
 			k
 		);
-	}
+	}*/
 
 	return res;
 

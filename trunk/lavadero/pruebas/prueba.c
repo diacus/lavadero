@@ -48,19 +48,16 @@ int prueba( int argc, char *argv[] ) {
 void coordinador(){
 
 	tupla t;
-	char clave[256] = "";
 	int i = 0, j;
 	TUPLA_NEW ( t, sizeof(i) );
 	TUPLA_WRITE ( t, &i);
 
 	for( j=0; j<10; j++){
-		sdblinda_meter( "saludo", t );
+		sdblinda_meter( "ida", t );
 		printf( "Coordinador: Meti Entero i = %d\n", i );
-
-		sdblinda_sacar( "respuesta", t );
+		sdblinda_sacar( "regreso", t );
 		TUPLA_READ ( &i, t );
 		printf( "Coordinador: Recibi i modificado %d\n", i );
-
 	}
 
 
@@ -68,22 +65,20 @@ void coordinador(){
 
 void esclavo(){
 
-	char clave[256] = "";
 	tupla t;
 	int i, j;
 	TUPLA_NEW( t, sizeof(i) );
 	for(j = 0; j < 10; j++) {
 
-		sdblinda_sacar( "saludo", t );
+		sdblinda_sacar( "ida", t );
 
 		TUPLA_READ( &i, t );
 		printf( "Esclavo: Recibi i = %d\n", i );
 		i++;
 		TUPLA_WRITE ( t, &i);
 
-		sdblinda_meter( "repuesta", t );
+		sdblinda_meter( "regreso", t );
 		printf( "Esclavo: Envie entero i = %d incrementado\n", i );
-		memset( clave, '\0', 12 );
 	}
 
 }

@@ -29,7 +29,7 @@ void mandelbrot_Distribuido( int argc, char *argv[] ) {
 
 void mandelbrot_Coordinador(){
 
-	unsigned int AnchoIm =1280, AltoIm=800; /*dimensiones de la imagen*/
+	unsigned int AnchoIm =1500, AltoIm=1500; /*dimensiones de la imagen*/
 	double x1=-2, x2=2, y1=-2, y2=2; /*límites x1, x2 corresponden al dominio; y1, y2 al rango de la imagen*/
 	pixel ** imagen;
 	cadena nombre = "fractal";
@@ -117,7 +117,6 @@ void mandelbrot_RecibeRenglones( pixel ** matriz, unsigned int  alto, unsigned i
 		TUPLA_READ( paquete, t );
 		renglon = *( int *) paquete;
 		vector = (pixel *)(paquete + sizeof( int ));
-		mandelbrot_ImprimeVector( vector, ancho );
 		for ( j = 0; j < ancho; j++){
 			matriz[renglon][j].rojo = vector[j].rojo;
 			matriz[renglon][j].verde = vector[j].verde;
