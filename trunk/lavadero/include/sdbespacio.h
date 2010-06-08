@@ -8,10 +8,20 @@
 #ifndef SDBESPACIO_H_
 #define SDBESPACIO_H_
 
-#include <sdbproceso.h>
-#include <tupla.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <pthread.h>
 #include <mpi.h>
+
+#include <sdbproceso.h>
+#include <pendiente.h>
 #include <thash.h>
+#include <tupla.h>
+
+
+typedef pthread_t       hilo;
+typedef pthread_mutex_t candado;
 
 #define NHILOS 4
 
@@ -35,6 +45,18 @@ thash *sdbespacio_gethash();
  */
 
 thash *sdbespacio_getpendientes();
+
+/* candado *sdbespacio_getLockHash()
+ *
+ */
+
+candado *sdbespacio_getLockHash();
+
+/* candado *sdbespacio_getLockPendientes()
+ *
+ */
+
+candado *sdbespacio_getLockPendientes();
 
 /* void sdbespacio_iniciar()
  *

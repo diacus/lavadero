@@ -5,14 +5,7 @@
  *      Author: diacus
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <pendiente.h>
-#include <sdbproceso.h>
 #include <sdbespacio.h>
-#include <thash.h>
-#include <pthread.h>
-
 
 /* thash *sdbespacio_gethash()
  *
@@ -54,6 +47,39 @@ thash *sdbespacio_getpendientes() {
 	return pendientes;
 }
 
+
+/* candado *sdbespacio_getLockHash()
+ *
+ */
+
+candado *sdbespacio_getLockHash() {
+	static candado *res = NULL;
+	static int creadolh = 0;
+
+	if( !creadolh ) {
+		res = (candado *) malloc( sizeof(candado) );
+		creadolh++;
+	}
+
+	return res;
+}
+
+/* candado *sdbespacio_getLockPendientes()
+ *
+ */
+
+candado *sdbespacio_getLockPendientes() {
+	static candado *res = NULL;
+	static int creadolp = 0;
+
+	if( !creadolp ) {
+		res = (candado *) malloc( sizeof(candado) );
+		creadolp++;
+	}
+
+	return res;
+}
+
 /* int sdbmaestro_iniciar()
  *
  * Función para inicializar el especio de tuplas.
@@ -61,7 +87,7 @@ thash *sdbespacio_getpendientes() {
 
 int sdbespacio_iniciar() {
 	int i, salida, error = 0;
-	pthread_t hilos[NHILOS];                /* El espacio de tuplas es multi-hilado. */
+	hilo hilos[NHILOS];                /* El espacio de tuplas es multi-hilado. */
 
 	for( i = 0; i < NHILOS; i++ ) {
 		error = pthread_create( hilos + i, NULL ,sdbespacio_atender, (void *) i );
@@ -87,8 +113,7 @@ void *sdbespacio_atender( void *args ) {
 	char   *buffer;                         /* Buffer de mensaje a recibir.          */
 	thash  *tabla   = sdbespacio_gethash(); /* Apuntador a tabla hash.               */
 	estado *edo     = sdbproceso_estado();  /* Apuntador a estado (propio de LINDA). */
-	int     error   = 0,
-			nbytes,                         /* Tamaño (nbytes) del buffer a recibir, */
+	int     nbytes,                         /* Tamaño (nbytes) del buffer a recibir, */
 			source,                         /* identidad (source) del emisor y       */
 			tag;                            /* etiqueta (tag) del mensaje.           */
 
@@ -116,8 +141,7 @@ void *sdbespacio_atender( void *args ) {
 				sdbespacio_atiendeSuprimir ( buffer, tabla );
 				break;
 			default:
-				fprintf( stderr, "Error de aplicación\n" );
-				error++;
+				fprintf( stderr, "Error: Tarea no soportada por el programa.\n" );
 			}
 			DELETE_MESSAGE(buffer);
 		}
@@ -135,18 +159,32 @@ void *sdbespacio_atender( void *args ) {
 
 unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 
-	thash        *poratender;	/* Creación de apuntador a la tabla hash de indices y tabla de pendientes   */
-	pendiente    *p;			/* apuntador a la estructura pendiente                                      */
-	tupla         data;			/* Tupla a almacenar                                                        */
-	char         *key;			/* Clave de la tupla                                                        */
-	int           indice, tam;	/* índice de la tabla en el que se almacenará la tupla y tamaño de la tupla */
+	thash        *poratender;  /* Creación de apuntador a la tabla hash de indices y tabla de pendientes   */
+	pendiente    *p;           /* apuntador a la estructura pendiente                                      */
+	tupla         data;        /* Tupla a almacenar                                                        */
+	char         *key;         /* Clave de la tupla                                                        */
+	int           indice, tam; /* índice de la tabla en el que se almacenará la tupla y tamaño de la tupla */
 	int           error = 0;
 
-	poratender = sdbespacio_getpendientes();
-	tam        = sdbproceso_unpack( message, sz, &key, &data);
+	candado      *lock_tabla,      /* Candado para el espacio de tuplas.        */
+	             *lock_pendientes; /* Candado para las solicitudes por atender. */
 
+	lock_tabla      = sdbespacio_getLockHash();
+	lock_pendientes = sdbespacio_getLockPendientes();
+
+	poratender      = sdbespacio_getpendientes();
+
+
+	tam = sdbproceso_unpack( message, sz, &key, &data);
+
+
+	pthread_mutex_lock( lock_tabla );
 	indice = thash_insert(tabla, data, key );
+	pthread_mutex_unlock( lock_tabla );
+
+	pthread_mutex_lock( lock_pendientes );
 	p      = thash_remove( poratender, key );
+	pthread_mutex_unlock( lock_pendientes );
 
 	if( p ) {
 		switch( p->op ) {
@@ -175,10 +213,10 @@ unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 
 int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla ) {
 
-	int           error = 0;
-	thash 		 *poratender;
-	pendiente	 *p;
-	tupla		 *data;
+	int        error = 0;
+	thash     *poratender;
+	pendiente *p;
+	tupla     *data;
 
 	data = thash_remove( tabla, key );
 
