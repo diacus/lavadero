@@ -38,5 +38,6 @@ int CalculaPI(int argc, char *argv[]);
 
 int pruebapack();
 int prueba_linda( int argc, char *argv[] );
+int prueba_pthread( int argc, char *argv[] );
 
 #endif /* PRUEBA_H_ */

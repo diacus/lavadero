@@ -13,6 +13,8 @@
 #include <mpi.h>
 #include <thash.h>
 
+#define NHILOS 4
+
 
 /* TABLESIZE : Número de claves en las tablas hash utilizadas */
 
@@ -40,6 +42,12 @@ thash *sdbespacio_getpendientes();
  */
 
 int sdbespacio_iniciar();
+
+/* void *sdbespacio_atender( void *args )
+ *
+ */
+
+void *sdbespacio_atender( void *args );
 
 /* unsigned int sdbespacio_atiendeMeter( char * message, int sz, thash *tabla )
  *

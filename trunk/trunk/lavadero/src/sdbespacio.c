@@ -11,6 +11,7 @@
 #include <sdbproceso.h>
 #include <sdbespacio.h>
 #include <thash.h>
+#include <pthread.h>
 
 
 /* thash *sdbespacio_gethash()
@@ -21,8 +22,8 @@
 
 thash *sdbespacio_gethash() {
 
-	static int creadaHash = 0;
-	static thash *tabla = NULL;
+	static int    creadaHash = 0;
+	static thash *tabla      = NULL;
 
 	if( ! creadaHash ) {
 		creadaHash ++;                	/* Esta parte puede ser parametrizada con */
@@ -41,8 +42,8 @@ thash *sdbespacio_gethash() {
 
 thash *sdbespacio_getpendientes() {
 
-	static int creadaPendientes = 0;
-	static thash *pendientes = NULL;
+	static int    creadaPendientes = 0;
+	static thash *pendientes       = NULL;
 
 
 	if( ! creadaPendientes ) {
@@ -59,44 +60,70 @@ thash *sdbespacio_getpendientes() {
  */
 
 int sdbespacio_iniciar() {
-	thash  *tabla   = sdbespacio_gethash();	/* Apuntador a tabla hash 																			*/
-	estado *edo     = sdbproceso_estado();	/* Apuntador a estado (propio de LINDA)																*/
-	char   *buffer;							/* Buffer de mensaje a recibir																		*/
-	int     nbytes, source, tag;			/* Tamaño (nbytes) del buffer a recibir, identidad (source) del emisor y etiqueta (tag) del mensaje */
-	int error = 0;
+	int i, salida, error = 0;
+	pthread_t hilos[NHILOS];                /* El espacio de tuplas es multi-hilado. */
 
-	while( edo->tag != END ) {
-		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &(edo->status));
-		source = (edo->status).MPI_SOURCE;
-		tag = (edo->status).MPI_TAG;
-		MPI_Get_count(&(edo->status), MPI_BYTE, &nbytes);
-		buffer = (char *) calloc( nbytes, sizeof(char) );
-		MPI_Recv( buffer, nbytes, MPI_BYTE, source, tag, MPI_COMM_WORLD, &(edo->status) );
-		switch(tag) {
-		case END :
-			edo->tag = END;
-			break;
-		case STORE :
-			sdbespacio_atiendeMeter( buffer, nbytes, tabla );
-			break;
-		case GRAB :
-			sdbespacio_atiendeSacar( buffer, source, tabla);
-			break;
-		case READ :
-			sdbespacio_atiendeLeer( buffer, source, tabla );
-			break;
-		case DROP :
-			sdbespacio_atiendeSuprimir ( buffer, tabla );
-			break;
-		default:
-			fprintf( stderr, "Error de aplicación\n" );
-			error++;
-		}
-		DELETE_MESSAGE(buffer);
+	for( i = 0; i < NHILOS; i++ ) {
+		error = pthread_create( hilos + i, NULL ,sdbespacio_atender, (void *) i );
+		if( error )
+			fprintf( stderr, "Error %d: %s\n", error, strerror(error) );
 	}
-	return error;
+
+	for( i = 0; i < NHILOS; i++ ) {
+		error = pthread_join( hilos[i], (void **) &salida );
+		if( error )
+			fprintf( stderr, "Error %d: %s\n", error, strerror(error) );
+	}
+
+	return 0;
 }
 
+/* void *sdbespacio_atender( void *args )
+ *
+ */
+
+void *sdbespacio_atender( void *args ) {
+
+	char   *buffer;                         /* Buffer de mensaje a recibir.          */
+	thash  *tabla   = sdbespacio_gethash(); /* Apuntador a tabla hash.               */
+	estado *edo     = sdbproceso_estado();  /* Apuntador a estado (propio de LINDA). */
+	int     error   = 0,
+			nbytes,                         /* Tamaño (nbytes) del buffer a recibir, */
+			source,                         /* identidad (source) del emisor y       */
+			tag;                            /* etiqueta (tag) del mensaje.           */
+
+	while( edo->tag != END ) {
+			MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &(edo->status));
+			source = (edo->status).MPI_SOURCE;
+			tag = (edo->status).MPI_TAG;
+			MPI_Get_count(&(edo->status), MPI_BYTE, &nbytes);
+			buffer = (char *) calloc( nbytes, sizeof(char) );
+			MPI_Recv( buffer, nbytes, MPI_BYTE, source, tag, MPI_COMM_WORLD, &(edo->status) );
+			switch(tag) {
+			case END :
+				edo->tag = END;
+				break;
+			case STORE :
+				sdbespacio_atiendeMeter( buffer, nbytes, tabla );
+				break;
+			case GRAB :
+				sdbespacio_atiendeSacar( buffer, source, tabla );
+				break;
+			case READ :
+				sdbespacio_atiendeLeer( buffer, source, tabla );
+				break;
+			case DROP :
+				sdbespacio_atiendeSuprimir ( buffer, tabla );
+				break;
+			default:
+				fprintf( stderr, "Error de aplicación\n" );
+				error++;
+			}
+			DELETE_MESSAGE(buffer);
+		}
+
+	pthread_exit(args);
+}
 
 /* unsigned int sdbespacio_atiendeMeter( char * message, int sz )
  *
@@ -105,6 +132,7 @@ int sdbespacio_iniciar() {
  * empleando la clave también empaquetada en el mensaje
  *
  */
+
 unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 
 	thash        *poratender;	/* Creación de apuntador a la tabla hash de indices y tabla de pendientes   */
@@ -112,13 +140,13 @@ unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 	tupla         data;			/* Tupla a almacenar                                                        */
 	char         *key;			/* Clave de la tupla                                                        */
 	int           indice, tam;	/* índice de la tabla en el que se almacenará la tupla y tamaño de la tupla */
-	int error = 0;
+	int           error = 0;
 
 	poratender = sdbespacio_getpendientes();
-	tam    = sdbproceso_unpack( message, sz, &key, &data);
+	tam        = sdbproceso_unpack( message, sz, &key, &data);
 
 	indice = thash_insert(tabla, data, key );
-	p = thash_remove( poratender, key );
+	p      = thash_remove( poratender, key );
 
 	if( p ) {
 		switch( p->op ) {
@@ -147,7 +175,7 @@ unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 
 int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla ) {
 
-	int error = 0;
+	int           error = 0;
 	thash 		 *poratender;
 	pendiente	 *p;
 	tupla		 *data;
@@ -179,10 +207,10 @@ int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla ) {
 
 int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla ) {
 
-	int error = 0;
-	thash *poratender;
+	int        error = 0;
+	thash     *poratender;
 	pendiente *p;
-	tupla data;
+	tupla      data;
 
 	data = thash_read( tabla, key );
 
@@ -208,7 +236,7 @@ int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla ) {
 
 int sdbespacio_atiendeSuprimir( char *key, thash *tabla ) {
 
-	int error = 0;
+	int    error = 0;
 	tupla *data;
 
 	data = thash_remove( tabla, key );

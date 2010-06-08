@@ -82,3 +82,7 @@ void esclavo(){
 	}
 
 }
+
+int prueba_pthread( int argc, char *argv[] ) {
+	return 0;
+}
