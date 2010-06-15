@@ -20,15 +20,48 @@
 #include <tupla.h>
 
 
-typedef pthread_t       hilo;
-typedef pthread_mutex_t candado;
-
-#define NHILOS 4
-
-
 /* TABLESIZE : Número de claves en las tablas hash utilizadas */
 
 #define TABLESIZE 1000
+
+#define MULTITHREAD
+
+#ifdef MULTITHREAD
+#define NHILOS 2
+
+typedef pthread_t       hilo;
+typedef pthread_mutex_t candado;
+
+typedef struct dt{
+	char   *cliente;
+	candado lock_tabla;
+	candado lock_pendientes;
+	candado lock_procesos;
+} datos;
+
+/* LIBERA_PROCESO(N, arg)
+ *
+ */
+
+#define LIBERA_PROCESO(N, arg) \
+	arg->cliente[N - MAESTRO - 1] = '\0'
+
+
+/* datos *sdbespacio_getdatos()
+ *
+ * Obtiene un apuntador a los datos compartidos por los
+ * hilos del espacio de tuplas.
+ */
+
+datos *sdbespacio_getdatos();
+
+/* datos *sdbespacio_deletedatos( datos *d )
+ *
+ */
+
+datos *sdbespacio_deletedatos( datos *d );
+
+#endif
 
 /* thash *sdbespacio_gethash()
  *
@@ -46,18 +79,6 @@ thash *sdbespacio_gethash();
 
 thash *sdbespacio_getpendientes();
 
-/* candado *sdbespacio_getLockHash()
- *
- */
-
-candado *sdbespacio_getLockHash();
-
-/* candado *sdbespacio_getLockPendientes()
- *
- */
-
-candado *sdbespacio_getLockPendientes();
-
 /* void sdbespacio_iniciar()
  *
  * Función para inicializar el proceso maestro.
@@ -65,11 +86,11 @@ candado *sdbespacio_getLockPendientes();
 
 int sdbespacio_iniciar();
 
-/* void *sdbespacio_atender( void *args )
+/* void *sdbespacio_atender( void *param )
  *
  */
 
-void *sdbespacio_atender( void *args );
+void *sdbespacio_atender( void *param );
 
 /* unsigned int sdbespacio_atiendeMeter( char * message, int sz, thash *tabla )
  *
