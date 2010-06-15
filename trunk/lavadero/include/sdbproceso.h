@@ -80,6 +80,7 @@ typedef struct edo {
  *
  * Devuelve un apuntador a una variable de tipo estado
  */
+
 estado *sdbproceso_estado();
 
 /* char *sdbproceso_pack( char *key, tupla *data )
