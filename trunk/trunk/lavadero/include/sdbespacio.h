@@ -24,7 +24,7 @@
 
 #define TABLESIZE 1000
 
-#define MULTITHREAD
+/* #define MULTITHREAD */
 
 #ifdef MULTITHREAD
 #define NHILOS 2
