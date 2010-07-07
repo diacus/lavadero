@@ -96,7 +96,7 @@ void *sdbespacio_atender( void *param );
  *
  */
 
-unsigned int sdbespacio_atiendeMeter( char * message, int sz, thash *tabla );
+unsigned int sdbespacio_atiendeMeter( char * message, int sz, thash *tabla, int src );
 
 /* int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla )
  *
@@ -120,5 +120,17 @@ int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla );
  */
 
 int sdbespacio_atiendeSuprimir( char *key, thash *tabla );
+
+/* int sdbespacio_atiendePendiente ( char * message )
+ *
+ * Rutina para atender la petición Pendiente.
+ */
+int sdbespacio_atiendePendiente ( char * message );
+
+/* int sdbespacio_atiendeSalvar( char *message, int sz, thash *tabla )
+ *
+ * Rutina para atender la salvar un mensaje en el respaldo
+ */
+int sdbespacio_atiendeSalvar( char *message, int sz, thash *tabla );
 
 #endif /* SDBESPACIO_H_ */
