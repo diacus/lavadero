@@ -12,10 +12,10 @@
 #include <string.h>
 #include <tupla.h>
 
-#define LINDA0     0 /* Identificador del proceso que administra el espacio de tuplas.     */
-#define LINDA1     1 /* Identificador del proceso que administra el espacio de tuplas.     */
-#define LINDA2     2 /* Identificador del proceso que administra el espacio de tuplas.     */
-#define MAESTRO    3 /* Identificador del proceso que administra la aplicación             */
+#define LINDA0     0 /* Identificador del proceso que administra el espacio de tuplas primario.     */
+#define LINDA1     1 /* Identificador del proceso que administra el espacio de tuplas secundario.     */
+#define MAESTRO    2 /* Identificador del proceso que administra la aplicación             */
+#define NSITES     2/* Identificador del proceso que administra la aplicación             */
 #define STORE    100 /* Etiqueta para un mensaje que envía una tupla para que se almacene. */
 #define GRAB     101 /* Etiqueta para un mensaje de solicitud de tupla.                    */
 #define READ     102 /* Etiqueta para un mensaje que busca eliminar una tupla del espacio. */
@@ -24,6 +24,9 @@
 #define DATA	 105 /* Etiqueta para un mensaje que transmite una tupla.                  */
 #define BEGIN    106 /* Etiqueta inicial.                                                  */
 #define END      107 /* Etiqueta final.                                                    */
+#define ACK      108 /* Etiqueta acuse de recibo                                           */
+#define UNATTENDED 109 /* Etiqueta para atender pendiente								   */
+#define SAVE 110 /* Etiqueta para atender pendiente								   */
 
 /* SOYESCLAVO(e) e->my_rank
  *
@@ -31,7 +34,7 @@
  * realiza el trabajo.
  */
 
-#define SOYESCLAVO(e) e->my_rank > 3
+#define SOYESCLAVO(e) e->my_rank > NSITES
 
 
 /* SOYESPACIO(e) e->my_rank
@@ -40,7 +43,7 @@
  * administra el espacio de tuplas.
  */
 
-#define SOYESPACIO(e) e->my_rank >= 0 && e->my_rank < 3
+#define SOYESPACIO(e) e->my_rank < NSITES
 
 /* SOYMAESTRO(e) e->my_rank
  *
@@ -49,7 +52,23 @@
  * middleware.
  */
 
-#define SOYMAESTRO(e) e->my_rank == 3
+#define SOYMAESTRO(e) e->my_rank == NSITES
+
+/* SOYPRIMARIO(e) e->my_rank
+ *
+ * Predicado que es verdadero si el proceso es quien
+ * administra el espacio de tuplas primario
+ */
+
+#define SOYPRIMARIO(e) e->my_rank == LINDA0
+
+/* SOYSECUNDARIO(e) e->my_rank
+ *
+ * Predicado que es verdadero si el proceso es quien
+ * administra el espacio de tuplas secundario
+ */
+
+#define SOYSECUNDARIO(e) e->my_rank == LINDA1
 
 /* DELETE_MESSAGE(s)
  *

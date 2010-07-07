@@ -75,12 +75,12 @@ int sdbespacio_iniciar() {
 		MPI_Get_count(&(edo->status), MPI_BYTE, &nbytes);
 		buffer = (char *) calloc( nbytes, sizeof(char) );
 		MPI_Recv( buffer, nbytes, MPI_BYTE, source, tag, MPI_COMM_WORLD, &(edo->status) );
-		switch(tag) {
+		switch( tag ) {
 		case END :
 			edo->tag = END;
 			break;
 		case STORE :
-			sdbespacio_atiendeMeter( buffer, nbytes, tabla );
+			sdbespacio_atiendeMeter( buffer, nbytes, tabla, source );
 			break;
 		case GRAB :
 			sdbespacio_atiendeSacar( buffer, source, tabla);
@@ -91,8 +91,14 @@ int sdbespacio_iniciar() {
 		case DROP :
 			sdbespacio_atiendeSuprimir ( buffer, tabla );
 			break;
+		case UNATTENDED:
+			sdbespacio_atiendePendiente ( buffer );
+			break;
+		case SAVE:
+			sdbespacio_atiendeSalvar( buffer, nbytes, tabla );
+			break;
 		default:
-			fprintf( stderr, "Error de aplicación\n" );
+			fprintf( stderr, "LINDA%d: Error de aplicacion\n", edo->my_rank );
 			error++;
 		}
 		DELETE_MESSAGE(buffer);
@@ -108,7 +114,7 @@ int sdbespacio_iniciar() {
  * empleando la clave también empaquetada en el mensaje
  *
  */
-unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
+unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla, int src ){
 
 	thash        *poratender;	/* Creación de apuntador a la tabla hash de indices y tabla de pendientes   */
 	pendiente    *p;			/* apuntador a la estructura pendiente                                      */
@@ -116,11 +122,20 @@ unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 	char         *key;			/* Clave de la tupla                                                        */
 	int           indice, tam;	/* índice de la tabla en el que se almacenará la tupla y tamaño de la tupla */
 	int error = 0;
+	char c = '\0';
+	estado *edo     = sdbproceso_estado();
 
 	poratender = sdbespacio_getpendientes();
 	tam    = sdbproceso_unpack( message, sz, &key, &data);
 
 	indice = thash_insert(tabla, data, key );
+
+	if( SOYPRIMARIO ( edo ) ){
+		MPI_Send( message, sz, MPI_CHAR, LINDA1, SAVE, MPI_COMM_WORLD );
+		MPI_Recv( &c , 1, MPI_CHAR, LINDA1, ACK, MPI_COMM_WORLD, &(edo->status) );
+	}
+
+	MPI_Send( &c, 1, MPI_CHAR, src, ACK, MPI_COMM_WORLD );
 	p = thash_remove( poratender, key );
 
 	if( p ) {
@@ -133,12 +148,32 @@ unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 			case READ :
 				sdbespacio_atiendeLeer( key, p->cliente, tabla );
 				break;
+
 		}
 
 		DELETEPENDIENTE(p);
 		error++;
 	}
 
+	return error;
+}
+
+/* int sdbespacio_atiendeSalvar( char *message, int sz, thash *tabla )
+ *
+ * Rutina para atender la salvar un mensaje en el respaldo, recube el mensaje
+ * el tamaño de este y la referencia a la tabla donde se almacenará
+ */
+int sdbespacio_atiendeSalvar( char *message, int sz, thash *tabla ){
+
+	tupla         data;			/* Tupla a almacenar                                                        */
+	char         *key;			/* Clave de la tupla                                                        */
+	int           indice, tam;	/* índice de la tabla en el que se almacenará la tupla y tamaño de la tupla */
+	int error = 0;
+	char c = '\0';
+
+	tam = sdbproceso_unpack( message, sz, &key, &data);
+	indice = thash_insert(tabla, data, key );
+	MPI_Send( &c, 1, MPI_CHAR, LINDA0, ACK, MPI_COMM_WORLD );
 	return error;
 }
 
@@ -150,29 +185,62 @@ unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 
 int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla ) {
 
-	int error = 0;
+	int error = 0, nbytes;
 	thash 		 *poratender;
 	pendiente	 *p;
 	tupla		 *data;
+	char c = '\0', *pend;
+	estado *edo     = sdbproceso_estado();
 
 	data = thash_remove( tabla, key );
 
 	if( data ) {
+		if ( SOYPRIMARIO ( edo ) ){
+			MPI_Send( key, strlen ( key ) + 1, MPI_CHAR, LINDA1, DROP, MPI_COMM_WORLD );
+			MPI_Recv( &c , 1, MPI_CHAR, LINDA1, ACK, MPI_COMM_WORLD, &(edo->status) );
+		}
 		MPI_Send( data, TUPLA_SIZE(data), MPI_CHAR, src, DATA, MPI_COMM_WORLD );
 		DELETE_MESSAGE(data);
-	} else {
+	}
+	else {
 		poratender = sdbespacio_getpendientes();
 		NEWPENDIENTE(p);
 		p->key = strdup(key);
 		p->cliente = src;
 		p->op = GRAB;
-
 		thash_insert(poratender, p, key );
+		if ( SOYPRIMARIO ( edo ) ){
+			nbytes = strlen ( key ) + 1 + 2 * sizeof( int );
+			pend = malloc ( nbytes );
+			*(int *)( pend ) = src;
+			*(int *)( pend + sizeof ( int ) ) = GRAB;
+			strcpy ( pend + 2 * sizeof ( int ), key);
+			MPI_Send( pend, nbytes, MPI_CHAR, LINDA1, UNATTENDED, MPI_COMM_WORLD );
+			MPI_Recv( &c , 1, MPI_CHAR, LINDA1, ACK, MPI_COMM_WORLD, &(edo->status) );
+			free ( pend );
+		}
 		error++;
 	}
-
 	return error;
 }
+
+int sdbespacio_atiendePendiente ( char * message ){
+
+	thash 		 *poratender;
+	pendiente	 *p;
+	char c = '\0';
+
+	poratender = sdbespacio_getpendientes();
+	NEWPENDIENTE(p);
+	p->cliente = *(int *)message;
+	p->op = *(int *)( message + sizeof ( int ) );
+	p->key = message + 2 * sizeof( int );
+	thash_insert( poratender, p, p->key );
+	MPI_Send( &c, 1, MPI_CHAR, LINDA0, ACK, MPI_COMM_WORLD );
+	return 0;
+
+}
+
 
 /* int sdbespacio_atiendeLeer( char *key, unsigned int src )
  *
@@ -213,11 +281,13 @@ int sdbespacio_atiendeSuprimir( char *key, thash *tabla ) {
 
 	int error = 0;
 	tupla *data;
+	char c = '\0';
 
 	data = thash_remove( tabla, key );
-
-	if( data )
-		DELETE_MESSAGE(data)
+	if( data ){
+		MPI_Send( &c, 1, MPI_CHAR, LINDA0, ACK, MPI_COMM_WORLD );
+		DELETE_MESSAGE(data);
+	}
 	else
 		error++;
 

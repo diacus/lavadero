@@ -29,7 +29,7 @@ void mandelbrot_Distribuido( int argc, char *argv[] ) {
 
 void mandelbrot_Coordinador(){
 
-	unsigned int AnchoIm =2500, AltoIm=2500; /*dimensiones de la imagen*/
+	unsigned int AnchoIm =2000, AltoIm=2000; /*dimensiones de la imagen*/
 	double x1=-2.3, x2=2.3, y1=-2.3, y2=2.3; /*límites x1, x2 corresponden al dominio; y1, y2 al rango de la imagen*/
 	pixel ** imagen;
 	cadena nombre = "fractal";
