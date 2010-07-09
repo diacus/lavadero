@@ -12,6 +12,9 @@
 #include <string.h>
 #include <tupla.h>
 
+#define TIEMPO1	   10000 /* tiempo en decimas de segundo */
+#define TIEMPO2	   100000 /* tiempo en decimas de segundo */
+#define MENSAJES   333 /* tiempo en decimas de segundo */
 #define LINDA0     0 /* Identificador del proceso que administra el espacio de tuplas primario.     */
 #define LINDA1     1 /* Identificador del proceso que administra el espacio de tuplas secundario.     */
 #define MAESTRO    2 /* Identificador del proceso que administra la aplicación             */
@@ -90,6 +93,7 @@ typedef struct edo {
 	int			tag;    	/* Etiqueta para el mensaje                */
 	char		*message;   /* Apuntador al mensaje a enviar o recibir */
 	MPI_Status	status ;	/* Estado de la comunicación               */
+	MPI_Request request;	/*  */
 } estado;
 
 /* estado *sdbproceso_estado()
@@ -131,5 +135,12 @@ char *sdbproceso_pack( char *key, tupla data );
 int sdbproceso_unpack( char *msg, unsigned int sz, char **key, tupla *data);
 
 
+/* int MPI_timer (MPI_Request *request, MPI_Status *status)
+ * función que verifica la llegada de un mensaje
+ * si esta no ocurre después del valor TIEMPO (decimas de segundo)
+ * el mensaje se descarta.Regresa 0 si el mensaje fue recibido
+ * y 1 si la espera por el mensaje no fue exitosa
+ */
+int MPI_timer (MPI_Request *request, MPI_Status *status);
 
 #endif /* SDBPROCESO_H_ */

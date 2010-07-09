@@ -13,6 +13,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* variable global que indica que ocurrio una falla*/
+int falla = 0;
+
+/* variable global que indica el sitio al que se envian los datos */
+int site = 0;
+
 
 /* int sdblinda_iniciar( int argc, char *argv[] )
  *
@@ -53,19 +59,41 @@ int sdblinda_iniciar( int argc, char *argv[] ) {
  * de la operación.
  */
 
+/*
+ * MPI_Irecv(message, 100, MPI_CHAR, source, tag, MPI_COMM_WORLD, &request);
+  if (timer (&request, &status) == 0)
+ */
+
 int sdblinda_meter( char *key, tupla data ) {
 
 	estado *edo = sdbproceso_estado();
 	/* nbytes almacenará el tamaño del mensaje a enviar */
 	int nbytes = strlen( key ) + 1 + TUPLA_SIZE( data );
 	char c = '\0';
+	int flag=0, time=0, i, f = 0;
+
 	/* Empaquetado del mensaje que se enviará al espacio de tuplas */
 	if( !edo->message )
 		DELETE_MESSAGE(edo->message);
 	edo->message = sdbproceso_pack( key, data );
 
-	MPI_Send( edo->message, nbytes, MPI_CHAR, LINDA0, STORE, MPI_COMM_WORLD );
-	MPI_Recv( &c , 1, MPI_CHAR, LINDA0, ACK, MPI_COMM_WORLD, &(edo->status) );
+	for ( i = 0; i <= f ; i++ ){
+		MPI_Send( edo->message, nbytes, MPI_CHAR, site, STORE, MPI_COMM_WORLD );
+		MPI_Irecv( &c , 1, MPI_CHAR, site, ACK, MPI_COMM_WORLD, &(edo->request) );
+		while ( !flag ){
+			/* Do some work ... */
+			MPI_Test(&(edo->request), &flag, &(edo->status));
+			time ++;
+			if ( time == TIEMPO1 ){
+				MPI_Cancel( &(edo->request) );
+				printf( "Soy %d: El espacio de principal de tuplas fallo\n", edo->my_rank );
+				falla ++;
+				f++;
+				site = 1;
+			}
+		}
+		flag = 0;
+	}
 
 	return 0;
 }
@@ -79,14 +107,32 @@ int sdblinda_meter( char *key, tupla data ) {
  * El valor de retorno le notifica al programador acerca la cantidad de bytes
  * recibidos exitosamente.
  */
-
+/*
+ * MPI_Irecv(message, 100, MPI_CHAR, source, tag, MPI_COMM_WORLD, &request);
+  if (timer (&request, &status) == 0)
+ */
 int sdblinda_sacar( char *key, tupla data ) {
 
 	estado *edo = sdbproceso_estado();
+	int flag = 0, i, f = 0, time = 0;
 
-	MPI_Send( key, strlen(key) + 1, MPI_CHAR, LINDA0, GRAB, MPI_COMM_WORLD );
-	MPI_Recv( data , TUPLA_SIZE(data), MPI_BYTE, LINDA0, DATA, MPI_COMM_WORLD, &(edo->status) );
-
+	for ( i = 0; i <= f ; i++ ){
+		MPI_Send( key, strlen(key) + 1, MPI_CHAR, site, GRAB, MPI_COMM_WORLD );
+		MPI_Irecv( data , TUPLA_SIZE(data), MPI_BYTE, site, DATA, MPI_COMM_WORLD, &(edo->request) );
+		while ( !flag ){
+			/* Do some work ... */
+			MPI_Test(&(edo->request), &flag, &(edo->status));
+			time ++;
+			if ( time == TIEMPO2 ){
+				MPI_Cancel( &(edo->request) );
+				printf( "Soy %d: El espacio de principal de tuplas fallo\n", edo->my_rank );
+				falla ++;
+				f++;
+				site = 1;
+			}
+		}
+		flag = 0;
+	}
 
 	return TUPLA_BYTES(data);
 

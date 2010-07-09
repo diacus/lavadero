@@ -66,15 +66,18 @@ int sdbespacio_iniciar() {
 	estado *edo     = sdbproceso_estado();	/* Apuntador a estado (propio de LINDA)																*/
 	char   *buffer;							/* Buffer de mensaje a recibir																		*/
 	int     nbytes, source, tag;			/* Tamaño (nbytes) del buffer a recibir, identidad (source) del emisor y etiqueta (tag) del mensaje */
-	int error = 0;
+	int error = 0, i = 0;
 
 	while( edo->tag != END ) {
+		i++;
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &(edo->status));
 		source = (edo->status).MPI_SOURCE;
 		tag = (edo->status).MPI_TAG;
 		MPI_Get_count(&(edo->status), MPI_BYTE, &nbytes);
 		buffer = (char *) calloc( nbytes, sizeof(char) );
 		MPI_Recv( buffer, nbytes, MPI_BYTE, source, tag, MPI_COMM_WORLD, &(edo->status) );
+		if (edo->my_rank == 0 && i == MENSAJES)
+			edo->tag = END;
 		switch( tag ) {
 		case END :
 			edo->tag = END;
