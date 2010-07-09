@@ -75,4 +75,6 @@ int sdblinda_leer( tupla data, char *key );
 
 int sdblinda_detener();
 
+
+
 #endif /* SDBLINDA_H_ */

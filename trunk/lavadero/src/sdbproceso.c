@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sdbproceso.h>
-
+#include <unistd.h>
 #include <tupla.h>
 
 
@@ -84,4 +84,29 @@ int sdbproceso_unpack( char *msg, unsigned int sz, char **key, tupla *data) {
 
 	return TUPLA_BYTES(*data);
 
+}
+
+/* int MPI_timer (MPI_Request *request, MPI_Status *status)
+ * función que verifica la llegada de un mensaje
+ * si esta no ocurre después del valor TIEMPO (decimas de segundo)
+ * el mensaje se descarta.Regresa 0 si el mensaje fue recibido
+ * y 1 si la espera por el mensaje no fue exitosa
+ */
+int MPI_timer ( MPI_Request *request, MPI_Status *status ){
+	int flag = 0, time = 0;
+	while ( !flag ){
+        /* Do some work ... */
+        MPI_Test( request, &flag, status );
+        usleep( 100000 );
+        time ++;
+        if ( time == TIEMPO2 ){
+        	printf( "no se recibio mensaje\n" );
+        	MPI_Cancel( request );
+        	flag = 1;
+        }
+	}
+	if( time != TIEMPO2 )
+		return 0;
+	else
+		return 1;
 }
