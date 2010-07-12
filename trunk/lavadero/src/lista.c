@@ -1,4 +1,4 @@
-/*
+/**
  * lista.c
  *
  *  Created on: 06/05/2010
@@ -10,7 +10,7 @@
 #include <string.h>
 #include <lista.h>
 
-/* lista *lista_new( void *inf, unsigned int sz, char *k )
+/** lista *lista_new( void *inf, unsigned int sz, char *k )
  *
  * Constructor de un nodo de lista con que almacena un apuntador
  * info a una cadena de sz bytes etiquetados con la clave key.
@@ -26,7 +26,7 @@ lista *lista_new( void *inf, char *k ) {
 	return res;
 }
 
-/* lista *lista_insert( lista *lst, lista *item )
+/** lista *lista_insert( lista *lst, lista *item )
  *
  * Inserta el nodo item en la lista lst, ordenandolo
  * por su clave
@@ -55,7 +55,7 @@ lista *lista_insert( lista *lst, lista *item ) {
 	return res;
 }
 
-/* lista *lista_remove( lista *lst, char *k )
+/** lista *lista_remove( lista *lst, char *k )
  *
  * Elimina el nodo con clave k de la lista lst.
  */
@@ -88,7 +88,7 @@ lista *lista_remove( lista *lst, char *k ) {
 
 }
 
-/* tupla lista_find( lista *lst, char *k )
+/** tupla lista_find( lista *lst, char *k )
  *
  * Devuelve la tupla almacenada en la lista
  * lst, con clave k.
@@ -104,7 +104,7 @@ void *lista_find( lista *lst, char *k ) {
 	return res;
 }
 
-/* void *lista_delete( lista *lst )
+/** void *lista_delete( lista *lst )
  *
  */
 
@@ -119,7 +119,7 @@ void *lista_delete( lista *lst ) {
 	return res;
 }
 
-/* lista *lista_finalize( lista *lst )
+/** lista *lista_finalize( lista *lst )
  *
  * Elimina la lista apuntada por lst.
  */
