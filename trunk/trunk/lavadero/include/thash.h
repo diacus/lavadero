@@ -17,7 +17,7 @@
 #define GOLD 1.6180339887498949
 #define SHIFT 10e7
 
-/* Type thash
+/** Type thash
  *
  * Tipo de Dato Abstracto que representa una tabla hash centralizada
  *

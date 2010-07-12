@@ -11,13 +11,13 @@
 #include <matriz.h>
 #include <sdblinda.h>
 
-/* int maestro_generaMatrices( matriz **A, matriz **B, int r, int c )
+/** int maestro_generaMatrices( matriz **A, matriz **B, int r, int c )
  *
  */
 
 int maestro_generaMatrices( matriz **A, matriz **B, int r, int c );
 
-/* int maestro_init_suma()
+/** int maestro_init_suma()
  *
  */
 
