@@ -1,4 +1,4 @@
-/*
+/**
  * sdbmaestro.c
  *
  *  Created on: 16/05/2010
@@ -9,7 +9,7 @@
 
 #ifdef MULTITHREAD
 
-/* thash *sdbespacio_gethash()
+/** thash *sdbespacio_gethash()
  *
  * Función para obtener una referencia a la tabla hash en la
  * que almacenan las tuplas.
@@ -29,7 +29,7 @@ thash *sdbespacio_gethash() {
 }
 
 
-/* thash *sdbespacio_getpendientes()
+/** thash *sdbespacio_getpendientes()
  *
  * Funcipon para obtener una referencia al espacio en el que
  * se van a almacenar las peticiones pendientes.
@@ -50,7 +50,7 @@ thash *sdbespacio_getpendientes() {
 }
 
 
-/* datos *sdbespacio_getdatos()
+/** datos *sdbespacio_getdatos()
  *
  * Obtiene un apuntador a los datos compartidos por los
  * hilos del espacio de tuplas.
@@ -70,7 +70,7 @@ datos *sdbespacio_getdatos() {
 }
 
 
-/* datos *sdbespacio_deletedatos( datos *d )
+/** datos *sdbespacio_deletedatos( datos *d )
  *
  */
 
@@ -82,7 +82,7 @@ datos *sdbespacio_deletedatos( datos *d ) {
 	return 0;
 }
 
-/* int sdbmaestro_iniciar()
+/** int sdbmaestro_iniciar()
  *
  * Función para inicializar el especio de tuplas.
  */
@@ -122,7 +122,7 @@ int sdbespacio_disponible( int id ) {
 	return res;
 }
 
-/* void *sdbespacio_atender( void *args )
+/** void *sdbespacio_atender( void *args )
  *
  */
 
@@ -186,7 +186,7 @@ void *sdbespacio_atender( void *param ) {
 	pthread_exit(param);
 }
 
-/* unsigned int sdbespacio_atiendeMeter( char * message, int sz )
+/** unsigned int sdbespacio_atiendeMeter( char * message, int sz )
  *
  * Función que recibe un mensaje y el tamaño en bytes de éste
  * almacena en la tabla hash la tupla contenida en el mensaje
@@ -233,7 +233,7 @@ unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla ){
 	return error;
 }
 
-/* int sdbespacio_atiendeSacar( char *key, unsigned int src )
+/** int sdbespacio_atiendeSacar( char *key, unsigned int src )
  *
  * Rutina para atender la petición Sacar de un cliente, y
  * proporcionarle la tupla que solicitó.
@@ -272,7 +272,7 @@ int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla ) {
 	return error;
 }
 
-/* int sdbespacio_atiendeLeer( char *key, unsigned int src )
+/** int sdbespacio_atiendeLeer( char *key, unsigned int src )
  *
  * Rutina para atender la petición Leer de un cliente, y
  * proporcionarle la tupla que solicitó.
@@ -309,7 +309,7 @@ int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla ) {
 	return error;
 }
 
-/* int sdbespacio_atiendeSuprimir( char *key )
+/** int sdbespacio_atiendeSuprimir( char *key )
  *
  * Rutina para atender la petición Suprimir.
  */
