@@ -9,7 +9,7 @@
 #define PENDIENTE_H_
 
 
-/* Registro: pendiente
+/** Registro: pendiente
  *
  * Estructura para almacenar las solicigudes pendientes.
  *
@@ -26,7 +26,7 @@ typedef struct pnd {
 } pendiente;
 
 
-/* NEWPENDIENTE(x)
+/** NEWPENDIENTE(x)
  *
  * Macro para crear un nuevo registro de solicitudes
  * pendientes.
@@ -36,7 +36,7 @@ typedef struct pnd {
 
 #define NEWPENDIENTE(x) x = (pendiente *) malloc(sizeof(pendiente))
 
-/* DELETEPENDIENTE(x)
+/** DELETEPENDIENTE(x)
  *
  * Macro para liberar el espacio de memoria ocupado
  * por un pendiente.

@@ -13,14 +13,14 @@ int prueba( int argc, char *argv[] );
 void coordinador();
 void esclavo();
 
-/* int pruebalista( int argc, char *argv[] )
+/** int pruebalista( int argc, char *argv[] )
  *
  * Función para probar la lista
  */
 
 int pruebalista( int argc, char *argv[] );
 
-/* int pruebahash( int argc, char *argv[] )
+/** int pruebahash( int argc, char *argv[] )
  *
  * Función para probar la tabla hash
  */
@@ -29,7 +29,7 @@ int pruebahash( int argc, char *argv[] );
 
 int pruebabit();
 
-/* Funciones generadas por Eclipse PTP al crear un
+/** Funciones generadas por Eclipse PTP al crear un
  * MPI Project.
  */
 

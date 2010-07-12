@@ -13,7 +13,7 @@
 
 typedef char * tupla;
 
-/* TUPLA_NEW(t, N)
+/** TUPLA_NEW(t, N)
  *
  * Macro para crear una tupla que almacene N bytes.
  *
@@ -30,7 +30,7 @@ typedef char * tupla;
 	*((int *) t) = N;
 	/*memcpy(tupla, &N, sizeof(int))*/
 
-/* TUPLA_READ(a,t)
+/** TUPLA_READ(a,t)
  *
  * Macro utilizada para leer el contenido de la tupla t.
  *
@@ -51,7 +51,7 @@ typedef char * tupla;
 	memcpy(a, temp, size); \
 }
 
-/* TUPLA_WRITE(t,a)
+/** TUPLA_WRITE(t,a)
  *
  * Macro utilizada para escribir en la tupla t, los datos
  * en el espacio de memoria apuntado por a.
