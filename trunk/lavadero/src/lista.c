@@ -1,8 +1,15 @@
 /**
- * lista.c
+ * @file
+ * @author Giovanni Medrano <ryubba@gmail.com>
+ * @author Diego Guzmán <dr.guzsant@gmail.com>
  *
- *  Created on: 06/05/2010
- *      Author: diacus
+ * @version 1.0
+ *
+ * @section Descripción
+ *
+ * Implementación del tipo de dato abstracto lista,
+ * el cual es empleado para perimitir duplicidad de clabes en
+ * el espacio de tuplas.
  */
 
 #include <stdio.h>
@@ -12,13 +19,13 @@
 
 /** lista *lista_new( void *inf, unsigned int sz, char *k )
  *
- * \brief Constructor de un nodo de lista con que almacena un apuntador
+ * Constructor de un nodo de lista con que almacena un apuntador
  * inf a una cadena de sz bytes etiquetados con la clave key.
  *
- * \param *inf un apuntador a la información del nuevo nodo.
- * \param sz tamaño del dato apuntado por inf.
- * \param *k cadena de caracteres que representa la clave del dato apuntado por inf.
- * \return Devuelve un apuntador al nodo de lista creado.
+ * @param *inf un apuntador a la información del nuevo nodo.
+ * @param sz tamaño del dato apuntado por inf.
+ * @param *k cadena de caracteres que representa la clave del dato apuntado por inf.
+ * @return Devuelve un apuntador al nodo de lista creado.
  */
 
 lista *lista_new( void *inf, char *k ) {
@@ -32,7 +39,12 @@ lista *lista_new( void *inf, char *k ) {
 /** lista *lista_insert( lista *lst, lista *item )
  *
  * Inserta el nodo item en la lista lst, ordenandolo
- * por su clave
+ * por su clave.
+ *
+ * @param *lst apuntador a la lista en la que se quiere insertar un elemento.
+ * @param *item apuntador al elemento de la lista que se quiere insertar en lst.
+ *
+ * @return Devuelve un apuntador a la lista resultante.
  */
 
 lista *lista_insert( lista *lst, lista *item ) {
@@ -61,6 +73,11 @@ lista *lista_insert( lista *lst, lista *item ) {
 /** lista *lista_remove( lista *lst, char *k )
  *
  * Elimina el nodo con clave k de la lista lst.
+ *
+ * @param *lst apuntador a la lista de la que se quiere remover un elemento.
+ * @param *k clave del elemento que se quiere remover de la lista.
+ *
+ * @return Devuelve un apuntador a la lista resultante.
  */
 
 lista *lista_remove( lista *lst, char *k ) {
@@ -95,6 +112,11 @@ lista *lista_remove( lista *lst, char *k ) {
  *
  * Devuelve la tupla almacenada en la lista
  * lst, con clave k.
+ *
+ * @param *lst Apuntador a la lista en la que se buscará el nodo.
+ * @param k clave del nodo que se buscará en la lista
+ *
+ * @return devuelve la tupla correspondiente a la clave dada
  */
 
 void *lista_find( lista *lst, char *k ) {
@@ -107,7 +129,8 @@ void *lista_find( lista *lst, char *k ) {
 	return res;
 }
 
-/** void *lista_delete( lista *lst )
+/* void *lista_delete( lista *lst )
+ *
  *
  */
 
@@ -125,13 +148,16 @@ void *lista_delete( lista *lst ) {
 /** lista *lista_finalize( lista *lst )
  *
  * Elimina la lista apuntada por lst.
+ *
+ * @param *lst Es un apuntador a la lista que se va a eliminar.
+ * @return Devuelve un apuntador a nulo.
  */
 
 lista *lista_finalize( lista *lst ) {
 	if(lst) {
 		free(lst->key);
 		free(lst->info);
-		lista_delete(lst->next);
+		lista_finalize(lst->next);
 		free(lst);
 	}
 	return NULL;

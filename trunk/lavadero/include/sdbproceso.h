@@ -5,6 +5,15 @@
  *      Author: diacus
  */
 
+/**
+ * @file
+ * @author Giovanni Medrano <ryubba@gmail.com>
+ * @author Diego Guzmán <dr.guzsant@gmail.com>
+ *
+ * @version 1.0
+ *
+ */
+
 #ifndef SDBPROCESO_H_
 #define SDBPROCESO_H_
 
@@ -81,7 +90,7 @@
 
 #define DELETE_MESSAGE(s) {free(s); s = NULL;}
 
-/** Registro: estado
+/** @typedef estado
  *
  * Estructura para almacenar las variables que identifican
  * a cada proceso dentro de MPI.
@@ -96,7 +105,7 @@ typedef struct edo {
 	MPI_Request request;	/*  */
 } estado;
 
-/** estado *sdbproceso_estado()
+/* estado *sdbproceso_estado()
  *
  * Función para crear las variables de estado del proceso
  * y obtener un apuntador al registro donde se alojan.
@@ -106,7 +115,7 @@ typedef struct edo {
 
 estado *sdbproceso_estado();
 
-/** char *sdbproceso_pack( char *key, tupla *data )
+/* char *sdbproceso_pack( char *key, tupla *data )
  *
  * Función para empaquetar la tupla data y su clave key, en una sola
  * porción de memoria, para ser enviados a la memoria compartida.
@@ -124,7 +133,7 @@ estado *sdbproceso_estado();
 
 char *sdbproceso_pack( char *key, tupla data );
 
-/** int sdbproceso_unpack( char *msg, unsigned int sz, char **key, tupla *data)
+/* int sdbproceso_unpack( char *msg, unsigned int sz, char **key, tupla *data)
  *
  * Función para descomponer el mensaje apuntado por msg de tamaño sz.
  *
@@ -135,7 +144,7 @@ char *sdbproceso_pack( char *key, tupla data );
 int sdbproceso_unpack( char *msg, unsigned int sz, char **key, tupla *data);
 
 
-/** int MPI_timer (MPI_Request *request, MPI_Status *status)
+/* int MPI_timer (MPI_Request *request, MPI_Status *status)
  * función que verifica la llegada de un mensaje
  * si esta no ocurre después del valor TIEMPO (decimas de segundo)
  * el mensaje se descarta.Regresa 0 si el mensaje fue recibido

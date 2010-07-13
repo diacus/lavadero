@@ -5,19 +5,43 @@
  *      Author: diacus
  */
 
+/**
+ * @file
+ * @author Giovanni Medrano <ryubba@gmail.com>
+ * @author Diego Guzmán <dr.guzsant@gmail.com>
+ *
+ * @version 1.0
+ *
+ * @section Descripción
+ *
+ * Implementación de funciones para utilizar una tabla hash como
+ * espacio de tuplas, o lista de pendientes.
+ */
+
 #include <thash.h>
 
 #ifndef HECHIZA
 #include <string.h>
 #include <lista.h>
 
-/* thash *thash_new( unsigned int sz )
+/**
+ * Función construcora, crea una nueva tabla hash con sz entradas.
  *
+ * @param sz el número de entradas que aceptará la tabla hash.
+ * @return Devuelve un apuntador a la tabla hash recién creada.
  */
 
 thash *thash_new( unsigned int sz ) { return ght_create(sz); }
 
-/* unsigned int thash_insert( thash *t, void *value, unsigned int sz, char *key )
+/**
+ *
+ * Función para insrtar un elemento en la tabla hash.
+ *
+ * @param *t Apuntador a la tabla hash que recibe el objeto nuevo.
+ * @param *value Apuntador al objeto que se va a insertar.
+ * @param *key Clave con la que se va a insertar el elemento nuevo.
+ *
+ * @return Devuelve un entero que indica si la operación fué exitosa.
  *
  */
 
@@ -32,11 +56,14 @@ unsigned int thash_insert( thash *t, void *value, char *key ) {
 
 }
 
-/* void *thash_remove( thash *t, char *key )
+/**
  *
  * Retira el dato etiquetado con la clave key de la tabla apuntada por t.
  *
- * Devuelve un apuntador al dato retirado de la tabla, y escribe el tamaño
+ * @param *t Un apuntador a la tabla hash de la que se va a eliminar el elemento.
+ * @param *key clave del elemento que se desea eliminar.
+ *
+ * @return Devuelve un apuntador al dato retirado de la tabla, y escribe el tamaño
  * del dato en el entenro apuntado por sz.
  */
 
@@ -54,7 +81,14 @@ void *thash_remove( thash *t, char *key ) {
 
 }
 
-/* void *thash_read( thash *t, unsigned int *sz, char *key )
+/**
+ *
+ * Función para leer un elemento de la tabla hash.
+ *
+ * @param *t Un apuntador a la tabla hash de la que se va a consultar el elemento.
+ * @param *key clave del elemento que se desea consultar.
+ *
+ * @return Devuelve un apuntador al elemento encontrado.
  *
  */
 
@@ -62,7 +96,11 @@ void *thash_read( thash *t, char *key ) {
 	return ght_get( t, strlen(key), key );
 }
 
-/* int thash_flush( thash *t )
+/**
+ *
+ * Elimina todos los elementos de la tabla.
+ *
+ * @param *t Un apuntador a la tabla hash de la que se van a eliminar los elementos.
  *
  */
 
@@ -79,8 +117,12 @@ int thash_flush( thash *t ) {
 
 }
 
-/* thash *thash_finalize( thash *t )
+/**
  *
+ * Función destructora de la tabla hash
+ *
+ * @param *t Un apuntador a la tabla hash de la que se va a eliminar.
+ * @return Esta función devuelve un apuntador nulo en caso de éxito.
  */
 
 thash *thash_finalize( thash *t ) {

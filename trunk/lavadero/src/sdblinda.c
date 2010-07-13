@@ -5,6 +5,21 @@
  *      Author: diacus
  */
 
+/**
+ * @file
+ * @author Giovanni Medrano <ryubba@gmail.com>
+ * @author Diego Guzmán <dr.guzsant@gmail.com>
+ *
+ * @version 1.0
+ *
+ * @section Descripción
+ *
+ * Implementación de los nodos que llevan a cabo la tarea
+ * de espacios de tuplas, se encargan de recibir y atender peticiones
+ * para metar, sacar y leer tuplas.
+ * 
+ */
+
 #include <stdio.h>
 #include <sdblinda.h>
 #include <sdbproceso.h>
@@ -20,7 +35,7 @@ int falla = 0;
 int site = 0;
 
 
-/* int sdblinda_iniciar( int argc, char *argv[] )
+/** int sdblinda_iniciar( int argc, char *argv[] )
  *
  * Función para inicializar el espacio de tuplas
  */
@@ -49,19 +64,21 @@ int sdblinda_iniciar( int argc, char *argv[] ) {
 	return 0;
 }
 
+/*
+ * MPI_Irecv(message, 100, MPI_CHAR, source, tag, MPI_COMM_WORLD, &request);
+  if (timer (&request, &status) == 0)
+ */
 
-/* int sdblinda_meter( void *data, unsigned int size, const char *key )
+/**
  *
  * Función para almacenar los size bytes de datos apuntados por data, bajo
  * la clave key.
  *
- * El valor de retorno le notifica al programador acerca del éxito o fracaso
+ * @param *key Clave con la que se almacenará la tupla.
+ * @parem  data Tupla que se va a almacenar.
+ *
+ * @return El valor de retorno le notifica al programador acerca del éxito o fracaso
  * de la operación.
- */
-
-/*
- * MPI_Irecv(message, 100, MPI_CHAR, source, tag, MPI_COMM_WORLD, &request);
-  if (timer (&request, &status) == 0)
  */
 
 int sdblinda_meter( char *key, tupla data ) {
@@ -98,18 +115,23 @@ int sdblinda_meter( char *key, tupla data ) {
 	return 0;
 }
 
-/* int sdblinda_sacar( void **data, const char *key )
+/*
+ * MPI_Irecv(message, 100, MPI_CHAR, source, tag, MPI_COMM_WORLD, &request);
+  if (timer (&request, &status) == 0)
+ */
+
+/** 
  *
  * Función para recuperar los datos almacenados bajo la clave key, y recibirlos
  * en el espacio de memoria apuntado por data.  Esta función elimina los datos
  * del espacio de tuplas.
  *
- * El valor de retorno le notifica al programador acerca la cantidad de bytes
+ * @param *key La clave de la tupla que se va a sacar del espacio.
+ * @param  data Es el espacio de memoria donde se deposita la tupla recien retirada.
+ *
+ * @return El valor de retorno le notifica al programador acerca la cantidad de bytes
  * recibidos exitosamente.
- */
-/*
- * MPI_Irecv(message, 100, MPI_CHAR, source, tag, MPI_COMM_WORLD, &request);
-  if (timer (&request, &status) == 0)
+ *
  */
 int sdblinda_sacar( char *key, tupla data ) {
 
@@ -138,13 +160,16 @@ int sdblinda_sacar( char *key, tupla data ) {
 
 }
 
-/* int sdblinda_leer( void **data, const char *key )
+/**
  *
  * Función para recuperar los datos almacenados bajo la clave key, y recibirlos
  * en el espacio de memoria apuntado por data.  Esta función es parecida a sdblinda_sacar,
  * sólo que NO elimina los datos del espacio de tuplas.
  *
- * El valor de retorno le notifica al programador acerca la cantidad de bytes
+ * @param *key La clave de la tupla que se va a leer del espacio.
+ * @param  data Es el espacio de memoria donde se deposita la tupla recuperada.
+ *
+ * @return El valor de retorno le notifica al programador acerca la cantidad de bytes
  * recibidos exitosamente.
  */
 
@@ -161,12 +186,14 @@ int sdblinda_leer( char *key, tupla data ) {
 
 
 
-/* int sdblinda_suprimir( const char *key )
+/**
  *
  * Función para eliminar los datos guardados bajo la clave key almacenados en el
  * espacio de tuplas. Una vez borrados los datos, no se recuperarán.
  *
- * El valor de retorno le notifica al programador acerca del éxito o fracaso
+ * @param key La clave de la tupla que se quiere eliminar.
+ *
+ * @return El valor de retorno le notifica al programador acerca del éxito o fracaso
  * de la operación.
  */
 
@@ -177,7 +204,7 @@ int sdblinda_suprimir( char *key ) {
 	return 0;
 }
 
-/* int sdblinda_detener()
+/** int sdblinda_detener()
  *
  * Una vez terminada la aplicación, esta función destruye el espacio
  * de tuplas.

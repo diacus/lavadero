@@ -5,11 +5,28 @@
  *      Author: diacus
  */
 
+/**
+ * @file
+ * @author Giovanni Medrano <ryubba@gmail.com>
+ * @author Diego Guzmán <dr.guzsant@gmail.com>
+ *
+ * @version 1.0
+ *
+ * @section Descripción
+ *
+ * Declaración del tipo de dato abstracto tupla.
+ */
+
 #ifndef TUPLA_H_
 #define TUPLA_H_
 
 #include <stdlib.h>
 #include <string.h>
+
+/**
+ * @typedef tupla Tipo de dato abstracto que se utiliza para guardar y comunicar
+ * información entre los nodos que utilizan la memoria virtual distribuida.
+ */
 
 typedef char * tupla;
 
