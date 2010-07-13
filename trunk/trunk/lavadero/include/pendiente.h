@@ -5,11 +5,24 @@
  *      Author: diacus
  */
 
+/**
+ * @file
+ * @author Giovanni Medrano <ryubba@gmail.com>
+ * @author Diego Guzmán <dr.guzsant@gmail.com>
+ *
+ * @version 1.0
+ *
+ * @section Descripción
+ *
+ * Declaración del tipo de dato abstracto pendiente el cual
+ * representa una petición que no ha sido atendida.
+ */
+
 #ifndef PENDIENTE_H_
 #define PENDIENTE_H_
 
 
-/** Registro: pendiente
+/** @typedef pendiente
  *
  * Estructura para almacenar las solicigudes pendientes.
  *

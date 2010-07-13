@@ -1,8 +1,15 @@
-/*
- * main.c
+/**
+ * @file
+ * @author Giovanni Medrano <ryubba@gmail.com>
+ * @author Diego Guzmán <dr.guzsant@gmail.com>
  *
- *  Created on: 05/05/2010
- *      Author: diacus
+ * @version 1.0
+ *
+ * @section Descripción
+ *
+ * Este programa genera un Fractal de Mandelbrot de manera distribuida
+ * utilizando una implementación de la memoria virtual distribuida
+ * linda.
  */
 
 #include <mandelbrot.h>

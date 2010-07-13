@@ -5,6 +5,18 @@
  *      Author: diacus
  */
 
+/**
+ * @file
+ * @author Giovanni Medrano <ryubba@gmail.com>
+ * @author Diego Guzmán <dr.guzsant@gmail.com>
+ *
+ * @version 1.0
+ *
+ * @section Descripción
+ *
+ * Declaración del tipo de dato abstracto thash.
+ */
+
 #ifndef THASH_H_
 #define THASH_H_
 /*#define HECHIZA*/   /* <--- Descomentar esta linea ara sar la implementación */
@@ -32,6 +44,12 @@ typedef struct th {
 
 #include <ght_hash_table.h>
 
+/**
+ * @typedef thash
+ *
+ * Tipo de dato abstracto que sirve para almacenar datos y recuperarlos
+ * a partir de una clave alfanumérica.
+ */
 typedef ght_hash_table_t thash;
 
 #endif

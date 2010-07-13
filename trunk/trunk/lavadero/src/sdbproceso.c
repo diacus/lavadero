@@ -5,6 +5,18 @@
  *      Author: diacus
  */
 
+/**
+ * @file
+ * @author Giovanni Medrano <ryubba@gmail.com>
+ * @author Diego Guzmán <dr.guzsant@gmail.com>
+ *
+ * @version 1.0
+ *
+ * @section Descripción
+ *
+ * Implementación de las funciones que desempeñan todos los nodos, tanto espacios, como clientes.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,12 +25,12 @@
 #include <tupla.h>
 
 
-/* estado *sdbproceso_estado()
+/**
  *
  * Función para crear las variables de estado del proceso
  * y obtener un apuntador al registro donde se alojan.
  *
- * Devuelve un apuntador a una variable de tipo estado
+ * @return Devuelve un apuntador a una variable de tipo estado
  */
 
 estado *sdbproceso_estado() {
@@ -33,7 +45,7 @@ estado *sdbproceso_estado() {
 	return est;
 }
 
-/* char *sdbproceso_pack( char *key, tupla *data )
+/**
  *
  * Función para empaquetar la tupla data y su clave key, en una sola
  * porción de memoria, para ser enviados a la memoria compartida.
@@ -44,7 +56,9 @@ estado *sdbproceso_estado() {
  *
  * |<--longitud de la clave + n bytes de la tupla -->|
  *
- * La función devuelve un apuntador al espacio de memoria que
+ * @param *key La clave de la tupla
+ * @param los datos de la tupla.
+ * @return La función devuelve un apuntador al espacio de memoria que
  * almacena el "paquete".
  *
  */
@@ -65,12 +79,17 @@ char *sdbproceso_pack( char *key, tupla data ) {
 	return package;
 }
 
-/* int sdbproceso_unpack( char *msg, unsigned int sz, char **key, void **data)
+/**
  *
  * Función para descomponer el mensaje apuntado por msg de tamaño sz.
  *
- * Devuelve en el apuntador data los datos recuperados, la cadena
- * apuntada por key con la clave de la tupla y el tamaño en bytes de la tupla
+ * @param *msg mensaje a descomponer.
+ * @param  sz tamaño del mensaje a descomponer.
+ * @param **key cadena donde se guarda la clave del mensaje.
+ * @param *data tupla en la que se almacenan los datos del mensaje.
+ *
+ * @return Devuelve en el apuntador data los datos recuperados, la cadena
+ * apuntada por key con la clave de la tupla y el tamaño en bytes de la tupla.
  */
 
 int sdbproceso_unpack( char *msg, unsigned int sz, char **key, tupla *data) {
@@ -86,11 +105,13 @@ int sdbproceso_unpack( char *msg, unsigned int sz, char **key, tupla *data) {
 
 }
 
-/* int MPI_timer (MPI_Request *request, MPI_Status *status)
- * función que verifica la llegada de un mensaje
+/**
+ * Función que verifica la llegada de un mensaje
  * si esta no ocurre después del valor TIEMPO (decimas de segundo)
  * el mensaje se descarta.Regresa 0 si el mensaje fue recibido
  * y 1 si la espera por el mensaje no fue exitosa
+ *
+ * @return En función del valor del retorno, la petición se considera exitosa o no.
  */
 int MPI_timer ( MPI_Request *request, MPI_Status *status ){
 	int flag = 0, time = 0;

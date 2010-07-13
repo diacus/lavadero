@@ -1,8 +1,23 @@
-/**
+/*
  * sdbmaestro.c
  *
  *  Created on: 16/05/2010
  *      Author: diacus
+ */
+
+/**
+ * @file
+ * @author Giovanni Medrano <ryubba@gmail.com>
+ * @author Diego Guzmán <dr.guzsant@gmail.com>
+ *
+ * @version 1.0
+ *
+ * @section Descripción
+ *
+ * Implementación de los nodos que llevan a cabo la tarea
+ * de espacios de tuplas, se encargan de recibir y atender peticiones
+ * para metar, sacar y leer tuplas.
+ * 
  */
 
 #include <sdbespacio.h>
@@ -16,10 +31,14 @@
 #include <thash.h>
 
 
-/** thash *sdbespacio_gethash()
+/**
  *
  * Función para obtener una referencia a la tabla hash en la
  * que almacenan las tuplas.
+ *
+ * Implementa el patrón Singleton
+ *
+ * @return una referencia a la variable thash que alamacena las tuplas.
  */
 
 thash *sdbespacio_gethash() {
@@ -36,10 +55,14 @@ thash *sdbespacio_gethash() {
 }
 
 
-/** thash *sdbespacio_getpendientes()
+/**
  *
  * Funcipon para obtener una referencia al espacio en el que
  * se van a almacenar las peticiones pendientes.
+ *
+ * Implementa el patrón Singleton
+ *
+ * @return una referencia a la variable thash que alamacena las solicitudes pendientes.
  */
 
 thash *sdbespacio_getpendientes() {
@@ -56,9 +79,12 @@ thash *sdbespacio_getpendientes() {
 	return pendientes;
 }
 
-/** int sdbmaestro_iniciar()
+/**
  *
  * Función para inicializar el especio de tuplas.
+ *
+ * @return Devuelve un entero que es igual a cero si el espacio de tuplas
+ * se ha inicializado exitosamente.
  */
 
 int sdbespacio_iniciar() {
@@ -110,12 +136,17 @@ int sdbespacio_iniciar() {
 }
 
 
-/** unsigned int sdbespacio_atiendeMeter( char * message, int sz )
+/**
  *
  * Función que recibe un mensaje y el tamaño en bytes de éste
  * almacena en la tabla hash la tupla contenida en el mensaje
  * empleando la clave también empaquetada en el mensaje
  *
+ * @param *message apuntador al mensaje recibido.
+ * @param sz tamaño en bytes del mensaje recibido.
+ *
+ * @return Devuelve un entero que es igual a cero si el espacio de tuplas
+ * se ha inicializado exitosamente.
  */
 unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla, int src ){
 
@@ -161,10 +192,17 @@ unsigned int sdbespacio_atiendeMeter( char *message, int sz, thash *tabla, int s
 	return error;
 }
 
-/** int sdbespacio_atiendeSalvar( char *message, int sz, thash *tabla )
+/**
  *
- * Rutina para atender la salvar un mensaje en el respaldo, recube el mensaje
- * el tamaño de este y la referencia a la tabla donde se almacenará
+ * Rutina para atender la salvar un mensaje en el respaldo, recribe el mensaje,
+ * el tamaño de este y la referencia a la tabla donde se almacenará.
+ *
+ * @param *message apuntador al mensaje recibido
+ * @param sz tamaño del mensaje recibido
+ * @param *tabla apuntador a la tabla hash donde se almacenará la tupla incluida en el mensaje.
+ *
+ * @return Devuelve un entero que es igual a cero si el espacio de tuplas
+ * se ha inicializado exitosamente.
  */
 int sdbespacio_atiendeSalvar( char *message, int sz, thash *tabla ){
 
@@ -180,10 +218,16 @@ int sdbespacio_atiendeSalvar( char *message, int sz, thash *tabla ){
 	return error;
 }
 
-/** int sdbespacio_atiendeSacar( char *key, unsigned int src )
+/**
  *
  * Rutina para atender la petición Sacar de un cliente, y
  * proporcionarle la tupla que solicitó.
+ *
+ * @param key apuntador a la clave de la tupla solicitada.
+ * @param src identificador del nodo que solicitó la tupla.
+ *
+ * @return Devuelve un entero que es igual a cero si el espacio de tuplas
+ * se ha inicializado exitosamente.
  */
 
 int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla ) {
@@ -227,6 +271,17 @@ int sdbespacio_atiendeSacar( char *key, unsigned int src, thash *tabla ) {
 	return error;
 }
 
+/**
+ * Rutina empleada para revisar si se tienen solicitudes pendientes
+ * asociadas con un mensaje dado, si lo hay, esta rutina atiende el pendiente
+ *
+ * @param message mensaje que contiene una petición
+ *
+ * @return Devuelve un entero que es igual a cero si el espacio de tuplas
+ * se ha inicializado exitosamente.
+ *
+ */
+
 int sdbespacio_atiendePendiente ( char * message ){
 
 	thash 		 *poratender;
@@ -245,10 +300,16 @@ int sdbespacio_atiendePendiente ( char * message ){
 }
 
 
-/** int sdbespacio_atiendeLeer( char *key, unsigned int src )
+/**
  *
  * Rutina para atender la petición Leer de un cliente, y
  * proporcionarle la tupla que solicitó.
+ *
+ * @param *key clave de la tupla que se desea leer
+ * @param  src identificadro del proceso que solicita la tupla para lectura.
+ * @param *tabla apuntador a la tabla hash donde se almacenan las tuplas.
+ *
+ * @return en caso de exito, esta función devuelve un entero igual a cero.
  */
 
 int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla ) {
@@ -275,9 +336,10 @@ int sdbespacio_atiendeLeer( char *key, unsigned int src, thash *tabla ) {
 	return error;
 }
 
-/** int sdbespacio_atiendeSuprimir( char *key )
- *
+/**
  * Rutina para atender la petición Suprimir.
+ * @param *key Es la clave de la tupla a suprimir.
+ * @param *tabla apuntador a la tabla hash en la que se alamacenan las tuplas.
  */
 
 int sdbespacio_atiendeSuprimir( char *key, thash *tabla ) {
