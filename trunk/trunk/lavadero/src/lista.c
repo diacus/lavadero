@@ -12,10 +12,13 @@
 
 /** lista *lista_new( void *inf, unsigned int sz, char *k )
  *
- * Constructor de un nodo de lista con que almacena un apuntador
- * info a una cadena de sz bytes etiquetados con la clave key.
+ * \brief Constructor de un nodo de lista con que almacena un apuntador
+ * inf a una cadena de sz bytes etiquetados con la clave key.
  *
- * Devuelve un apuntador al nodo de lista creado.
+ * \param *inf un apuntador a la información del nuevo nodo.
+ * \param sz tamaño del dato apuntado por inf.
+ * \param *k cadena de caracteres que representa la clave del dato apuntado por inf.
+ * \return Devuelve un apuntador al nodo de lista creado.
  */
 
 lista *lista_new( void *inf, char *k ) {
