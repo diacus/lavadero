@@ -45,19 +45,21 @@ estado *sdbproceso_estado() {
 	return est;
 }
 
+/*
+ * +-------+-----------------------------------------+
+ * | clave |                  tupla                  |
+ * +-------+-----------------------------------------+
+ * |<--longitud de la clave + n bytes de la tupla -->|
+ *
+ */
+
 /**
  *
  * Función para empaquetar la tupla data y su clave key, en una sola
  * porción de memoria, para ser enviados a la memoria compartida.
  *
- * +-------+-----------------------------------------+
- * | clave |                  tupla                  |
- * +-------+-----------------------------------------+
- *
- * |<--longitud de la clave + n bytes de la tupla -->|
- *
  * @param *key La clave de la tupla
- * @param los datos de la tupla.
+ * @param data los datos de la tupla.
  * @return La función devuelve un apuntador al espacio de memoria que
  * almacena el "paquete".
  *
